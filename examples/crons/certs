@@ -1,0 +1,20 @@
+#
+# Renew certs:
+#  - avoid dnsec key rolls times 
+#    dns_tools uses locking but good to avoid overlap
+#    dnssec renews on 2nd of every month at 8 am and rolls 10 am
+#  - certs renew (check) every Tue afternoon and roll 2 hours later
+#
+#  format: minute hour day month dayofweek user cmd (mon = 1)
+#
+30 14 * * 2 root /usr/bin/sslm-mgr -renew
+30 16 * * 2 root /usr/bin/sslm-mgr -roll
+
+#
+# update dh parms :
+# will update if existing file is older than min age.
+# The default min age is 120 days. Use -a to change min age.
+# Update early morning ahead of any cert renewal.
+#
+30 2 * * 2 root /usr/bin/sslm-dhparm -s /etc/ssl-mgr/prod-certs
+

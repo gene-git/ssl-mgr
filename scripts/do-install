@@ -1,0 +1,77 @@
+#!/bin/bash
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022,2023 Gene C
+#
+# installer script for ssl_mgr
+# e.g. Call from PKGBUILD:  ./scripts/do-install ${pkgdir}
+# gene c (2023)
+#
+dest="$1"
+self="ssl-mgr"
+
+info="README.rst Docs examples scripts packaging"
+infodir="usr/share/${self}"
+
+license="Docs/License.rst"
+licensedir="usr/share/licenses/${self}"
+
+etc="examples"
+etcdir='etc/ssl-mgr/'
+
+libexecdir="usr/lib/${self}/"
+
+# list apps without the ".py" or leave empty string
+apps=('sslm-dhparm' 'sslm-info' 'sslm-mgr' 'sslm-verify')
+#libexec_py=('sslm-auth-hook' 'sslm-cleanup-hook')
+libexec_py=('sslm-auth-hook')
+libexec_other=()
+
+# so can make app link in /usr/bin
+sitedir=$(/usr/bin/python3 -c "import site; print(site.getsitepackages()[0])")
+mysitedir="$sitedir/${self//-/_}"
+
+if [ ! -d "$dest" ] ; then
+    echo 'Missing destination directory'
+    exit 1
+else
+    #
+    # shared
+    #
+    /usr/bin/rsync --mkpath -a ${info} ${dest}/${infodir}/
+    /usr/bin/rsync --mkpath -a ${license} ${dest}/${licensedir}/
+
+    #
+    # Applications
+    #
+    mkdir -p ${dest}/${etcdir}
+    /usr/bin/rsync --mkpath -a ${etc} ${dest}/${etcdir}/
+
+    /usr/bin/python -m installer --destdir="$dest" dist/*.whl
+
+    # link(s) in /usr/bin/
+    if [ -v apps ] ; then
+        /usr/bin/mkdir -p "${dest}/usr/bin"
+        for app in ${apps[@]}
+        do
+            /usr/bin/ln -sf ${mysitedir}/${app}.py ${dest}/usr/bin/${app}
+        done
+    fi
+
+    # libexec python
+    mkdir -p ${dest}/${libexecdir}
+    if [ -v libexec_py ] ; then
+        for app in ${libexec_py[@]}
+        do
+            /usr/bin/ln -sf ${mysitedir}/${app}.py ${dest}/${libexecdir}/${app}
+        done
+    fi
+    # libexec other
+    if [ -v libexec_other ] ; then
+        for app in ${libexec_other[@]}
+        do
+            /usr/bin/ln -sf ${mysitedir}/${app} ${dest}/${libexecdir}/${app}
+        done
+    fi
+    exit 0
+fi
+
