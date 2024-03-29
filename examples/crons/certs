@@ -11,8 +11,9 @@
 30 16 * * 2 root /usr/bin/sslm-mgr -roll
 
 #
-# update dh parms :
-# will update if existing file is older than min age.
+# update /create dh parms :
+# rfc 7919 pre-defined groups are created once as they don't change
+# For older DH params, they will be updates if existing file is older than min age.
 # The default min age is 120 days. Use -a to change min age.
 # Update early morning ahead of any cert renewal.
 #

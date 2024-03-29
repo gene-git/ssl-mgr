@@ -1010,6 +1010,7 @@ Dependencies
  cryptography
  dateutil
  netaddr
+ lockmgr            Ensures only 1 app runs at a time
 =================== ==================================
 
 * Building Package:
