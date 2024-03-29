@@ -10,7 +10,7 @@
 # 
 pkgname='ssl-mgr'
 pkgdesc='Manage (re)new certificates and handle DANE TLSA key rollover'
-_gitname='ssl_mgr'
+_gitname='ssl-mgr'
 
 pkgver=2.2.0
 pkgrel=1
