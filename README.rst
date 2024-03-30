@@ -30,6 +30,11 @@ In practical terms, there are really only 2 commands that are needed with *sslm-
 Once things are set up these can be run out of cron - renew, then wait, then roll.
 Clean and simple.
 
+N.B. DNSSEC is required for DANE otherwise it is not necessary. However, I do recommend using DNSSEC.
+I have also made available the tool I use to manage it [#dnstool]_
+
+There is a PDF version in the Docs directory if that is easier to read.
+
 Key Features
 ============
 
