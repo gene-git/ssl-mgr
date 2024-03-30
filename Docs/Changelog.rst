@@ -1,8 +1,10 @@
 Changelog
 =========
 
-**[HEAD] ----- 2024-03-29** ::
+**[2.3.1] ----- 2024-03-29** ::
 
+	    more little readme changes
+	    minor readme tweak
 	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 
