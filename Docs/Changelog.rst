@@ -1,6 +1,11 @@
 Changelog
 =========
 
+**[HEAD] ----- 2024-03-29** ::
+
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[2.3.0] ----- 2024-03-29** ::
 
 	    Add PKGBUILD depends : certbot and optdepends: dns_tools

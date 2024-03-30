@@ -13,9 +13,7 @@ By way of background, I wrote this with 3 goals. Specifically to:
 
  * simplify certificate management - (i.e. automatic, simple and robust)
 
- * support *dns-01* acme challenge with Letsencrypt. 
-
-   * Also support *http-01*, but *dns-01* is definitely, strongly preferred
+ * support *dns-01* acme challenge with Letsencrypt (and *http-01* as well)
 
  * support for *DANE TLS*
 
@@ -25,8 +23,7 @@ makes it as easy and simple as it can be; but no simpler.
 
 In practical terms, there are really only 2 commands that are needed with *sslm-mgr*:
 
- * **renew** - creates the new certificate(s). 
-               New ones are always created in *next*; current ones remain in *curr*. 
+ * **renew** - creates the new certificate(s) in *next* : current ones remain in *curr*. 
 
  * **roll** - moves *next* to become the new *curr*.
 
@@ -242,7 +239,7 @@ Tool                    Purpose
 sslm-auth-hook          internal - used with certbot's manual hook option
 sslm-dhparm             generate Diffie Hellman paramater file(s)
 sslm-info               display info about cert.pem, csr.pem, chain.pem, privkey.pem,  etc
-ssl-mgr                 primary tool for certificate management
+sslm-mgr                primary tool for certificate management
 sslm-verify             verifies any cert.pem file using public key from chain.pem
 ===================     ===========================================================
 
