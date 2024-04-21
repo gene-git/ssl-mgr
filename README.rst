@@ -51,10 +51,20 @@ Key Features
 New / Interesting
 ==================
 
-Recent changes and any important new info goes here.
+Recent changes and important info goes here.
 
- * This has been in production for some time 
- * This is the first version made available to community.
+ * For non-dns servers the *restart_cmd* config can now be either a list of commands 
+   or a single command.
+   This can be helpful for postfix when using sni_maps; these *must* be rebuilt 
+   whenever a cert changes. e.g. the smtp server could now have:
+
+   restart_cmd = ['/usr/bin/postmap -F lmdb:/etc/postfix/sni_maps', '/usr/bin/postfix reload']
+
+   **Reloading/restarting postfix alone will NOT pick up new cert when using sni_maps**
+
+   You can alternatively put both commands into a shell script and run that as well.
+
+ * ssl-mgr has been in production for some time and working well.
 
 More Detail
 ===========
@@ -830,7 +840,9 @@ Config ssl-mgr.conf
 
     [smtp]
         servers = ['srv8.prv.sapience.com', 'srv7.prv.sapience.com']
-        restart_cmd = '/usr/bin/systemctl restart postfix'
+        # N.B. If using sni_maps
+        #restart_cmd = ['/usr/bin/postmap -F lmdb:/etc/postfix/sni_maps', '/usr/bin/postfix reload']
+        restart_cmd = '/usr/bin/postfix reload'
         svc_depends = [['sapience.com', ['mail-rsa', 'mail-ec']]]
         depends = ['dns']
 

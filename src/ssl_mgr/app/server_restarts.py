@@ -3,6 +3,8 @@
 """
 Restart servers after cert update
 """
+from typing import List, Union
+
 from utils import run_prog
 from ssl_dns import dns_restart
 
@@ -83,14 +85,48 @@ def _check_restart_needed(ssl_mgr:'SslMgr', server) -> bool:
     if not ssl_mgr.opts.root_privs:
         logs('  Need root privs to restart server')
         if  ssl_mgr.opts.debug:
-            return False
+            return True
         return False
     return True
+
+def _do_one_restart(ssl_mgr:'SslMgr', cmds:Union[str, List[str]], host=None) -> int:
+    """
+    Runs command in cmds (or each command if a list)
+        - cmds can be single command or list of commands
+    return: 
+        - the number of fails. 
+    For a list of commands each failing command adds to the count
+    """
+    logs = ssl_mgr.logs
+    if not isinstance(cmds, list):
+        cmds = [cmds]
+
+    num_fails = 0
+    for restart_cmd in cmds:
+        this_cmd = restart_cmd.split()
+        if not restart_cmd:
+            continue
+
+        pargs = []
+        if host :
+            pargs = ['/usr/bin/ssh', host]
+
+        pargs += this_cmd
+        if ssl_mgr.opts.debug:
+            logs(f'  debug: {pargs}')
+        else:
+            [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.log)
+            if retc != 0:
+                logs(f'Error: restarting {pargs}')
+                num_fails += 1
+
+    return num_fails
 
 def _restart_server(ssl_mgr:'SslMgr', server) -> (bool, int, int):
     """
     Run restart command on host (local or remote)
     Return (num_fails, num_total)
+    The restart command can be 1 item or a list of items to run.
     """
     logs = ssl_mgr.logs
     log = ssl_mgr.log
@@ -99,35 +135,34 @@ def _restart_server(ssl_mgr:'SslMgr', server) -> (bool, int, int):
     if not restart_needed:
         return (True, 0, 0)
 
-    restart_cmd = server.restart_cmd.split()
-    if not restart_cmd:
+    if not server.restart_cmd:
         return (True, 0, 0)
 
-    num_fails = 0
-    num_total = 0
+    #
+    # NB if restart has more than 1 command, a failure of any of themn counts as a fail.
+    #
+    num_fails_tot = 0
+    num_restarts_tot = 0
     okay = True
     for host in server.servers:
         logs(f'    {host}')
+        num_restarts_tot += 1
+
         #
         # Use ssh if remote otherwise run cmd locally
         #
-        num_total += 1
+        remote = None
         if host not in (ssl_mgr.this_host, ssl_mgr.this_fqdn):
-            pargs = ['/usr/bin/ssh', host]
-        else:
-            pargs = []
+            remote = host
 
-        pargs += restart_cmd
-        if ssl_mgr.opts.debug:
-            logs(f'  debug: {pargs}')
-        else:
-            [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.log)
-            if retc != 0:
-                logs(f'Error: restarting {pargs}')
-                okay = False
-                num_fails += 1
+        num_fails = _do_one_restart(ssl_mgr, server.restart_cmd, host=remote)
 
-    return (okay, num_fails, num_total)
+        if num_fails > 0:
+            okay = False
+            num_fails_tot += 1
+            log(f'     Restart : {server.restart_cmd} had {num_fails} fails')
+
+    return (okay, num_fails_tot, num_restarts_tot)
 
 def server_restarts_non_dns(ssl_mgr:'SslMgr') -> bool:
     """
