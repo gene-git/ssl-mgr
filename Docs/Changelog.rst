@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**[2.4.0] ----- 2024-04-21** ::
+
+	    Enhance non-dns restart_cmd to allow a list of commands. Useful for postfix when using sni_maps which must be rebuilt to get new certificates
+	    remove duplicate depends in PKGBUILD
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[2.3.1] ----- 2024-03-29** ::
 
 	    more little readme changes
