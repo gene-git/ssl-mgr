@@ -77,7 +77,7 @@ def get_available_options(defaults:dict):
 
     ohelp = 'Only roll if next is older than this (config min_roll_mins)'
     min_roll_mins = defaults.get('min_roll_mins')
-    opt = [('-roll-mins', '--min-roll-mins'), {'help' : ohelp, 'type' : int, 'default' : min_roll_mins}]
+    opt = [('-roll-mins', '--min-roll-mins'), {'help' : ohelp, 'default' : min_roll_mins}]
     std_opts.append(opt)
 
     ohelp = 'dns: Use script to sign zones & restart primary (config dns.restart_cmd)'
@@ -86,7 +86,7 @@ def get_available_options(defaults:dict):
 
     ohelp = 'Clean database dirs keeping newest N (see --clean-all)'
     clean_keep = defaults.get('clean_keep')
-    opt = [('-clean-keep', '--clean-keep'), {'help' : ohelp, 'type' : int, 'default' : clean_keep}]
+    opt = [('-clean-keep', '--clean-keep'), {'help' : ohelp, 'default' : clean_keep}]
     std_opts.append(opt)
 
     ohelp = 'Clean up all grps/svcs not just active domains'

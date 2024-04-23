@@ -95,4 +95,13 @@ def parse_options(defaults:dict) -> dict:
     if grps_svcs:
         opt_dict['grps_svcs'] = _parse_groups_services(grps_svcs)
 
+    #
+    # 3.14 deprecated argparse.add_argument 'type' field
+    #
+    if opt_dict.get('clean_keep') :
+        opt_dict['clean_keep'] = int(opt_dict['clean_keep'])
+
+    if opt_dict.get('min_roll_mins') :
+        opt_dict['min_roll_mins'] = int(opt_dict['min_roll_mins'])
+
     return opt_dict

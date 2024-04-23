@@ -53,6 +53,9 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * Adjust for upcoming python changes.
+   Some argparse options have been deprecated in 3.12 and will be removed in 3.14.
+
  * For non-dns servers the *restart_cmd* config can now be either a list of commands 
    or a single command.
    This can be helpful for postfix when using sni_maps; these *must* be rebuilt 
