@@ -80,6 +80,8 @@ def certbot_options(certbot:'Certbot', challenge_type:str, cert_dir:str,
     #    cleanup_hook_w_args = f'{cleanup_hook_w_args} debug'
 
     opts = ['certonly', '--manual']
+    opts += ['--logs-dir', certbot.logdir_letsencrypt]
+    opts += ['--work-dir', certbot.workdir_letsencrypt]
     opts += ['--quiet', '--keep-until-expiring']
     opts += ['--cert-name', certbot.apex_domain]
     opts += ['--manual-auth-hook', auth_hook_w_args]
@@ -111,7 +113,9 @@ def certbot_options(certbot:'Certbot', challenge_type:str, cert_dir:str,
     #
     # Removing ssl_ca.info.ca_test and using cl opt only now
     #
-    if ssl_ca.test :            # or ssl_ca.info.ca_test:
+    #if ssl_ca.test :               # old way
+    #
+    if certbot.opts.test :
         opts += ['--test-cert']
 
     if ssl_ca.dry_run:

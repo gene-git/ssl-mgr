@@ -26,6 +26,7 @@ def _tlsa_update_one(cert:'SslCert', ssl_dns):
     """
     Make file with tlsa records
     """
+    logs = cert.logs
     ssl_svc = cert.svc
     dane_tls = ssl_svc.dane_tls
     if not dane_tls :
@@ -47,6 +48,10 @@ def _tlsa_update_one(cert:'SslCert', ssl_dns):
                 tlsa_data = cert.get_cert_hash(hash_type)
             case _:
                 tlsa_data = cert.get_pubkey_hash(hash_type, serialize_fmt="DER")
+
+        if not tlsa_data:
+            logs(f' {apex_domain}  tlsa : bad or missing cert - skipping')
+            continue
 
         #
         # the record data for TLSA has:

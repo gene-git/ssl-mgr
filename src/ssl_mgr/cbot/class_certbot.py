@@ -8,6 +8,7 @@ import os
 from db import SslDb
 from utils import get_my_hostname
 from utils import init_logging, get_certbot_logger
+from utils import set_restictive_file_perms
 from config import SslOpts
 from .auth_hook import auth_hook
 from .cleanup_hook import cleanup_hook
@@ -48,6 +49,13 @@ class CertbotHook:
             self.logger = get_certbot_logger()
             self.logger.logs('auth_hook: init logging')
 
+        #
+        # certbot logdir (--logs-dir) (default /var/log/letsencrypt)
+        #
+        self.logdir_letsencrypt = os.path.join(self.opts.logdir, 'letsencrypt')
+        os.makedirs(self.logdir_letsencrypt, exist_ok=True)
+        set_restictive_file_perms(self.logdir_letsencrypt)
+
         self.logs = self.logger.logs
         self.logsv = self.logger.logsv
         self.log = self.logger.log
@@ -58,6 +66,12 @@ class CertbotHook:
         self.db = SslDb(self.opts.top_dir, grp_name, svc_name)
         self.cb_dir = self.db.cb_dir
         self.db_name = self.db.db_names[lname]
+
+        #
+        # certbot work dir (--work-dir)(default is /var/lib/letsencrypt)
+        #
+        self.workdir_letsencrypt = os.path.join(self.cb_dir, 'work')
+        set_restictive_file_perms(self.workdir_letsencrypt)
 
         (self.this_host, self.this_fqdn) = get_my_hostname()
 

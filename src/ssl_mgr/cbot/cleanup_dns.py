@@ -11,7 +11,7 @@ def cleanup_hook_dns(certbot:'CertbotHook'):
     """
     clean dns-01
      - make new/empty file - i.e. no TXT records with challenge tokens.
-     - push to DNS 
+     - push to DNS
      - be nice if could hold the actual push until we are ready
        to push dns for tlsa (even if no tlsa)
        Dont have svc so no sans - its in csr
@@ -27,6 +27,8 @@ def cleanup_hook_dns(certbot:'CertbotHook'):
     auth_data_rows.append(';; Done - cleaned up')
 
     #
+    # Push empty acme-challenge dns zone file (skip waiting for nameserver checks
+    # as we are not validating any acme challenges)
     # Maybe we can delay this push until tlsa records are available?
     #
-    auth_push_dns(certbot, auth_data_rows)
+    auth_push_dns(certbot, auth_data_rows,check_nameservers=False)

@@ -3,4 +3,4 @@
 """
 Project ssl-mgr
 """
-__version__ = "2.5.0"
+__version__ = "3.1.1"

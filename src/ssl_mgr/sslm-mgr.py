@@ -14,8 +14,6 @@ def main():
     """
     Certificate manager
     """
-    #breakpoint()
-
     ssl_mgr = SslMgr()
     okay = ssl_mgr.do_tasks()
     if not okay:

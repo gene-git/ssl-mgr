@@ -31,7 +31,6 @@ def auth_hook(certbot:'CertbotHook'):
     validation = certbot.env.validation
     token = certbot.env.token
     remaining_challenges = certbot.env.remaining_challenges
-
     #
     # Update log file
     #

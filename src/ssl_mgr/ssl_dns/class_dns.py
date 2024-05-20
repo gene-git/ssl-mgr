@@ -4,13 +4,14 @@
 DNS tools
 """
 # pylint: disable=invalid-name,too-many-instance-attributes
+# pylint: disable=too-many-arguments
 import netaddr
 from utils import get_certbot_logger
 
 from .dns import dns_resolver
 from .dns import auth_nameservers
 from .dns import dns_query
-from .check_acme import check_acme_challenge
+from .check_acme import check_acme_challenges
 
 def _mx_host_dict(mx_hosts_raw:[str]):
     """
@@ -36,13 +37,13 @@ class SslDns:
     Each instance is associated with one domain name for which we will be
     checking it's authoritative name servers for the challenge records.
     """
-    def __init__(self, apex_domain, dns_primary, dns_port):
+    def __init__(self, apex_domain, dns_primary, dns_port, check_delay, check_xtra_ns):
         """
         domain
             domain whose authoritative NS will be queried to confirm DNS acme challenges
             are flushed to all the NS
-         
-        dns_primary:dns_port 
+
+        dns_primary:dns_port
             dns server that can provide dns as seen from internet
             used to get a list of authoritative nameservers for 'apex_domain'
             IPs are looked up using standard dns recursive stub resolver.
@@ -59,16 +60,26 @@ class SslDns:
         self.mx_hosts = None
         #self.stub_resolver = None
 
+        self.check_delay = -1
+        self.xtra_ns = []
+
         self.logger = get_certbot_logger()
         self.logs = self.logger.logs
         self.log = self.logger.log
+        self.logv = self.logger.logv
+
+        if check_delay and check_delay > 0:
+            self.check_delay = check_delay
+            #self.log(f'ssl_dns: delay : {check_delay}')
 
         #
         # system default name server
         #
         self.stub_resolver = dns_resolver()
 
+        #
         # get IP of primary if passed in as domain
+        #
         dns_ips = [dns_primary]
         if not _is_valid_ip(dns_primary):
             dns_ips = dns_query(self.stub_resolver, dns_primary, 'A')
@@ -78,12 +89,30 @@ class SslDns:
         # get the list of authoritative name servers
         self.auth_ns = auth_nameservers(apex_domain, self.primary_resolver, self.stub_resolver)
 
+        # add any extra nameserver ips to check
+        if check_xtra_ns:
+            #self.log(f'ssl_dns: xtra_ns : {check_xtra_ns}')
+            for xns in check_xtra_ns:
+                if _is_valid_ip(xns):
+                    self.xtra_ns.append(xns)
+                else:
+                    dns_ips = dns_query(self.stub_resolver, xns, 'A')
+                    self.xtra_ns += dns_ips
+
         #
-        # Set up resolvers for each auth ns (without caching)
+        # Set up resolvers without caching for each auth ns and each xtra_ns
+        #  - auth_ns : name:ip
+        #  - xtra_ns:  ip:ip
         #
         for (ns, ip) in self.auth_ns.items():
             self.resolvers[ns] = dns_resolver(ip, port=53)
             self.checks[ns] = False
+
+        for ip in self.xtra_ns:
+            ns = ip
+            if ns not in self.resolvers:
+                self.resolvers[ns] = dns_resolver(ip, port=53)
+                self.checks[ns] = False
 
         if self.primary_resolver and self.apex_domain:
             self.mx_hosts = dns_query(self.primary_resolver, self.apex_domain, 'MX')
@@ -118,11 +147,10 @@ class SslDns:
             results[ns] =  dns_query(resolver, query, rr_type)
         return results
 
-
-    def check_acme_challenge(self, domain:str, validation:str):
+    def check_acme_challenges(self, challenges:[str]):
         """
         Check that every auth name server has correct acm-challenge
         domain must be apex or ubdomain of apex_domain - as apex
         has the name servers
         """
-        return check_acme_challenge(self, domain, validation)
+        return check_acme_challenges(self, challenges)

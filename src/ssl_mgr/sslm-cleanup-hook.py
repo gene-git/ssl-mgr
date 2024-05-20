@@ -62,8 +62,6 @@ def main():
      - does http / dns based on application name
        cb-auth-http or cb-auth-dns
     """
-    #breakpoint()
-
     (_prog, group, service, deb) = _group_service()
     certbot = CertbotHook('next', group, service, opts=None, debug=deb)
     certbot.cleanup_hook()

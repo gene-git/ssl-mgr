@@ -128,6 +128,7 @@ def csr_info(csr):
     """
     Summary fields of CSR
     """
+    # pylint: disable=protected-access
     info = CertInfo()
 
     # pubkey
@@ -152,6 +153,7 @@ def cert_info(cert:x509.Certificate):
     """
     Extract useful info from cert
     """
+    # pylint: disable=protected-access
     info = CertInfo()
     if not cert:
         return info

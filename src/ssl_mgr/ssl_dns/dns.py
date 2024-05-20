@@ -24,9 +24,13 @@ def auth_nameservers(apex_domain:str,
     if response.rrset:
         for rec in response.rrset:
             this_ns = rec.to_text()
-            ans = stub_resolver.resolve(this_ns, 'A')
-            ip = ans.rrset.to_text().split()[-1]
-            ns_list[this_ns] = ip
+            # primary then stub
+            ips = dns_query(primary_resolver, this_ns, 'A')
+            if not ips:
+                ips = dns_query(stub_resolver, this_ns, 'A')
+
+            if ips:
+                ns_list[this_ns] = ips[0]
 
     return ns_list
 
@@ -58,7 +62,32 @@ def dns_query(resolver, query, rr_type):
         return None
 
     rrs = []
-    if res:
-        for record in res.rrset:
-            rrs.append(record.to_text().strip('"'))
+    if not res:
+        return rrs
+
+    if rr_type == 'A':
+        ips = []
+        for rec in res.rrset:
+            ip = rec.address
+            ips.append(ip)
+        return ips
+
+    for record in res.rrset:
+        rrs.append(record.to_text().strip('"'))
+
     return rrs
+
+def dns_serial(resolver, apex_domain):
+    """
+    Check resolvert for SOA serial of apex_domain
+    """
+    try:
+        res = resolver.resolve(apex_domain, 'SOA')
+    except dns.exception.DNSException:
+        return None
+
+    serial = None
+    if res and res.rrset:
+        # only 1 SOA record
+        serial = res.rrset[0].serial
+    return serial

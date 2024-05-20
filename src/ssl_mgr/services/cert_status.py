@@ -20,7 +20,7 @@ def cert_status(svc:'Service'):
             cert_info = svc.cert[db_name].cert_info()
 
             if not cert_info:
-                logs(f'{space} {lname:<12s} : Faailed to read cert')
+                logs(f'{space} {lname:<12s} : Failed to read cert')
                 continue
 
             expiry_date_str = cert_info.expiry_date_str

@@ -72,6 +72,10 @@ class SslOpts:
         self.dns_refresh = False
         self.root_privs = os.geteuid() == 0
 
+        # config overrides these - may need longer delay
+        self.dns_check_delay = 240
+        self.dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
+
         # what to do tasks on
         self.grps_svcs = {}
 

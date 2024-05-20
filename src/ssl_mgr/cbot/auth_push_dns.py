@@ -5,6 +5,7 @@ auth push for dns-01
 """
 # pylint: disable=too-many-locals
 import os
+import time
 from utils import open_file
 from ssl_dns import init_primary_dns_server,  dns_zone_update, dns_restart
 from ssl_dns import dns_txt_record_format
@@ -18,15 +19,15 @@ def _acme_challenges(apex_domain:str, auth_data_rows:[str]):
      - each auth_data row contains:
        domain validation_strng
 
-    returns: (dns_rr_str, dom_valid)
+    returns: (dns_rr_str, challenges)
     dns_rr_str = All dns txt records as string with newlines
-    dom_valid  = List of (domain, validation) pairs :
+    challenges  = List of (domain, validation) pairs :
                  [(domain, validation), ... ]
     """
     rr_ttl = '60'
     dns_rr = f';; acme-challenge : {apex_domain}\n'
 
-    dom_valid = []
+    challenges = []
     for row in auth_data_rows:
         if row == '' or row.startswith('#') or row.startswith(';') :
             continue
@@ -48,9 +49,9 @@ def _acme_challenges(apex_domain:str, auth_data_rows:[str]):
         dns_row = f'_acme-challenge.{domain}. {rr_ttl} IN TXT {rdata}\n'
 
         dns_rr += dns_row
-        dom_valid.append((f'{domain}', f'{validation}'))
+        challenges.append((f'{domain}', f'{validation}'))
 
-    return (dns_rr, dom_valid)
+    return (dns_rr, challenges)
 
 def _save_dns_acme_file(cb_dir, apex_domain, dns_rr):
     """
@@ -68,7 +69,7 @@ def _save_dns_acme_file(cb_dir, apex_domain, dns_rr):
         return dns_path
     return None
 
-def auth_push_dns(certbot:'CertbotHook', auth_data_rows:[str]):
+def auth_push_dns(certbot:'CertbotHook', auth_data_rows:[str], check_nameservers=True):
     """
     Send acme-challenges to dns so letsencrypt can validate.
     Create DNS acme-challenge TXT records in single file.
@@ -92,9 +93,9 @@ def auth_push_dns(certbot:'CertbotHook', auth_data_rows:[str]):
     #
     # Get
     #  - dns_rr : string of DNS TXT records for all challenges
-    #  - dom_valid : [(domain, validation), ...] pairs to confirm dns NS servers have them
+    #  - challenges : [(domain, validation), ...] pairs to confirm dns NS servers have them
     #
-    (dns_rr, dom_valid) = _acme_challenges(apex_domain, auth_data_rows)
+    (dns_rr, challenges) = _acme_challenges(apex_domain, auth_data_rows)
 
     #
     # Save:
@@ -121,16 +122,33 @@ def auth_push_dns(certbot:'CertbotHook', auth_data_rows:[str]):
         logs('Error with dns_restart')
 
     #
-    # Wait and only return after all auth_nameservers have
+    # Cleanup doesn't need any nameserver checks
+    # It just wants to push empty acme-challenge TXT records to the zone
+    #
+    if not check_nameservers:
+        logs('auth_push_dns - skipping nameserver checks')
+        return
+
+    #
+    # Wait and only return after all auth nameservers have
     # the correct acme validation challenges
     # Certbot will check with the authorized NS to validate challenge
     #
+    # - sanity check primary NS has correct acme challenges - if not we have major problem.
+    # - get serial of primary NS
+    # - check each ns has current serial
+    #
     dns = init_primary_dns_server(certbot.opts, apex_domain)
-    for (domain, validation) in dom_valid:
-        if deb:
-            logs(f'Debug skip: dns acme check {domain} : {validation}')
-            continue
+    if deb:
+        subdoms = [ sub for (sub, _val) in challenges]
+        logs(f'Debug skip: dns acme check {apex_domain} : {subdoms}')
+        return
 
-        ns_updated = dns.check_acme_challenge(domain, validation)
+    ns_updated = dns.check_acme_challenges(challenges)
+    if not ns_updated:
+        hail_mary = 600
+        logs(f'Failed to validate all nameservers - hail mary delay {hail_mary}')
+        time.sleep(hail_mary)
+        ns_updated = dns.check_acme_challenges(challenges)
         if not ns_updated:
-            logs(f'Error - dns check fail {domain} {validation}')
+            logs('  Still Failed to validate all nameservers.  Fatal error')

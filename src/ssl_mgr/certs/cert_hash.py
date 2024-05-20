@@ -17,6 +17,9 @@ def cert_hash(cert_pem:bytes, hash_type:str) -> str :
     Generate hash of certificate and return hex string
     Input cert_pem in bytes - if change to str then .encode() back to bytes
     """
+    if not cert_pem:
+        return None
+
     cert = load_pem_x509_certificate(cert_pem)
 
     if hash_type:
@@ -34,6 +37,9 @@ def csr_hash(csr_pem:bytes, hash_type:str) -> str :
     """
     Generate hash of certificate and return hex string
     """
+    if not csr_pem:
+        return None
+
     csr = load_pem_x509_csr(csr_pem)
     hash_method = lookup_hash(hash_type)
     csr_fingerpr = csr.fingerprint(hash_method)
@@ -46,6 +52,9 @@ def pubkey_hash(cert_pem:bytes, hash_type:str, serialize_fmt="DER") -> str :
     Generate hash of pubkey in certificate and return hex string
       pubkey is serialized into DER format for TLSA
     """
+    if not cert_pem:
+        return None
+
     cert = load_pem_x509_certificate(cert_pem)
     pub_key = cert.public_key()
 

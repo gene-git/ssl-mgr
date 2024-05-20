@@ -22,7 +22,15 @@ def certbot_register_options(certbot:'Certbot', ssl_csr:'SslCsr'):
     opts = ['register']
     #opts += ['--quiet']
     opts += ['--config-dir', cb_dir]
+    opts += ['--logs-dir', certbot.logdir_letsencrypt]
+    opts += ['--work-dir', certbot.workdir_letsencrypt]
     opts += ['--agree-tos', '--no-eff-email', '--email', email]
+
+    if certbot.opts.test:
+        opts += ['--test-cert']
+
+    if certbot.opts.dry_run:
+        opts += ['--dry-run']
 
     return opts
 
@@ -43,8 +51,10 @@ def certbot_acct_check(certbot:'Certbot', ssl_ca:'SslCA',  ssl_csr:'SslCsr'):
 
     #
     # Check if LE account already registered
+    # stop using ssl_ca.test - now use command line -t / -n
     #
-    is_staging = ssl_ca.test
+    #is_staging = ssl_ca.test
+    is_staging = certbot.opts.test
     acct_is_reg = acct_registered(certbot.db.cb_dir, staging=is_staging)
     if acct_is_reg:
         return True

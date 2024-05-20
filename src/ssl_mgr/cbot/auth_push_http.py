@@ -60,7 +60,7 @@ def _token_to_webservers(certbot, token_path:str, validation:str):
                     temp_token.write(val_data)
                 _fix_file_permission(certbot, temp_token.name)
 
-                scp = '/usr/bin/scp'
+            scp = '/usr/bin/scp'
 
             dst = f'{web_server}:{token_path}'
             pargs = [scp, temp_token.name, dst]

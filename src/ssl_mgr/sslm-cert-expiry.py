@@ -24,7 +24,6 @@ def main():
     Cert expiration check.
     1 arg - cert file.
     """
-    #breakpoint()
     cert_files = _parse_args()
     if not cert_files:
         print('Missing cert_file argument')

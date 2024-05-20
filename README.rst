@@ -53,6 +53,33 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * It seems letsencrypt dns-01 challenge may not always use the apex domain's
+   authoritative servers or perhaps their (secondary) check can lag more.
+   At least it seems that way lately.. 
+   We tackle this with the addition of 2 new variables to the top level config:
+   
+     * *dns-check-delay*. 
+       Given in seconds, this causes a delay before attempting to validate that all authoritative servers 
+       have up to date acme challenge dns txt records.
+       Defaults to 240 seconds - this may well need to be made longer.
+       Obviously, this does lead to longer run times - by design.
+
+     * *dns_xtra_ns*. 
+       List of nameservers (hostname or ip) which will be checked to have up to date acme challenge 
+       dns txt records in addition to each apex domain authoritative nameserver.
+       Default value is:
+
+       dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
+
+     * improve the way nameservers are checked for being up to date with acme challenges.
+       First check the primary has all the acme challenge TXT records. Then check 
+       all nameservers, including the *xtra_ns* have the same serial as the primary 
+
+ * Fix bug with letsencrypt test cert
+
+ * logs output directly by certbot are now in *<logdir>/letsencrypt* instead of the default
+   /var/log/letsencrypt.
+
  * Adjust for upcoming python changes.
    Some argparse options have been deprecated in 3.12 and will be removed in 3.14.
 
