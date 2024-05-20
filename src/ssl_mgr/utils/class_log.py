@@ -18,6 +18,12 @@ def _opt_tag(msg, opt:str):
         elif opt == 'sdash':
             tag = 4 * '-'
 
+        elif opt == 'mdash':
+            tag = 16 * '-'
+
+        elif opt == 'ldash':
+            tag = '\n' + 24 * '-'
+
         elif opt == 'warn':
             tag = 4 * '-' + ' Warn ' + 4 * '-'
 

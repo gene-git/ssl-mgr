@@ -132,9 +132,11 @@ def check_nameservers_updated(ssl_dns):
                 if serial == serial_primary:
                     done.append(ns)
                     pending.remove(ns)
-                    ssl_dns.log(f' {ns} ok')
+                    ssl_dns.logs(f' {ns} ok {serial_primary}')
+                else:
+                    ssl_dns.log(f' {ns} serial {serial} != {serial_primary}')
             else:
-                ssl_dns.logs(f' ns {ns} failed to return serial')
+                ssl_dns.logs(f' ns {ns} failed to get serial')
 
         if len(pending) < 1 :
             all_done = True

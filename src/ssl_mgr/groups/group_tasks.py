@@ -114,7 +114,7 @@ def execute_tasks(group):
 
     logs = group.logs
     logsv = group.logsv
-    logs(f'{group.grp_name}', opt='sdash')
+    logs(f'{group.grp_name}', opt='ldash')
 
     #
     # Order tasks: key, csr, cert then next-to-curr
@@ -126,7 +126,7 @@ def execute_tasks(group):
     change = group.change
     #group.cert_changed = False
     for svc in group.services:
-        logs(f'  {svc.svc_name}')
+        logs(f'\n  {svc.svc_name}')
         #
         # check for renew_cert
         #
