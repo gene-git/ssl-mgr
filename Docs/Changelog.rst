@@ -1,6 +1,20 @@
 Changelog
 =========
 
+**[3.1.1] ----- 2024-05-20** ::
+
+	    Seems possible that letsencrypt dns-01 may not always use the apex domain
+	        authoritative servers or perhaps their (secondary) check can lag more. At least it seems that way lately.
+	        We tackle this with the addition of 2 new variables to the top level config:
+	        See README : dns-check-delay and dns_xtra_ns.
+	    improve the way nameservers are checked for being up to date with acme challenges.
+	        First check the primary has all the acme challenge TXT records. Then check
+	        all nameservers, including the *xtra_ns* have the same serial as the primary
+	    Code improvements and cleanup in dns module.
+	    buglet whereby the cleanup code was incorrectly calling for dns nameserver validation.
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[2.5.0] ----- 2024-04-23** ::
 
 	    Adjust for upcoming python changes.
