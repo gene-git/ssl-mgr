@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[3.2.0] ----- 2024-05-20** ::
+
+	    Tweak logging - more info about nameserver checks and visually tidier
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.1.1] ----- 2024-05-20** ::
 
 	    Seems possible that letsencrypt dns-01 may not always use the apex domain
