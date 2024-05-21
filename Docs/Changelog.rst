@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[3.2.2] ----- 2024-05-21** ::
+
+	    More readme updates
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.2.1] ----- 2024-05-21** ::
 
 	    update readme
