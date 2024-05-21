@@ -21,31 +21,42 @@ The aim is to make things as robust, complete and simple to use as possible. Und
 sensible and be as automated as is feasible. A good tool does things correctly and
 makes it as easy and simple as it can be; but no simpler.
 
-In practical terms, there are really only 2 commands that are needed with *sslm-mgr*:
+In practical terms, there are only 2 commands that are needed with *sslm-mgr*:
 
  * **renew** - creates the new certificate(s) in *next* : current ones remain in *curr*. 
 
  * **roll** - moves *next* to become the new *curr*.
 
 Once things are set up these can be run out of cron - renew, then wait, then roll.
-Clean and simple.
+Clean and simple. Strictly rolling certs is only needed when they are advertized via DNS (say)
+and rolling provides the way for both old and new keys to be made available for some
+period while DNS servers update. Then the last step is to advertize the new certs only.
+Changing to new certs without rolling can be a problem if some DNS servers still have the old certs.
+
+While there are lots of other options, the *-s* status option offers a convenient view of all
+managed certificates along with their expiration and time remaining before renewal. The
+*sslm-info* command provides a convenient way to display information about certs (or chains of certs)
+CSRs etc.
 
 N.B. DNSSEC is required for DANE otherwise it is not necessary. However, I do recommend using DNSSEC.
-I have also made available the tool I use to manage it [#dnstool]_
+I have also made available the tool I use to manage it [#dnstool]_.
 
-There is a PDF version in the Docs directory if that is easier to read.
+DANE can use either self-signed certs or known CA signed certs. *ssl-mgr* makes it straightforwaard 
+to make self-signed certs as well.
+
+For convenience, there is a PDF version of this document in the Docs directory.
 
 Key Features
 ============
 
- * Handles new and renew certificates
- * Generates key pairs and CSR to provide maximum control 
- * Supports http-01 and dns-01 acme challenge
- * Outputs DNS files for acme DNS-01 authentication as well as TLSA.
-   These files are included by the zone file to make updates straightforward.
- * Uses certbot in manual mode to handle communication with letsencrypt, 
-   tracking it's accounts etc.
- * Processes multiple domains, each can have multiple certs for different purposes if so desired.
+ * Handles creating new and renewing certificates
+ * Generates key pairs and Certificate Signing Request, CSR, to provide maximum control 
+ * Supports http-01 and dns-01 acme challenges
+ * Outputs DNS files for acme DNS-01 authentication as well as optioanal DANE TLSA files.
+   These files are to be included by the apex domain zone file. This makes updates 
+   straightforward.
+ * Uses certbot in manual mode to handle communication with letsencrypt, account tracking etc.
+ * Processes multiple domains, where each domain each can have multiple certs for different purposes.
 
 
 New / Interesting
@@ -54,8 +65,8 @@ New / Interesting
 Recent changes and important info goes here.
 
  * It seems letsencrypt dns-01 challenge may not always use the apex domain's
-   authoritative servers or perhaps their (secondary) check can lag more.
-   At least it seems that way lately.. 
+   authoritative servers or perhaps their (secondary) checks might lag more.
+   At least it seems that way lately.
    We tackle this with the addition of 2 new variables to the top level config:
    
      * *dns-check-delay*. 
@@ -75,18 +86,21 @@ Recent changes and important info goes here.
        First check the primary has all the acme challenge TXT records. Then check 
        all nameservers, including the *xtra_ns* have the same serial as the primary 
 
+     * While things can take longer than previous versions, teting to date has shown it 
+       to be robust and working well with letsencrypt.
+
  * Fix bug with letsencrypt test cert
 
- * logs output directly by certbot are now in *<logdir>/letsencrypt* instead of the default
+ * certbot logs are now in *<logdir>/letsencrypt* instead of it's default
    /var/log/letsencrypt.
 
- * Adjust for upcoming python changes.
+ * Adjust code to be compatible with upcoming python changes.
    Some argparse options have been deprecated in 3.12 and will be removed in 3.14.
 
  * For non-dns servers the *restart_cmd* config can now be either a list of commands 
    or a single command.
-   This can be helpful for postfix when using sni_maps; these *must* be rebuilt 
-   whenever a cert changes. e.g. the smtp server could now have:
+   This is useful for postfix when using sni_maps; these *must* be rebuilt 
+   whenever a cert changes. e.g. the smtp server could now use:
 
    restart_cmd = ['/usr/bin/postmap -F lmdb:/etc/postfix/sni_maps', '/usr/bin/postfix reload']
 
@@ -122,18 +136,21 @@ are advertised in DNS.
 A *roll* is required for *DNSSEC* as well as for *DANE*, which we manage.
 
 Without any loss of functionality and to keep things nice and simple, we treat 
-every update as requiring a key roll. As above, a *roll* is required for 
-*DANE TLS* but not needed for things such as web server certificate update. 
+every update as requiring a key roll. 
+
+Again, a *roll* is required for *DANE TLS* but is not needed for things such as web server 
+certificate update. 
 
 Furthermore, admin always has the control, should it be needed, to do 
 whatever they choose.
 
-e.g. a using *-f* will force things to happen (a roll or create new certs and so on.)
+e.g. Using *-f* will force things to happen (a roll or create new certs and so on.)
 
 Curr & Next
 -----------
 
-These are kept in directories that contain the same set of files.
+These are kept in directories that contain different versions of the same set of files. 
+Of course *next* has newer versions.
 
 In order of creation these are:
 
@@ -155,15 +172,17 @@ should take care of everything. Can be run daily or weekly.
 Diffie-Hellman Parameters
 -------------------------
 
-There is an additional tool provided, *sslm-dhparm*, which generates Diffie-Hellman parameters.
+There is also a tool, *sslm-dhparm*, which generates Diffie-Hellman parameters.
 This can be added to the cron file.
 
 By default *sslm-dhparm* only generates new parameters if they are more than 120 days old, or absent.
 This can therefore be run weekly without issues. 
 
-The new, preferred and now default DH parameters are based on RFC-7919 `rfc_7919`_ pre-defined
-named groups. The default is *ffdhe4096*, which only need to be generated once and will only
-be generated when absent. Strictly these don't need to be in cron, but its convenient to 
+Note: The new, preferred and now default DH parameters are based on RFC-7919 `rfc_7919`_ pre-defined
+named groups. The default is *ffdhe4096*. Pre-defined named groups only need to be generated once 
+and will only be generated if absent. 
+
+Strictly these don't need to be in cron, but its convenient to 
 have the program check and create the DH parameters should they be missing. May
 happen occasionally when adding new domain.
 
@@ -182,7 +201,7 @@ Sample cron files are provided in the examples directory.
 More Details
 ------------
 
-There are several additional commands that offer fine grained control, just in case
+There are several additional commands that offer fine grained control, in case
 its needed.  These are discussed in detail below. One example is the *-f* or *--force* option
 which does what the name suggests.
 
@@ -210,33 +229,40 @@ DANE
 For DANE TLSA records, care must be taken to properly *roll* new keys. Key rolling 
 ensures that the *next* key and the *curr* key are both advertised in DNS 
 for some period. After some time the new key can be made *curr*. This waiting period
-should be long enough to provide sufficient time for all DNS servers to pick up both the new keys. 
+should be long enough to provide sufficient time for all DNS servers to pick up both old and new
+new keys before DNS is changed to only show the new ones.
 It's reasonable to wait 2 x the DNS TTL or longer.
 
-After that wait time, the new (*next*) keys can be then be made live as the new *curr* ones.
+After that wait time, the new (*next*) keys can be then be made available as the new *curr* ones.
 Applications, mail really,  can now use the new keys since the world has both sets of keys.
 
 Then DNS servers can then be updated again, this time with just the new (now *curr*) keys in the TLSA records. 
 DANE key roll is similar to key roll for DNSEC.  DANE TLSA actually requires DNSSEC. 
+
+DANE was designed as an alternative to third party certificate authorities like letsencrypt which
+means its fine to used self signed or CA signed certs. While DANE could be used for web servers
+to date it is really only used for email.
+
 The companion *dns_tools* package takes care of all our DNSSEC needs [#dnstool]_:  
 
 .. [#dnstool] dns_tools : https://github.com/gene-git/dns_tools
 
-And I recommend using it to simplify the DNS refresh needed TLSA and for validating
-with Letsencrypt using *DNS-01*. A DNS refresh means resign zones and restart the
-primary dns server.
-
-
+And I recommend using it to simplify the DNS refresh needed for validating
+Letsencrypt acme challenges using *DNS-01* as well as for DANE TLSA.
+A DNS refresh means resign zones (when using DNSSEC) and then restarting the primary dns server.
 
 DANE TLSA records contain the public key, or a hash of that key, and thus need to be refreshed
 whenever that key changes; this is the key roll. It also means that if the key is kept the same, then
 the TLSA records aren't changing [#tlsa-1]_.  *ssl-mgr* has an option to re-use the public key
 when certs are being renewed, and this allows the TLSA records to remain unchanged. 
-In that case no key roll is needed until that key is changed. Some may find this useful.
+In that case no key roll is needed until that key is changed. Some may find this useful. 
 
 It basically means using the same certificate signing request, CSR, to get a new cert. The CSR contains
 the public key associated with the private key. So if keys dont change CSR doesn't change either,
 and the same CSR can be re-used.
+
+However, I find *ssl-mgr* makes it so simple to renew with new keys, that
+I don't see much point in reusing the old keys. Of course using new keys offers a security benefit.
 
 .. [#tlsa-1] DANE can use either public key or the cert. Cert does change when it's reneweed even if the
    public key is unchanged. I believe pretty much everyone uses the public key not the cert in
@@ -291,7 +317,7 @@ sslm-verify             verifies any cert.pem file using public key from chain.p
 Groups & Services
 ==================
 
-To help us organize the data we introduce groups and services.
+To help us organize all the data we introduce groups and services.
 
 What are groups? There are only two kinds of groups: Certificate Authorities and Apex Domains.
 CA can be self-signed or Letsencrypt et al. 
@@ -328,7 +354,7 @@ Apex Domains:
 Services
 --------
 
-Each service has 1 certificate.
+Each service gets 1 certificate.
 
 An apex domain may want/need different certs for different services. Each service has
 one certificate.
@@ -345,7 +371,7 @@ cert where each belongs the special group *ca*. Again, each of these is a separa
 
 Since each service has its own certificate, each has its own X509 name which describe
 what it is. This includes things like Common Name, Alternative Names and organization.
-In our case this also includes info about the keys to be used and which entity
+In this case it includes info about the keys to be used and which entity
 is provides the signed certificate. 
 
 Each service has it's information provided by a service file.  It has all the information
@@ -356,11 +382,11 @@ fields. These include things like Common Name, Organization and so on.
 .. [#x509-Name] x509 Name https://en.wikipedia.org/wiki/X.509
 
 CSR (certificate signing request) contains the *subject* organiziation (thats the apex domain
-org) information along with the public key. The private key is kept in a file. The CSR is sent to the CA
-and it returns a (signed) certificate.
+org) information along with the public key. The private key is kept in a separate file. 
+The CSR is sent to the CA which, all being well,  returns a (signed) certificate.
 
 The resulting cert and certificate chain(s) are kept together with the key and CSR files.
-A cert is signed by the *Issuer* and in addition to the signature contains the domain 
+A cert is signed by the *Issuer* and in addition to the signature contains the 
 public key. The *chain* file contains the public key and x509 Name of the certificate issuer.
 
 There are a couple of tools provided (*sslm-verify* and *sslm-info*) that make it 
@@ -819,9 +845,12 @@ Config ssl-mgr.conf
         prod_cert_dir = '/etc/ssl-mgr/prod-certs'
         logdir = '/var/log/ssl-mgr/ssl-mgr/Logs'
 
-        clean_keep = 10
+        clean_keep = 5
         min_roll_mins = 90
         renew_expire_days = 30
+
+        dns_check_delay = 240
+        dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
 
     #
     # Groups & Services
@@ -848,18 +877,18 @@ Config ssl-mgr.conf
     [[dns_primary]]
         domain = 'default'
         server = '10.1.2.3'
-        port = 10053
+        port = 11153
 
     [[dns_primary]]
         domain = 'example.com'
         server = '10.1.2.3'
-        port = 10053
+        port = 11153
 
     #
     # Servers
     #
     [dns]
-        restart_tool = '/etc/dns_tools/scripts/resign.sh'
+        restart_cmd = '/etc/dns_tools/scripts/resign.sh'
         acme_dir = '/etc/dns_tool/dns/external/staging/zones/include-acme'
         tlsa_dirs = ['/etc/dns_tool/internal/staging/zones/include-tlsa',
                     '/etc/dns_tool/external/staging/zones/include-tlsa',
@@ -869,11 +898,11 @@ Config ssl-mgr.conf
         depends = ['dns']
 
     [smtp]
-        servers = ['srv8.prv.sapience.com', 'srv7.prv.sapience.com']
-        # N.B. If using sni_maps
+        servers = ['smtp1.internal.example.com', 'smtp2.internal.example.com']
+        # If using sni_maps
         #restart_cmd = ['/usr/bin/postmap -F lmdb:/etc/postfix/sni_maps', '/usr/bin/postfix reload']
         restart_cmd = '/usr/bin/postfix reload'
-        svc_depends = [['sapience.com', ['mail-rsa', 'mail-ec']]]
+        svc_depends = [['example.com', ['mail-rsa', 'mail-ec']]]
         depends = ['dns']
 
     [imap]
@@ -882,7 +911,7 @@ Config ssl-mgr.conf
         svc_depends = [['example.com', ['mail-rsa', 'mail-ec']]]
     
     [web]
-        servers = ['web.internal.sapience.com']
+        servers = ['web.internal.example.com']
         restart_cmd = '/usr/bin/systemctl reload nginx'
         server_dir = '/srv/http/Sites'                  # Used for acme http-01 validation
         svc_depends = [['any', ['web-ec']]]
