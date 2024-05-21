@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[3.2.1] ----- 2024-05-21** ::
+
+	    update readme
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.2.0] ----- 2024-05-20** ::
 
 	    Tweak logging - more info about nameserver checks and visually tidier
