@@ -737,8 +737,8 @@ When things are automated, as here with *sslm-mgr* taking care of everything, th
 benefit to key reuse. So we support it, but we recommend just renew and roll and all will be fine :)
 
 
-ssl-mgr application
-===================
+sslm-mgr application
+====================
 
 Usage
 -----
@@ -747,7 +747,7 @@ To run - go to terminal and use :
 
 .. code-block:: bash
 
-   ssl-mgr --help
+   sslm-mgr --help
 
 Configuration
 -------------
@@ -758,14 +758,7 @@ The configuration file for ssl-mgr is ...
 
    /etc/ssl-mgr/config
 
-.. ssl-mgr-opts:
-
-Options
--------
-
-Available options for ssl-mgr are ..
-This section can be referenced by `ssl-mgr`_ 
-
+.. sslm-mgr-opts:
 
 Log files
 =========
@@ -775,12 +768,6 @@ Logs are found:
  .. code-block:: bash
 
     ${HOME}/log/ssl-mgr
-
-Another Section
-===============
-
-More stuff.
-
 
 ########
 Appendix
