@@ -13,36 +13,36 @@ By way of background, I wrote this with 3 goals. Specifically to:
 
  * simplify certificate management - (i.e. automatic, simple and robust)
 
- * support *dns-01* acme challenge with Letsencrypt (and *http-01* as well)
+ * support *dns-01* acme challenge with Letsencrypt (and *http-01*)
 
- * support for *DANE TLS*
+ * support *DANE TLS*
 
-The aim is to make things as robust, complete and simple to use as possible. Under the hood, make it 
+The aim is to make things as robust, complete and as simple to use as possible. Under the hood, make it 
 sensible and be as automated as is feasible. A good tool does things correctly and
 makes it as easy and simple as it can be; but no simpler.
 
-In practical terms, there are only 2 commands that are needed with *sslm-mgr*:
+In practical terms, there are only 2 common commands that are needed with *sslm-mgr*:
 
  * **renew** - creates the new certificate(s) in *next* : current ones remain in *curr*. 
 
  * **roll** - moves *next* to become the new *curr*.
 
 Once things are set up these can be run out of cron - renew, then wait, then roll.
-Clean and simple. Strictly rolling certs is only needed when they are advertized via DNS (say)
-and rolling provides the way for both old and new keys to be made available for some
-period while DNS servers update. Then the last step is to advertize the new certs only.
-Changing to new certs without rolling can be a problem if some DNS servers still have the old certs.
+Clean and simple. Strictly speaking, rolling of certs is only needed when they are advertized via DNS (say)
+and rolling provides a mechanism for both old and new keys to be made available for some
+period while DNS servers update. The last step is to advertize new certs only.
+Changing to new certs without rolling can be problematic if some DNS servers still have the old certs.
 
-While there are lots of other options, the *-s* status option offers a convenient view of all
-managed certificates along with their expiration and time remaining before renewal. The
-*sslm-info* command provides a convenient way to display information about certs (or chains of certs)
-CSRs etc.
+While there are lots of other command line options, the **-s,  --status** option provides 
+a convenient view of all managed certificates along with their expiration and 
+time remaining before renewal. The **sslm-info** standalone program provides a 
+convenient way to display information about certs (or chains of certs), CSRs etc.
 
-N.B. DNSSEC is required for DANE otherwise it is not necessary. However, I do recommend using DNSSEC.
-I have also made available the tool I use to manage it [#dnstool]_.
+N.B. DNSSEC is required for DANE otherwise it is not needed. However, I do recommend using DNSSEC
+and I have made available the tool I use to manage it DNS/DNSSEC [#dnstool]_.
 
-DANE can use either self-signed certs or known CA signed certs. *ssl-mgr* makes it straightforwaard 
-to make self-signed certs as well.
+DANE can use either self-signed certs or known CA signed certs. *ssl-mgr* makes it straightforward 
+to create self-signed certs as well.
 
 For convenience, there is a PDF version of this document in the Docs directory.
 
@@ -272,8 +272,8 @@ Acme Challenge
 --------------
 
 Using *DNS-01* to validate Letsencrypt acme challenges is done by adding the challenge TXT records
-to DNS, signing the zones and pushing them out, so that Letsencrypt can subsequently check those DNS records
-match appropriately and then they provide the requested cert. Some tool to do that DNS refresh
+to DNS, signing the zones (if using DNSSEC) and pushing them out, so that 
+Letsencrypt can subsequently check those DNS records match appropriately and then they provide the requested cert. Some tool to do that DNS refresh
 is needed for this pupose. I use dns_tools to do that. DNS refresh also happens after 
 DANE TLSA records are updated.
 
@@ -285,6 +285,17 @@ this to allow the dns signing server to be remote, some day.
 ###############
 Getting Started
 ###############
+
+The first order of business is creating the config files. These specify everything
+that's needed. 
+
+This includes the shared config *ssl-mgr.conf* which includes the commands 
+to restart servers (web, mail), where to put the acme challenge files (web or dns) 
+and where the final certificates are to be stored.
+
+Each certificate to be issued has it's own *service* config file.
+
+The sample configs provided in examples/conf.d provide a template to get started.
 
 Tools 
 =====
@@ -405,11 +416,14 @@ Key/Cert Files
    A CSR is always used make a cert. This provides control as well as 
    consistency across CAs, be they self or other.
    The public key is in the CSR and also in the certificate provided and signed by the CA. 
-   We support both RSA and Elliptic Curve (EC) keys.
+   We support both RSA and Elliptic Curve (EC) keys. EC is strongly preferred.
+   In fact, while RSA keys are still used they are only needed by ancient
+   client software for browsers and email. That said, RSA is still in common 
+   use for DKIM [#dkim]_ signing for some reason. We DKIM sign outbound mail with both RSA and EC.
 
  * Cert 
 
-   This cert contains the public key and is signed by the CA. It carries the *subject* 
+   Each cert contains the public key which is signed by the CA. It carries the *subject* 
    apex domain name along with 'subject alternative names' or SANS. SANS allow a certificate to contain
    multiple domain or subdomain names. The *issuer*, which signed the certificate, has it's name 
    in the cert as well. Name in this context is an X509 name meaning, common name, organization,
@@ -417,19 +431,18 @@ Key/Cert Files
 
  * Certificate chains
 
-    * chain 
+    * **chain** =  CA root cert + Signing CA cert
 
-      CA root cert + Signing  CA cert (Intermediate(s) usually).  
-      root may or may not be included by CAs other than LE
-      i.e. client chain = signing ca fullchain
+      Signing CA cert is usually the CA Intermediate cart(s)
+      Note that the root cert may or may not be included by CAs other than LE
+      For those client chain = signing ca
 
-    * fullchain
-   
-      Domain cert + chain
+    * **fullchain** = Domain cert + chain
 
-    * bundle 
-   
-      priv-key + fullchain. This is preferred by postfix.
+    * **bundle** = priv-key + fullchain. 
+      
+      A bundle is just a chain made of the private key plus the fullchain. This is preferred 
+      by postfix [#postfix_tls]_.
 
  * Private key
 
@@ -441,6 +454,8 @@ Key, CSR and certificate files are stored in the convenient PEM format. Certific
 X509.V3 [#x509]_ which provides for *extensions* such as SANS which are critical to have. 
 CSR files use *PKCS#10* [#pkcs]_ which can carry the same set of X509 extensions.
 
+.. [#dkim] DKIM -> https://datatracker.ietf.org/doc/html/rfc6376
+.. [#postfix_tls] Postfix TLS -> https://www.postfix.org/postconf.5.html#smtpd_tls_chain_files
 .. [#x509] X509 V3 -> https://datatracker.ietf.org/doc/html/rfc5280
 .. [#pkcs] PKCS#10 CSR -> https://www.rfc-editor.org/rfc/rfc2986
 
@@ -465,10 +480,25 @@ live by doing:
 sslm-mgr
 --------
 
-Has 2 modes - a *regular* mode and a *dev* mode. For all commands, the groups and services 
-are read from the *ssl-mgr* config file, but *can* also be provided on the command line.
+Has 2 modes - a *regular* mode and a developer or *dev* mode. In either case, the groups and services 
+are read from the *ssl-mgr* config file. The config file values *can* be overridden 
+from the command line. 
 
-The help for this is:
+To specify a group and service(s) on the command line use the format:
+
+.. code-block:: bash
+
+   ... <group-name>:<service_1>,<service_2>,...
+
+For example, for a domain with multiple services, you can limit
+to one or two services using:
+
+.. code-block:: bash
+
+   sslm-mgr -s example.com:mail-ec
+   sslm-mgr -s example.com:mail-ec,mail-rsa
+
+Help command for *sslm-mgr* :
 
 .. code-block:: text
 
@@ -504,7 +534,8 @@ The help for this is:
 
     For dev options add "dev" as 1st argument
 
-When more control is needed then *dev* mode offers above commands plus few more options:
+When more control is needed then *dev* mode offers above commands plus few more options. 
+To see developer help:
 
 .. code-block:: text
 
@@ -533,22 +564,24 @@ When more control is needed then *dev* mode offers above commands plus few more 
 Config Files
 ============
 
-Examples of configs are show in Appendix `Appendix`_ and the files
-themselves are in *conf.d/examples*.
+Sample configs are show in Appendix `Appendix`_ and the files
+themselves are provided in *examples/conf.d* directory.
 
-When setting up its a good idea to first create a self signed CA and use that.
-When you're ready change the signing CA to letsencrypt in the service file
-and run with the LE test server by using
+When first setting up its a good idea to start with creating a self signed CA and use that.
+When you're ready then change the signing CA to letsencrypt in the service file
+and run with the LE test-cert server by using
 
 .. code-block:: bash
 
-   sslm-mgr -t 
+   sslm-mgr --test 
+
+You may also use the letsencrypt *--dry-run* option.
 
 Once that is working for you then you use the normal LE server by dropping the
 test option.
 
-Config files are located in *conf.d*. There are 2 common configs and
-one for each group/service.  Service configs files resides under 
+Config files are located in *conf.d*. There are 2 shared configs and
+one config for each group/service.  Service configs files resides under 
 their *group* directory.
 
 The common configs are *ssl-mgr.conf* and *ca-info.conf* and are used for 
@@ -616,7 +649,7 @@ Each config provides:
 Output
 ======
 
-ALl generated data is kepy in a dated directory under the *db* dir and links are provided
+All generated data is kepy in a dated directory under the *db* dir and links are provided
 for *curr* and *next* 
 
  * curr -> db/<date-time>
@@ -640,6 +673,75 @@ info            Contains date/time when next was rolled to curr (curr only)
 The bundle.pem file, which has the priv key, is preferred by postfix to provide atomic udpate
 and avoid potential race during updates.
 That could happen if key and cert are read from separate files.
+
+In addition there are the acme challenge files. The *ssl-mgr.conf* file is where
+to specify where to store these files. 
+
+DNS-01 Validation
+-----------------
+
+For dns-01 the location is specified as a directory:
+
+.. code-block::
+
+    [dns]
+        acme_dir = '...'
+
+The acme challenges will be saved into a file under *<acme_dir>* with apex domain name as suffix:
+
+.. code-block::
+
+   <acme_dir>/acme-challenge.<apex_domain>
+
+The format of the DNS resource record is per RFC 8555 [#rfc_8555_dns]_ spec.
+The challenge file should be included by the DNS zone file for that apex domain.
+Once the challenge session is complete, the file will be replaced by an empty file,
+which ensures that there are no errors including it in the domain zone file.
+
+HTTP-01 Validation
+------------------
+
+For http-01 validation the location is specified by *server_dir* directory:
+
+.. code-block::
+
+    [web]
+        server_dir = '...'
+
+The individual challenge files, one per (sub)domain will be saved in a file following 
+RFC 8555 [#rfc_8555_http]_ spec:
+
+.. code-block::
+
+   <server_dir>/<apex_domain>/.well-known/acme-challenge/<token>
+
+.. [#rfc_8555_dns] DNS-01 Acme Challenge URI -> https://datatracker.ietf.org/doc/html/rfc8555#section-8.4
+.. [#rfc_8555_http] HTTP-01 Acme Challenge URI -> https://datatracker.ietf.org/doc/html/rfc8555#section-8.3
+
+If the web server is not local then ssh will be used to deliver the file the remote server.
+
+**N.B.** In all cases please ensure that the process has appropriate write permissions.
+
+DANE-TLSA DNS File
+------------------
+
+If DANE is on for any service, then the TLSA records will be saved under one or more 
+directories specified in the *[dns]* section of *ssl-mgr.conf*. 
+
+.. code-block::
+    
+   [dns]
+        ...
+        tlsa_dirs = [<tlsa_1:, <tlsa_2:, ...]
+
+Each directory, *<tlsa_1>*, *<tlsa_2>* etc, will be populated with one file per apex_domain 
+containing the TLSA records for that domain. The file will be named:
+
+.. code-block::
+
+   tlsa.<apex_domain> 
+
+Each file should be included by the DNS zone file for that apex domain.
 
 Certbot
 =======
