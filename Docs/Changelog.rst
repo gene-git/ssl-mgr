@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[3.5.0] ----- 2024-05-26** ::
+
+	    bug fix with self signed root cert expiration not using sign_end_days in config
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.4.0] ----- 2024-05-26** ::
 
 	    bugfix for self signed cert - fix argument typo
