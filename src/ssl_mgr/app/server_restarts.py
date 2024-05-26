@@ -68,7 +68,7 @@ def _check_restart_needed(ssl_mgr:'SslMgr', server) -> bool:
     """
     logs = ssl_mgr.logs
 
-    if not server.restart_cmd :
+    if not server or server.restart_cmd :
         return False
 
     #
@@ -176,6 +176,8 @@ def server_restarts_non_dns(ssl_mgr:'SslMgr') -> bool:
     server_types = ('smtp', 'imap', 'web', 'other')
     for stype in server_types:
         server = getattr(ssl_mgr.opts, stype)
+        if not server:
+            continue
         logs(f'  {stype}: ' )
         (isokay, fails, tots) = _restart_server(ssl_mgr, server)
         num_fails += fails

@@ -732,7 +732,7 @@ directories specified in the *[dns]* section of *ssl-mgr.conf*.
     
    [dns]
         ...
-        tlsa_dirs = [<tlsa_1:, <tlsa_2:, ...]
+        tlsa_dirs = [<tlsa_1>, <tlsa_2>, ...]
 
 Each directory, *<tlsa_1>*, *<tlsa_2>* etc, will be populated with one file per apex_domain 
 containing the TLSA records for that domain. The file will be named:
