@@ -194,7 +194,7 @@ def _self_signed_root_cert(ssl_cert:'SslCert', ssl_csr:SslCsr):
 
     return cert_pem
 
-def self_signed_root_cert(db_dir:str, ssl_cert:'SslCert', ssl_csr:SslCsr):
+def self_signed_root_cert(ssl_cert:'SslCert', db_dir:str, ssl_csr:SslCsr):
     """
     A root cert is not signed by another CA.
     Its just a self-signed cert.
