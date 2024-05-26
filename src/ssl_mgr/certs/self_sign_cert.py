@@ -83,7 +83,7 @@ def own_sign_cert(db_dir:str, ssl_ca:'SslCA', ssl_csr:SslCsr):
     issuer = ca_cert.subject
 
     time_start =  datetime.now(timezone.utc)
-    days_to_end = max(30, ca_svc.ca.sign_end_days)
+    days_to_end = max(90, ca_svc.ca.sign_end_days)
     time_end = time_start + timedelta(days=days_to_end)
 
     serial = x509.random_serial_number()
@@ -168,7 +168,7 @@ def _self_signed_root_cert(ssl_cert:'SslCert', ssl_csr:SslCsr):
     issuer = csr_subject
 
     time_start =  datetime.now(timezone.utc)
-    days_to_end = min(30, svc.ca.sign_end_days)
+    days_to_end = max(90, svc.ca.sign_end_days)
     time_end = time_start + timedelta(days=days_to_end)
 
     serial = x509.random_serial_number()
