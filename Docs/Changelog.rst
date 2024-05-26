@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[3.4.0] ----- 2024-05-26** ::
+
+	    bugfix for self signed cert - fix argument typo
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.3.0] ----- 2024-05-26** ::
 
 	    Avoid errors when missing servers
