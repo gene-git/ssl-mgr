@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[3.3.0] ----- 2024-05-26** ::
+
+	    Avoid errors when missing servers
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.2.4] ----- 2024-05-22** ::
 
 	    README updates
