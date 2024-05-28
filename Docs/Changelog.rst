@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**[3.6.0] ----- 2024-05-28** ::
+
+	        Skip writing tlsa file if woule be empty.
+	        Be more tolerant of missing input
+	        Add working example for self signed web server
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.5.0] ----- 2024-05-26** ::
 
 	    bug fix with self signed root cert expiration not using sign_end_days in config
