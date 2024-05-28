@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+#
+# Generate CA certs
+# Generate root + intermediate:
+#   ./make-ca root
+# Generate intermediate:
+#   ./make-ca
+#
+# Then can run sslm-mkg -renew etc as usual
+# for certs signed by the intermediate ca
+#
+if [ "$1" = "root" ] ; then
+    sslm-mgr -renew ca:my-root
+    sslm-mgr -roll ca:my-root
+fi
+sslm-mgr -renew ca:my-int
+sslm-mgr -roll ca:my-int
+
+echo "Next run:"
+echo "sslm-mgt -renew"
+echo "sslm-mgt -roll"

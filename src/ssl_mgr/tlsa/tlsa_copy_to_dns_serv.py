@@ -32,7 +32,7 @@ def tlsa_copy_to_dns_serv(group:'SslGroup'):
     # and will only push if there was some change
     #
     if not (opts.dns and opts.dns.tlsa_dirs):
-        logs('Error: tlsa_copy_to_dns_serv missing tlsa_dirs')
+        logs('Warning: tlsa_copy_to_dns_serv missing tlsa_dirs - skipped')
         return False
 
     isok = dns_zone_update(tls_path, opts.dns.tlsa_dirs, debug=opts.debug, log=logsv)

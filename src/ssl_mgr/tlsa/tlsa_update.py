@@ -144,13 +144,17 @@ def tlsa_update_domain(group:'SslGroup'):
                     tlsa_data_rows.append(this_row)
                     apex_data += this_row + '\n'
 
-    apex_data += '\n'
-    okay = write_path_atomic(apex_data, apex_tlsa_path)
-    if not okay:
-        logs(f'Error: Failed to open {apex_tlsa_path}')
-        return False
+    if tlsa_data_rows:
+        apex_data += '\n'
+        okay = write_path_atomic(apex_data, apex_tlsa_path)
+        if not okay:
+            logs(f'Error: Failed to open {apex_tlsa_path}')
+            return False
 
-    # set file time
-    if st_mtime > 0:
-        os.utime(apex_tlsa_path, ns=(st_atime, st_mtime))
+        # set file time
+        if st_mtime > 0:
+            os.utime(apex_tlsa_path, ns=(st_atime, st_mtime))
+    else:
+        group.log(f'tlsa: apex domain: {apex_domain} has no tlsa records')
+
     return True

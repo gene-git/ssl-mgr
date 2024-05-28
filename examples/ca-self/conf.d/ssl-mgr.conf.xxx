@@ -1,0 +1,60 @@
+#
+# ssl-mgr
+#
+# 
+# Globals
+#
+[globals]
+    verb = true
+    sslm_auth_hook = './libexec/sslm-auth-hook'             # certbot
+    prod_cert_dir = './etc/prod-certs'
+    logdir = './Logs'                                       # ssl-mgr & certbot
+
+    clean_keep = 5
+    # Since web only =>  no delay before roll
+    # min_roll_mins = 90
+    min_roll_mins = 0
+    renew_expire_days = 30
+
+    dns_check_delay = 240
+    dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
+
+#
+# Group Services
+#
+[[groups]]
+    domain = 'example.com'
+    #services = [ 'mail-self']
+    services = ['web-self']
+    active=true
+
+[[groups]]
+    domain = 'ca'
+    services = [ 'my-root', 'my-int']
+    active = true
+
+#
+# DNS primary provides authorized NS (name servers) and MX hosts of apex_domain
+# Must have at least one for acme dns-01
+#
+[[dns_primary]]
+    domain = 'default'
+    server = '10.1.1.1'     # change to point to internal DNS server
+    port = 10053
+
+#
+# servers :
+#   dns, smtp, dovecot, web, ...
+#
+#[dns]
+#    servers = []
+#    acme_dir = './etc/include-acme'                     # certbot
+#    tlsa_dirs = ['./etc/include-tlsa']                  # ssl-mgr
+
+[web]
+    # Use for srv8
+    # servers = ['xxx.int.example.com']
+    servers = []
+    skip_prod_copy = true
+    svc_depends = [['any', ['web-self']]]
+

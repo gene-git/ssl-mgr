@@ -1,0 +1,31 @@
+#
+# example.com : mail-ec
+#
+name = 'Example.com Mail'
+group = 'example.com'
+service = 'mail-ec'
+
+#signing_ca = 'my-sub'
+#signing_ca = 'le-http'
+signing_ca = 'le-dns'
+renew_expire_days = 30
+
+# Include tls.example.com in zone file to use
+#  => [[port, proto, usage, selector, match], ...]
+dane_tls = [[25, 'tcp', 3, 1, 1]]
+
+[KeyOpts]
+    ktype = 'ec'
+    ec_algo = 'secp384r1'
+
+[X509]
+    # X509Name details
+    CN = 'example.com'
+    O = 'Example Company'
+    OU = 'IT Mail'
+    L = ''
+    ST = ''
+    C = 'US'
+    email = 'hostmaster@example.com'    # required to register with letsencrypt
+
+    sans = ['example.com', 'smtp.example.com', 'imap.example.com', 'mail.example.com']

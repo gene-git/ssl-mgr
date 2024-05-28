@@ -22,8 +22,8 @@ def check_dns_primary(log, opts):
     okay = True
 
     if not opts.dns_primary or not isinstance(opts.dns_primary, list):
-        log('Error: Missing dns_primary tables in config')
-        return False
+        log('Warning: Missing dns_primary tables in config')
+        return True
 
     for primary in opts.dns_primary:
         domain = primary.get('domain')
@@ -67,9 +67,12 @@ def check_options_cbot_hook(log, opts:"SslOpts"):
     if not check_dns_primary(log, opts):
         okay = False
 
-    if not opts.dns.acme_dir:
-        log('Error: Missing dns.acme_dir in config')
-        okay = False
+    if opts.dns:
+        if not opts.dns.acme_dir:
+            log('Warning: Missing dns.acme_dir in config')
+    else:
+        log('Warning: Missing opts.dns in config')
+        #okay = False
 
     return okay
 
@@ -89,7 +92,7 @@ def check_options_group(log, group_name:str, services:[str], opts:"SslOpts") -> 
         okay = False
 
     if not (opts.web and opts.web.server_dir):
-        log('Warning: acme http not available - missing web.server_dir')
+        log('Warning: acme HTTP-01 not available - missing web.server_dir')
 
     if not check_dns_primary(log, opts):
         log('Warning: acme dns not available - missing dns primary server / port')
