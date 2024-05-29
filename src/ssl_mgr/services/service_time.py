@@ -20,7 +20,7 @@ def time_to_renew(service):
     if db_name:
         (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
         days_to_renew = days_left - service.svc.renew_expire_days
-        msg = f'Current cert expires: {expiry_date_str} ({days_left} days)'
+        msg = f'⤷ Current cert expires: {expiry_date_str} ({days_left} days)'
         if days_to_renew > 0 :
             service.logs(f'    {msg} -> Renew in {days_to_renew}')
             renew = False
@@ -35,7 +35,7 @@ def log_cert_expiry(service, lname):
     """ log curr/cert expiry """
     db_name = service.db.db_names[lname]
     (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
-    service.logs(f'    Cert expires: {expiry_date_str} ({days_left} days)')
+    service.logs(f'    ⤷ Cert expires: {expiry_date_str} ({days_left} days)')
 
 def _age_in_mins(age_secs):
     """ convert secs to mins secs """

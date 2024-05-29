@@ -64,6 +64,10 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * Add a working example of self signed web cert in examples/ca-self.
+   Create ca-certs (./make-ca) then generate new web cert signed by that ca.
+   (sslm-mgr -renew; sslm-mgr -roll)
+
  * It seems letsencrypt dns-01 challenge may not always use the apex domain's
    authoritative servers or perhaps their (secondary) checks might lag more.
    At least it seems that way lately.
