@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**[3.7.0] ----- 2024-05-29** ::
+
+	        Add comment to Readme about new self signed CA example
+	        Tweak log message on cert expiration
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[3.6.0] ----- 2024-05-28** ::
 
 	        Skip writing tlsa file if woule be empty.
