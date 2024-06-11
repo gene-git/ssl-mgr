@@ -898,13 +898,15 @@ each cert as below and update the trust store:
 Since browsers do not typically use the system certificate store the same certs will need to be imported
 into each browser. This can be dont manually in the GUI or using *certutil* provided by the *nss* package.
 Modern browsers typically keep the certificates in a file called *cert9.db* which can be updated
-using for example something like:
+using for example something like this (untested):
 
 .. code-block:: bash
 
     cert9='<path-to>/cert9.db'
     cdir=$(dirname $cert9)
-    certutil -A -n "my-int" -t "TCu,Cu,Tu" -i xxx/my-int/curr/cert.pem -d sql:$cdir
+    certutil -A -n "my-int" -t "TC,C,TC" -i xxx/my-int/curr/cert.pem -d sql:$cdir
+
+Please see *certutil* man pages for more info.
 
 Sample Cron File
 ================
