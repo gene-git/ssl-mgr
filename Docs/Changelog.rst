@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[4.0.2] ----- 2024-06-11** ::
+
+	    Tweak readme
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.0.1] ----- 2024-06-11** ::
 
 	    Add netaddr as a dependency (used for having IP addresses in alt-names)
