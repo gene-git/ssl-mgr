@@ -17,7 +17,7 @@ class SslCsr():
     """
     Handle CSR
     """
-    def __init__(self, db_name:str, svc:SslSvc, db:SslDb):
+    def __init__(self, db_name:str, svc:SslSvc, db:SslDb, is_ca=False):
         self.okay = True
         self.svc = svc
         self.db = db
@@ -26,16 +26,23 @@ class SslCsr():
         self.file = 'csr.pem'
         self.digest = 'sha384'
         self.days_end = 3650        # csr self sig valid
+        self.is_ca = is_ca
 
         self.csr = None
         self.csr_pem = None
         self.key_pkey = None
 
         self.db_dir = os.path.join(self.db.db_dir, db_name)
-
         #
         # read existing csr if available
+        #
         self.read()
+
+        #
+        # Ensure is_ca is up to date
+        #
+        self.is_ca = is_ca
+
 
     def __getattr__(self, name):
         """ non-set items simply return None so easy to check existence"""

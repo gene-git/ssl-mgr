@@ -4,7 +4,8 @@
 Certificate Tools - CSR
 """
 # pylint: disable=too-many-locals
-
+import ipaddress
+import netaddr
 from cryptography import x509
 #from cryptography.x509 import CertificateSigningRequest
 from cryptography.x509 import CertificateSigningRequestBuilder
@@ -74,21 +75,37 @@ def csr_generate(ssl_csr, key_pem) -> (x509.CertificateSigningRequest, bytes):
     sans = svc_x509.sans
     if svc_x509.CN not in svc_x509.sans:
         sans = [svc_x509.CN] + svc_x509.sans
-    alt_names = [x509.DNSName(host) for host in sans]
+
+    #alt_names = [x509.DNSName(host) for host in sans]
+    # handle domain names and ipv4/ipv6 addresses
+    alt_names = []
+    for name in sans:
+        if netaddr.valid_ipv4(name) :
+            ipv4 = ipaddress.IPv4Address(name)
+            x509_name = x509.IPAddress(ipv4)
+        elif netaddr.valid_ipv6(name):
+            ipv6 = ipaddress.IPv6Address(ipv6)
+            x509_name = x509.IPAddress(ipv6)
+        else:
+            x509_name = x509.DNSName(name)
+        alt_names.append(x509_name)
 
     #
     # Extensions
     #
-    basic_constraints = x509.BasicConstraints(ca=False, path_length=None)
+    if ssl_csr.is_ca:
+        basic_constraints = x509.BasicConstraints(ca=True, path_length=None)
+    else:
+        basic_constraints = x509.BasicConstraints(ca=False, path_length=None)
     sans = x509.SubjectAlternativeName(alt_names)
 
     kw_key_usage = {'digital_signature' : True,
                     'key_encipherment' : True,
-                    'key_cert_sign' : False,
+                    'key_cert_sign' : ssl_csr.is_ca,
                     'key_agreement' : True,
                     'content_commitment' : False,
                     'data_encipherment' : False,
-                    'crl_sign' : False,
+                    'crl_sign' : ssl_csr.is_ca,
                     'encipher_only' : False,
                     'decipher_only' : False,
                    }

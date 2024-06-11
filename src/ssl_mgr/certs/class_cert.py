@@ -44,6 +44,13 @@ class SslCert():
         self.keyopts = svc.keyopts
         self.opts = opts
 
+        #
+        # All services in 'ca' group are certificate authorities
+        #
+        self.is_ca = False
+        if grp_name and grp_name.lower() == 'ca':
+            self.is_ca = True
+
         self.logger = get_logger()
         self.log = self.logger.log
         self.logs = self.logger.logs
@@ -65,7 +72,7 @@ class SslCert():
             self.fullchain = read_fullchain_pem(self.db_dir)
 
         self.key = SslKey(self.db_name, self.svc, self.db)
-        self.csr = SslCsr(self.db_name, self.svc, self.db)
+        self.csr = SslCsr(self.db_name, self.svc, self.db, is_ca=self.is_ca)
 
         #
         # If svc newer than cert - cert out of date
@@ -180,7 +187,7 @@ class SslCert():
         self.db_dir = os.path.join(self.db.db_dir, self.db_name)
 
         self.key = SslKey(self.db_name, self.svc, self.db)
-        self.csr = SslCsr(self.db_name, self.svc, self.db)
+        self.csr = SslCsr(self.db_name, self.svc, self.db, is_ca=self.is_ca)
 
         self.cert = read_cert_pem(self.db_dir)
         self.chain = read_chain_pem(self.db_dir)

@@ -115,7 +115,7 @@ def own_sign_cert(db_dir:str, ssl_ca:'SslCA', ssl_csr:SslCsr):
     #
     fullchain_pem = b''
     if cert_pem:
-        fullchain_pem  = chain_pem
+        fullchain_pem  = cert_pem + chain_pem
 
     save_cert_pem(cert_pem, db_dir)
     save_chain_pem(chain_pem, db_dir)
