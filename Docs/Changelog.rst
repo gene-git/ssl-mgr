@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**[4.0.1] ----- 2024-06-11** ::
+
+	    Add netaddr as a dependency (used for having IP addresses in alt-names)
+	    Add couple of comments to end of readme about using self-signed certs
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.0.0] ----- 2024-06-11** ::
 
 	    Bug fix: CA certs need to be marked as CA and set certificate signing ability
