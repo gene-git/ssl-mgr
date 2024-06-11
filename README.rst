@@ -879,6 +879,33 @@ Logs are found:
 Appendix
 ########
 
+Self Signed CA
+==============
+
+The *examples/ca-self* directory has sample how to do this. The CA has a self-signed root certificate
+(*my-root*) along with an intermediate certificate (*my-int*) which is signed by the root cert. 
+Other certs are then signed by the intermediate certificate.
+
+The 2 public CA certs then need to be added to the linux certificate trust store. To do this copy
+each cert as below and update the trust store:
+
+.. code-block:: bash
+
+   cp certs/ca/my-root/curr/cert.pem /etc/ca-certificates/trust-source/anchors/my-root.pem
+   cp certs/ca/my-int/curr/cert.pem /etc/ca-certificates/trust-source/anchors/my-int.pem
+   update-ca-trust
+
+Since browsers do not typically use the system certificate store the same certs will need to be imported
+into each browser. This can be dont manually in the GUI or using *certutil* provided by the *nss* package.
+Modern browsers typically keep the certificates in a file called *cert9.db* which can be updated
+using for example something like:
+
+.. code-block:: bash
+
+    cert9='<path-to>/cert9.db'
+    cdir=$(dirname $cert9)
+    certutil -A -n "my-int" -t "TCu,Cu,Tu" -i xxx/my-int/curr/cert.pem -d sql:$cdir
+
 Sample Cron File
 ================
 
