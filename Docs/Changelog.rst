@@ -1,6 +1,20 @@
 Changelog
 =========
 
+**[4.2.0] ----- 2024-08-17** ::
+
+	    X509v3 Extended Key Usage adds "Time Stamping"
+	    Changed sslm-dhparm to generate RFC-7919
+	       Negotiated Finite Field Diffie-Hellman Ephemeral Parameters files - with the default
+	       now set to ffdhe8192 instead of ffdhe4096. User options -k overrides the default as usual
+	       NB push prod certs to all servers using: sslm-mgr dev -certs-prod
+	       NB TLSv1.3 restricts DH key exchange to named groups only.
+	    openssl trusted certificates there is ExtraData after the cert
+	       which has the trust data. cryptography.x509 will not load this so strip it off.
+	       see : https://github.com/pyca/cryptography/issues/5242
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.0.2] ----- 2024-06-11** ::
 
 	    Tweak readme
