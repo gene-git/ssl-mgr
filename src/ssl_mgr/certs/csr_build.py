@@ -115,6 +115,7 @@ def csr_generate(ssl_csr, key_pem) -> (x509.CertificateSigningRequest, bytes):
                                                 x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH,
                                                 x509.oid.ExtendedKeyUsageOID.EMAIL_PROTECTION,
                                                 x509.oid.ExtendedKeyUsageOID.CODE_SIGNING,
+                                                x509.oid.ExtendedKeyUsageOID.TIME_STAMPING,
                                                ])
     subject_key = x509.SubjectKeyIdentifier.from_public_key(pub_key)
     authority_key = x509.AuthorityKeyIdentifier.from_issuer_public_key(pub_key)

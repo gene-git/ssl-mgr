@@ -79,13 +79,16 @@ def _get_keysizes_todo(now_ns, dh_opts, dh_dir):
 
     return (named_todo, sizes_todo)
 
+
 def _gen_keylist(key_str):
     """
     make 2 lists out of csv list
-     - named groups and key sizes to generat
+     - named groups and key sizes to generate
+     - first item in keylist is the default symnlink dhparm.pem
     """
+    named_groups = ['ffdhe8192', 'ffdhe6144', 'ffdhe4096']
     if not key_str:
-        return (['ffdhe4096'], ['ffdhe4096'], [])
+        return (named_groups, named_groups, [])
     named = []
     sizes = []
     keylist = []
@@ -96,7 +99,7 @@ def _gen_keylist(key_str):
         else:
             keylist.append(item)
             named.append(item)
-    #keys = [int(key) for key in  key_str.split(',')]
+
     return (keylist, named, sizes)
 
 def _get_subdirs(topdir):
@@ -143,7 +146,7 @@ def _get_options():
     act = 'action'
     act_on = 'store_true'
 
-    keys = 'ffdhe4096'
+    keys = 'ffdhe8192,ffdhe6144,ffdhe4096'
     ohelp = f'Comma sep list of pre-defined names or key sizes, first used as default ({keys})'
     opt = [('-k', '--keys'), {'help' : ohelp, 'type' : str, 'default' : keys}]
     opts.append(opt)

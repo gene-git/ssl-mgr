@@ -39,6 +39,11 @@ def cert_split_pem_string(pemstring:str):
     Input: string with 1 or more PEM components
     Output: list of (label, pem)
     where label is one of the RFC 7468 labels
+    NB:
+    For openssl trusted certificates there is ExtraData after the cert - 
+      which has the trust data.
+      cryptography.x509 will not load this 
+      see : https://github.com/pyca/cryptography/issues/5242
     """
     pem_items = []
     if not pemstring:
@@ -46,7 +51,11 @@ def cert_split_pem_string(pemstring:str):
 
     pem_lines = pemstring.splitlines()
     for line in pem_lines:
+        if line.startswith('#') or line.strip().startswith('\n'):
+            continue
+
         (key, label) = _extract_label(line)
+
         if key == 'BEGIN':
             this_data = line + '\n'
             this_label = label

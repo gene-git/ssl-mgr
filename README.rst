@@ -64,6 +64,22 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * X509v3 Extended Key Usage adds "Time Stamping"
+
+ * Changed sslm-dhparm to generate RFC-7919
+   Negotiated Finite Field Diffie-Hellman Ephemeral Parameters files - with the default
+   now set to ffdhe8192 instead of ffdhe4096. User options -k overrides the default as usual
+
+   NB If you manually update DH files in prod-certs, then push to all servers:
+
+      sslm-mgr dev -certs-prod
+
+   NB TLSv1.3 restricts DH key exchange to named groups only.
+
+ * openssl trusted certificates there is ExtraData after the cert
+   which has the trust data. cryptography.x509 will not load this so strip it off.
+   see : https://github.com/pyca/cryptography/issues/5242
+
  * Add a working example of self signed web cert in examples/ca-self.
    Create ca-certs (./make-ca) then generate new web cert signed by that ca.
    (sslm-mgr -renew; sslm-mgr -roll)
@@ -100,19 +116,6 @@ Recent changes and important info goes here.
 
  * Adjust code to be compatible with upcoming python changes.
    Some argparse options have been deprecated in 3.12 and will be removed in 3.14.
-
- * For non-dns servers the *restart_cmd* config can now be either a list of commands 
-   or a single command.
-   This is useful for postfix when using sni_maps; these *must* be rebuilt 
-   whenever a cert changes. e.g. the smtp server could now use:
-
-   restart_cmd = ['/usr/bin/postmap -F lmdb:/etc/postfix/sni_maps', '/usr/bin/postfix reload']
-
-   **Reloading/restarting postfix alone will NOT pick up new cert when using sni_maps**
-
-   You can alternatively put both commands into a shell script and run that as well.
-
- * ssl-mgr has been in production for some time and working well.
 
 More Detail
 ===========
