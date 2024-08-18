@@ -34,6 +34,25 @@ def check_dns_primary(log, opts):
             okay = False
     return okay
 
+def _check_post_copy_command(log, opts):
+    """
+    Check copy command syntax
+    """
+    if not opts.post_copy_cmd:
+        return True
+
+    if not isinstance(opts.post_copy_cmd, list):
+        log('Error: post_copy_cmd must be a list')
+        return False
+
+    okay = True
+    for item in opts.post_copy_cmd:
+        if not isinstance(item, list):
+            log(f'Error: post_copy_cmd element must be [host, cmd] not {item}')
+            okay = False
+            continue
+    return okay
+
 def check_options(log, opts:"SslOpts"):
     """
     Check when called by sslm-mgr
@@ -53,6 +72,9 @@ def check_options(log, opts:"SslOpts"):
     if opts.clean_keep < clean_keep_min:
         log(f'Info: clean_keep too small {opts.clean_keep} resetting to {clean_keep_min}')
         opts.clean_keep = max(opts.clean_keep, clean_keep_min)
+
+    if not _check_post_copy_command(log, opts):
+        okay = False
 
     return okay
 

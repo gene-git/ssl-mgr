@@ -85,6 +85,35 @@ def _copy_to_server(ssl_mgr, serv_class, servers_done, log):
             okay = False
     return okay
 
+def _post_copy_command(ssl_mgr:"SslMgr"):
+    """
+    After certs are copied run any post_copy_cmd programs
+    post_copy_cmd ~ [[host1, command1], [host2, command2], ..]
+    Each command is run locally and passed host as argument
+    Config check validates post_copy_cmd is either empty/None
+    or list of items - each item a list of 2 [host, cmd] elems
+    NB
+      command failures are treated as non-fatal. Log and continue
+      We dont want one failure to prevent the remainder of things being done.
+    """
+    logs = ssl_mgr.logs
+    num_fails = 0
+
+    if not ssl_mgr.opts.post_copy_cmd:
+        return 0
+
+    for (host, cmd) in ssl_mgr.opts.post_copy_cmd:
+        pargs = [cmd, host]
+        if ssl_mgr.opts.debug:
+            logs(f'  debug: {pargs}')
+        else:
+            logs(f' Post Copy : [{host}, {cmd}]')
+            [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.log)
+            if retc != 0:
+                logs(f'Error: {pargs} - continuing')
+                num_fails += 1
+    return num_fails
+
 def certs_to_production(ssl_mgr:"SslMgr"):
     """
     1) Keys/certs are copied to prod_cert_dir defined in ssm-mgr.conf.
@@ -118,4 +147,13 @@ def certs_to_production(ssl_mgr:"SslMgr"):
         server = getattr(ssl_mgr.opts, stype)
         if not _copy_to_server(ssl_mgr, server, servers_done, logs):
             return False
+
+    #
+    # Run any post copy commands
+    #
+    logs('Running post_copy_cmd:')
+    num_fails = _post_copy_command(ssl_mgr)
+    if num_fails > 0:
+        logs(f'Warning: post copy commands had {num_fails}')
+
     return True

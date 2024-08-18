@@ -64,6 +64,13 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * New config option *post_copy_cmd*
+
+   For each server getting copies of certs may run this command on machine on which sslm-mgr is running.
+   The command is passed server hostname as an argument.
+   Usage Example: if a server needs a file permission change for an application user to read private key(s).
+   This option is a list of *[server-host, command]* pairs. See :ref:`config-ssl-mgr`
+
  * X509v3 Extended Key Usage adds "Time Stamping"
 
  * Changed sslm-dhparm to generate RFC-7919
@@ -959,6 +966,8 @@ Config ca-info.conf
         ca_type = 'self'
 
 
+.. _config-ssl-mgr:
+
 Config ssl-mgr.conf
 ===================
 
@@ -976,6 +985,11 @@ Config ssl-mgr.conf
 
         dns_check_delay = 240
         dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
+        
+        post_copy_cmd = [['example.com', '/etc/ssl-mgr/tools/update-permissions'],
+                         ['voip.example.com', '/etc/ssl-mgr/tools/voip-checker']
+                         ]
+                         
 
     #
     # Groups & Services

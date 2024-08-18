@@ -76,6 +76,8 @@ class SslOpts:
         self.dns_check_delay = 240
         self.dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
 
+        self.post_copy_cmd = None
+
         # what to do tasks on
         self.grps_svcs = {}
 
