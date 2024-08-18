@@ -1,6 +1,16 @@
 Changelog
 =========
 
+**[4.3.0] ----- 2024-08-18** ::
+
+	        New config option *post_copy_cmd*
+	           For each server getting copies of certs may run this command on machine on which sslm-mgr is running.
+	           The command is passed server hostname as an argument.
+	           Usage Example: if a server needs a file permission change for an application user to read private key(s).
+	           This option is a list of *[server-host, command]* pairs
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.2.0] ----- 2024-08-17** ::
 
 	    X509v3 Extended Key Usage adds "Time Stamping"
