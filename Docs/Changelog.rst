@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**[HEAD] ----- 2024-10-21** ::
+
+	    use ipaddress instead of netaddr
+	    Improve messages; more compact
+	    Some lint picking
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.3.0] ----- 2024-08-18** ::
 
 	        New config option *post_copy_cmd*
