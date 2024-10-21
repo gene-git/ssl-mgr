@@ -64,6 +64,12 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * New config variable : renew_expire_days_spread (default 0)
+   When set to value > 0, renew will happen between expiry_days ±spread days.
+   Where spread days is randomly drawn from a uniform distribution between -spread and spread.
+   Using this keeps the average renewal time the same but with multiple certificates
+   this helps renewals not all fall on same day even if have same expiration.
+
  * Improve messages
 
  * New config option *post_copy_cmd*

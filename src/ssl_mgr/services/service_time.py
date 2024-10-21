@@ -4,6 +4,31 @@
   service level tasks
 """
 import time
+import random
+
+def _get_rand_adjust_days(spread:int|None):
+    '''
+    If using renew_expire_days_spread > 0 then
+    Generate and return random integer in range:
+        [-spread, spread]
+    Return 
+        (spread, adjustment)
+        returned spread is set to 0 if input is negative
+    '''
+    if not spread or spread <= 0:
+        return (0,0)
+    adjust = random.randrange(-spread, spread + 1)
+    return (spread, adjust)
+
+def _renew_in_text(spread:int, days_to_renew:int) -> str:
+    ''' message for next renewal '''
+    when= f'{days_to_renew}'
+    if spread > 0:
+        if days_to_renew > 0:
+            when = f'{days_to_renew} ± {spread}'
+        else:
+            when= f'0 ± {spread}'
+    return when
 
 def time_to_renew(service):
     """
@@ -13,6 +38,13 @@ def time_to_renew(service):
      - days to expiration < ssl_svc.renew_expire_days
     """
     #
+    # If renew_expire_days_spread > 0 then get a random number
+    # of days between -spread and + spread
+    #
+    renew_expire_days = service.svc.renew_expire_days
+    (spread, renew_adjust) = _get_rand_adjust_days(service.svc.renew_expire_days_spread)
+
+    #
     # Have cert - check if ready or too new to renew/refresh
     #
     log_space = 'mspace'
@@ -20,14 +52,15 @@ def time_to_renew(service):
     db_name = service.db.db_names['curr']
     if db_name:
         (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
-        days_to_renew = days_left - service.svc.renew_expire_days
+        days_to_renew = days_left - renew_expire_days
+
         msg = f'↪ Current cert expires: {expiry_date_str} ({days_left} days)'
-        if days_to_renew > 0 :
-            #service.logs(f'    {msg} -> Renew in {days_to_renew}')
-            service.logs(f'{msg} 🗘 Renew in {days_to_renew}', opt=log_space)
+
+        if days_to_renew > -renew_adjust :
             renew = False
+            renew_in = _renew_in_text(spread, days_to_renew)
+            service.logs(f'{msg} 🗘 Renew in {renew_in}', opt=log_space)
         else:
-            #service.logs(f'    {msg} -> Renew now')
             service.logs(f'{msg} 🗘 Renew now', opt=log_space)
     else:
         service.logs(' Warning - no curr certs (first cert or missed roll?) - generating new next')

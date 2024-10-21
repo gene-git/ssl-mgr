@@ -45,6 +45,7 @@ class SslSvc:
         #  - default inherited from global opts can be changed per svc
         #
         self.renew_expire_days = opts.renew_expire_days
+        self.renew_expire_days_spread = opts.renew_expire_days_spread
 
         if not read_svc(self, opts.top_dir, grp_name, svc_name, self.logs):
             self.okay = False

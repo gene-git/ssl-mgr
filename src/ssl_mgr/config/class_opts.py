@@ -61,6 +61,7 @@ class SslOpts:
         self.refresh_cert = False
         self.renew_cert_now = False
         self.renew_expire_days = 30
+        self.renew_expire_days_spread = 0
         self.copy_csr = False
         self.clean_keep = 10
         self.clean_all = False
