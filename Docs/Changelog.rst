@@ -1,7 +1,17 @@
 Changelog
 =========
 
-**[4.4.0, origin/master] ----- 2024-10-21** ::
+**[4.5.0] ----- 2024-10-21** ::
+
+	     * New config variable : renew_expire_days_spread (default 0)
+	       When set to value > 0, renew will happen between expiry_days ±spread days.
+	       Where spread days is randomly drawn from a uniform distribution between -spread and spread.
+	       Using this keeps the average renewal time the same but with multiple certificates
+	       this helps renewals not all fall on same day even if have same expiration.
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
+**[4.4.0] ----- 2024-10-21** ::
 
 	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
 	    use ipaddress instead of netaddr
