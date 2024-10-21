@@ -26,4 +26,5 @@ from .file_tools import get_file_time_ns
 from .toml import read_toml_file
 from .toml import write_toml_file
 
+from .cidr import (is_valid_ip4, is_valid_ip6, is_valid_cidr)
 from .class_log import SslLog, init_logging, get_logger, get_certbot_logger

@@ -9,31 +9,78 @@ from logging.handlers import RotatingFileHandler
 from .file_tools import make_dir_path
 
 def _opt_tag(msg, opt:str):
-    """ log additional tag """
-    tag = None
+    '''
+    log additional tag
+      can be above or in front of message
+    '''
+    # pylint: disable=too-many-branches
+    above = ''
+    front = ''
     if opt :
         if opt == 'dash':
-            tag = len(msg) * '-'
+            above = len(msg) * '-'
 
         elif opt == 'sdash':
-            tag = 4 * '-'
+            above = 4 * '-'
 
         elif opt == 'mdash':
-            tag = 16 * '-'
+            above = 16 * '-'
 
         elif opt == 'ldash':
-            tag = '\n' + 24 * '-'
+            above = 24 * '-'
 
         elif opt == 'warn':
-            tag = 4 * '-' + ' Warn ' + 4 * '-'
+            front = 4 * '-' + ' Warn ' + 4 * '-'
 
         elif opt == 'error':
-            tag = 4 * '-' + ' Error ' + 3 * '-'
+            front = 4 * '-' + ' Error ' + 3 * '-'
 
         elif opt == 'info':
-            tag = 4 * '-' + ' Info ' + 3 * '-'
+            front = 4 * '-' + ' Info ' + 3 * '-'
 
-    return tag
+        elif opt == 'space':
+            front = 4 * ' '
+
+        elif opt == 'sspace':
+            front = 8 * ' '
+
+        elif opt == 'mspace':
+            front = 12 * ' '
+
+        elif opt == 'lspace':
+            front = 16 * ' '
+
+        elif opt == 'xlspace':
+            front = 32 * ' '
+
+        elif opt.startswith('space-'):
+            optsplit = opt.split('-')
+            if len(optsplit) > 1:
+                num_spaces = int(optsplit[1])
+                front = num_spaces * ' '
+
+    return (above, front)
+
+def _opt_tags(msg, opt:str|list[str]|None=None) -> str:
+    '''
+    Process any optional tags
+    '''
+    if not opt:
+        return ('', '')
+
+    opts = opt
+    if isinstance(opt, str):
+        opts = [opt]
+
+    above = ''
+    front = ''
+    for one in opts:
+        (this_above, this_front) = _opt_tag(msg, one)
+        if this_above:
+            above += this_above
+        if this_front:
+            front += this_front
+    return (above, front)
 
 class SslLog:
     """
@@ -65,54 +112,54 @@ class SslLog:
         """ set verbose flag """
         self.verb = verb
 
-    def log(self, msg:str, opt:str=None):
+    def log(self, msg:str, opt:str|list[str]|None=None):
         """
         write this to log
         """
-        tag = _opt_tag(msg, opt)
-        if tag:
-            self.logger.info(tag)
-        self.logger.info(msg)
+        (above,front) = _opt_tags(msg, opt)
+        if above:
+            self.logger.info(above)
+        self.logger.info(front + msg)
 
-    def logs(self, msg:str, opt:str=None):
+    def logs(self, msg:str, opt:str|list[str]|None=None):
         """
         write msg to
-         - log 
+         - log
          - stdout
         """
-        tag = _opt_tag(msg, opt)
-        if tag:
-            self.logger.info(tag)
-            print(tag)
-        self.logger.info(msg)
-        print(msg)
+        (above,front) = _opt_tags(msg, opt)
+        if above:
+            self.logger.info(above)
+            print(above)
+        self.logger.info(front + msg)
+        print(front + msg)
 
-    def logv(self, msg:str, opt:str=None):
+    def logv(self, msg:str, opt:str|list[str]|None=None):
         """
-        write to 
+        write to
          - log if verb is true
         """
         if self.verb:
-            tag = _opt_tag(msg, opt)
-            if tag:
-                self.logger.info(tag)
-            self.logger.info(msg)
+            (above,front) = _opt_tags(msg, opt)
+            if above:
+                self.logger.info(above)
+            self.logger.info(front + msg)
 
-    def logsv(self, msg:str, opt:str=None):
+    def logsv(self, msg:str, opt:str|list[str]|None=None):
         """
-        write msg to 
-         - log 
+        write msg to
+         - log
          - stdout when verb is true
         """
-        tag = _opt_tag(msg, opt)
-        if tag:
-            self.logger.info(tag)
+        (above,front) = _opt_tags(msg, opt)
+        if above:
+            self.logger.info(above)
             if self.verb:
-                print(tag)
+                print(above)
 
-        self.logger.info(msg)
+        self.logger.info(front + msg)
         if self.verb:
-            print(msg)
+            print(front + msg)
 
     def logfile(self):
         """ where to find log """
@@ -125,7 +172,7 @@ CERTBOT_LOGGER = None
 def init_logging(logdir):
     """
     Set up logging facility
-    Logging 
+    Logging
      - mgr_logger  : logs for ssl-mgr et al
      - cbot_logger : logs for by certbot
     """

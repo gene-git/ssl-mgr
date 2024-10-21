@@ -5,7 +5,6 @@ Certificate Tools - CSR
 """
 # pylint: disable=too-many-locals
 import ipaddress
-import netaddr
 from cryptography import x509
 #from cryptography.x509 import CertificateSigningRequest
 from cryptography.x509 import CertificateSigningRequestBuilder
@@ -24,7 +23,7 @@ from cryptography.hazmat.primitives import serialization
 #from cryptography.hazmat.primitives.serialization import PublicFormat
 
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-
+from utils import (is_valid_ip4, is_valid_ip6)
 from .hash import lookup_hash
 
 def _x509_name(svc_x509) -> x509.Name :
@@ -80,10 +79,10 @@ def csr_generate(ssl_csr, key_pem) -> (x509.CertificateSigningRequest, bytes):
     # handle domain names and ipv4/ipv6 addresses
     alt_names = []
     for name in sans:
-        if netaddr.valid_ipv4(name) :
+        if is_valid_ip4(name) :
             ipv4 = ipaddress.IPv4Address(name)
             x509_name = x509.IPAddress(ipv4)
-        elif netaddr.valid_ipv6(name):
+        elif is_valid_ip6(name):
             ipv6 = ipaddress.IPv6Address(ipv6)
             x509_name = x509.IPAddress(ipv6)
         else:

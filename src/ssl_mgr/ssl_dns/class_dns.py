@@ -5,8 +5,8 @@ DNS tools
 """
 # pylint: disable=invalid-name,too-many-instance-attributes
 # pylint: disable=too-many-arguments
-import netaddr
 from utils import get_certbot_logger
+from utils import is_valid_cidr
 
 from .dns import dns_resolver
 from .dns import auth_nameservers
@@ -25,18 +25,13 @@ def _mx_host_dict(mx_hosts_raw:[str]):
         mx_hosts[prio] = host
     return mx_hosts
 
-def _is_valid_ip(address):
-    """ check if ip or domain name """
-    if netaddr.valid_ipv4(address) or netaddr.valid_ipv6(address):
-        return True
-    return False
-
 class SslDns:
     """
     dns class for validating when dns has flushed acme validation TXT records
     Each instance is associated with one domain name for which we will be
     checking it's authoritative name servers for the challenge records.
     """
+    #pylint: disable=too-many-positional-arguments
     def __init__(self, apex_domain, dns_primary, dns_port, check_delay, check_xtra_ns):
         """
         domain
@@ -81,7 +76,7 @@ class SslDns:
         # get IP of primary if passed in as domain
         #
         dns_ips = [dns_primary]
-        if not _is_valid_ip(dns_primary):
+        if not is_valid_cidr(dns_primary):
             dns_ips = dns_query(self.stub_resolver, dns_primary, 'A')
 
         self.primary_resolver = dns_resolver(dns_ips, dns_port)
@@ -93,7 +88,7 @@ class SslDns:
         if check_xtra_ns:
             #self.log(f'ssl_dns: xtra_ns : {check_xtra_ns}')
             for xns in check_xtra_ns:
-                if _is_valid_ip(xns):
+                if is_valid_cidr(xns):
                     self.xtra_ns.append(xns)
                 else:
                     dns_ips = dns_query(self.stub_resolver, xns, 'A')

@@ -32,6 +32,7 @@ class SslCert():
         It only knows it's actual dir :
         topdir/group/service/db/date/db.db_dir/db_name
     """
+    #pylint: disable=too-many-positional-arguments
     def __init__(self, db_name:str, svc:"SslSvc", db:SslDb,
                  grp_name:str, svc_name:str, opts:"SslOpts"):
         self.db_name = db_name

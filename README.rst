@@ -64,6 +64,8 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * Improve messages
+
  * New config option *post_copy_cmd*
 
    For each server getting copies of certs may run this command on machine on which sslm-mgr is running.

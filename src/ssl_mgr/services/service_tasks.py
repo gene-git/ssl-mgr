@@ -186,6 +186,7 @@ def roll_next_to_curr(service):
      - check for next being cert/keys being older > min_roll_mins
        wont run without force
     """
+    log_space = 'mspace'
     (cert_age, ok_to_roll) = time_to_roll(service)
     if cert_age < 0:
         service.logsv('    Nothing to roll: no next cert')
@@ -193,9 +194,9 @@ def roll_next_to_curr(service):
 
     msg = f'cert is {cert_age} mins old'
     if ok_to_roll:
-        service.logs(f'    Okay to roll: {msg}')
+        service.logs(f'Okay to roll: {msg}', opt=log_space)
     else:
-        service.logs(f'    Too soon to roll: {msg} < {service.opts.min_roll_mins} mins')
+        service.logs(f'Too soon to roll: {msg} < {service.opts.min_roll_mins} mins', opt=log_space)
         return True         # not an error
 
     return next_to_curr(service)

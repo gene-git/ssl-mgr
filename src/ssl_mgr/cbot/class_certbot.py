@@ -20,7 +20,7 @@ class CertbotHook:
     """
     Used by certbot hook which has less info than when loaded by ssl-mgr
     """
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(self, lname:str, grp_name:str, svc_name:str,
                  opts:'SslOpts'=None, debug:bool=False):
 

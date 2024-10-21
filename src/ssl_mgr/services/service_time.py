@@ -15,17 +15,20 @@ def time_to_renew(service):
     #
     # Have cert - check if ready or too new to renew/refresh
     #
+    log_space = 'mspace'
     renew = True
     db_name = service.db.db_names['curr']
     if db_name:
         (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
         days_to_renew = days_left - service.svc.renew_expire_days
-        msg = f'⤷ Current cert expires: {expiry_date_str} ({days_left} days)'
+        msg = f'↪ Current cert expires: {expiry_date_str} ({days_left} days)'
         if days_to_renew > 0 :
-            service.logs(f'    {msg} -> Renew in {days_to_renew}')
+            #service.logs(f'    {msg} -> Renew in {days_to_renew}')
+            service.logs(f'{msg} 🗘 Renew in {days_to_renew}', opt=log_space)
             renew = False
         else:
-            service.logs(f'    {msg} -> Renew now')
+            #service.logs(f'    {msg} -> Renew now')
+            service.logs(f'{msg} 🗘 Renew now', opt=log_space)
     else:
         service.logs(' Warning - no curr certs (first cert or missed roll?) - generating new next')
 
@@ -33,9 +36,10 @@ def time_to_renew(service):
 
 def log_cert_expiry(service, lname):
     """ log curr/cert expiry """
+    log_space = 'mspace'
     db_name = service.db.db_names[lname]
     (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
-    service.logs(f'    ⤷ Cert expires: {expiry_date_str} ({days_left} days)')
+    service.logs(f'↪ Renewed cert expires: {expiry_date_str} ({days_left} days)', opt=log_space)
 
 def _age_in_mins(age_secs):
     """ convert secs to mins secs """

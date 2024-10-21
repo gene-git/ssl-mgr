@@ -21,7 +21,7 @@ def execute_tasks(ssl_mgr):
     #
     # Each group executes its tasks
     #
-    logs('ssl-mgr: group tasks starting:', opt='ldash')
+    logs('Start group tasks :', opt='ldash')
     for (grp_name, group) in ssl_mgr.groups.items():
         if not group.do_tasks():
             logs(f' Errors with {grp_name}')
@@ -41,7 +41,9 @@ def execute_tasks(ssl_mgr):
         #if group.curr_cert_changed:
         #    curr_certs_changed = True
 
-    logs('ssl-mgr: group tasks done:', opt='ldash')
+    logs('')
+    logs('Done group tasks:')
+    logs('', opt='ldash')
     #
     # Tasks for app level:
     # Order is important
@@ -65,14 +67,14 @@ def execute_tasks(ssl_mgr):
         return False
 
     if not server_restarts(ssl_mgr):
-        logs('Error: server_restarts_non_dns failed')
+        logs('Error: server_restarts failed')
         ssl_mgr.okay = False
         return False
 
     #
     # Cleanup
     #
-    logsv('ssl-mgr: Cleanup')
+    logsv('Cleanup and release lock')
     cleanup(ssl_mgr)
     ssl_mgr.lockmgr.release()
 

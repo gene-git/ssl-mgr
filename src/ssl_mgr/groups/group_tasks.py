@@ -124,9 +124,9 @@ def execute_tasks(group):
 
     # track if any certs changed
     change = group.change
-    #group.cert_changed = False
+
     for svc in group.services:
-        logs(f'\n  {svc.svc_name}')
+        logs(f'  {svc.svc_name}')
         #
         # check for renew_cert
         #
