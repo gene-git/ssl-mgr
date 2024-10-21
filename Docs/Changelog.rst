@@ -1,8 +1,9 @@
 Changelog
 =========
 
-**[HEAD] ----- 2024-10-21** ::
+**[4.4.0, origin/master] ----- 2024-10-21** ::
 
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
 	    use ipaddress instead of netaddr
 	    Improve messages; more compact
 	    Some lint picking
