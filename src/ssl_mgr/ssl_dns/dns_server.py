@@ -47,7 +47,7 @@ def init_primary_dns_server(opts:"SslOpts", apex_domain:str, log=print) -> SslDn
             default_server = server
             default_port = port
 
-        if domain.lower == apex_domain:
+        if domain.lower() == apex_domain:
             dns_server = server
             dns_port = port
             break

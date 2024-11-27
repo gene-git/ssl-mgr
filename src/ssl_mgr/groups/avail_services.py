@@ -4,7 +4,7 @@
 Misc utils
 """
 import os
-from utils import dir_list
+from config import service_list_from_dir
 
 def available_services(top_dir:str, grp_name:str) -> [str]:
     """
@@ -13,18 +13,7 @@ def available_services(top_dir:str, grp_name:str) -> [str]:
     to make a list of available services
     TODO: lets use active config services instead
     """
-    conf_path = os.path.join(top_dir, 'conf.d', grp_name)
-    [flist, _dlist, _llist] = dir_list(conf_path)
+    conf_dir = os.path.join(top_dir, 'conf.d')
+    service_names = service_list_from_dir(conf_dir, grp_name)
 
-    #
-    # All services are files named xxx
-    #
-    files = []
-    if flist:
-        files += flist
-
-    services = []
-    for file in files:
-        services.append(file)
-
-    return services
+    return service_names

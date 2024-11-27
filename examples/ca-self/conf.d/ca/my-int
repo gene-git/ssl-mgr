@@ -16,8 +16,8 @@ dane_tls = []
     ec_algo = 'secp384r1'
 
 [X509]
-    CN = "sap-int"
-    O = "Sap IT"
+    CN = "My-Int"
+    O = "My IT Certs"
     C = "US"
     L = ''
     ST = ''

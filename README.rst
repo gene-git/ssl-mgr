@@ -64,6 +64,12 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * Fixed: sslm-info now shows all SANS including IP addresses.
+ 
+ * Fixed: typo in dns_primary when domain specific dns server provided caused it not to be used. 
+
+ * Feature: config services list can now be wildcard (ALL or \*) same as command line
+
  * New config variable : renew_expire_days_spread (default 0)
    When set to value > 0, renew will happen between expiry_days ±spread days.
    Where spread days is randomly drawn from a uniform distribution between -spread and spread.
@@ -123,14 +129,6 @@ Recent changes and important info goes here.
 
      * While things can take longer than previous versions, teting to date has shown it 
        to be robust and working well with letsencrypt.
-
- * Fix bug with letsencrypt test cert
-
- * certbot logs are now in *<logdir>/letsencrypt* instead of it's default
-   /var/log/letsencrypt.
-
- * Adjust code to be compatible with upcoming python changes.
-   Some argparse options have been deprecated in 3.12 and will be removed in 3.14.
 
 More Detail
 ===========

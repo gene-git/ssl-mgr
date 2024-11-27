@@ -5,6 +5,7 @@ Read variables from conf.d/ssl-mgr.conf
 """
 import os
 from utils import read_toml_file
+from .services_list import (is_wildcard_services, service_list_from_dir)
 
 def read_ssl_mgr_conf(opts:"SslOpts"):
     """
@@ -27,13 +28,17 @@ def read_ssl_mgr_conf(opts:"SslOpts"):
     #
     groups = conf_dict.get('groups')
     if not groups or not isinstance(groups, list):
-        print('Error: config groups missing - must be array of tables')
+        print('Error: config groups missing - must be list of tables')
         return conf_dict
 
     grps_svcs = {}
     for item in groups:
         domain = item.get('domain')
+
         services = item.get('services')
+        if is_wildcard_services(services):
+            services = service_list_from_dir(conf_dir, domain)
+
         active = item.get('active')
         if not active:
             continue

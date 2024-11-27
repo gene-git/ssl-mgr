@@ -121,6 +121,8 @@ def check_options_group(log, group_name:str, services:[str], opts:"SslOpts") -> 
         #okay = False
 
     for svc_name in services:
+        if svc_name in ('*', 'ALL'):
+            continue
         svc_file = os.path.join(group_dir, svc_name)
         if not os.path.exists(svc_file):
             log(f'Error No config for {group_name}:{svc_name}')

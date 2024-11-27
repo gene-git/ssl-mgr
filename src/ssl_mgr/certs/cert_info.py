@@ -91,11 +91,16 @@ def get_sans(extensions:Extensions):
         return []
     try:
         sans = extensions.get_extension_for_class(x509.SubjectAlternativeName)
+        san_names = []
         if sans:
             sans = sans.value
             if sans:
-                sans = sans.get_values_for_type(x509.DNSName)
-        return sans
+                san_names = sans.get_values_for_type(x509.DNSName)
+                ips = sans.get_values_for_type(x509.IPAddress)
+                if ips:
+                    ips = [str(ip) for ip in ips]
+                    san_names += ips
+        return san_names
 
     except cryptography.x509.ExtensionNotFound :
         return []

@@ -11,6 +11,8 @@ from ssl_dns import dns_file_hash
 from utils import get_logger
 from db import SslDb
 from services import Service
+from config import is_wildcard_services
+
 from .avail_services import available_services
 from .class_tasks import TaskMgr
 from .group_tasks import group_to_production
@@ -68,7 +70,7 @@ class SslGroup():
             return
 
         # If all services, then get the fill list of available svcs
-        if 'ALL' in svcs:
+        if is_wildcard_services(svcs):
             svcs = available_services(top_dir, grp_name)
             self.svcs = svcs
 
