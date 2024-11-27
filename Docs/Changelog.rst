@@ -1,6 +1,16 @@
 Changelog
 =========
 
+**[4.9.0] ----- 2024-11-27** ::
+
+	    Fix typo in dns server when separate server provided for specific domain(s)
+	    conf.d/ssl-mgr.conf - services can now be wildcard services (ALL or *)
+	      Every file in group directory that is a service config will be included as service
+	    add self signed wild card example
+	    Fix bug with sslm-info not showing IP addresses in SAN
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.5.0] ----- 2024-10-21** ::
 
 	     * New config variable : renew_expire_days_spread (default 0)
