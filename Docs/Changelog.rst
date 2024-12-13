@@ -1,6 +1,13 @@
 Changelog
 =========
 
+**[5.0.0] ----- 2024-12-13** ::
+
+	    Bug Fix: Its not an error if copy_file(src, dst) when src non-existent.
+	      => copying to production failed incorrectly if a tlsa file was missing when none was needed/generated
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[4.9.0] ----- 2024-11-27** ::
 
 	    Fix typo in dns server when separate server provided for specific domain(s)
