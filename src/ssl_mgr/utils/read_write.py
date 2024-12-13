@@ -69,6 +69,9 @@ def copy_file_atomic(src, dst, log=print):
     """
     Copy local file from src to dst 
     """
+    if not os.path.exists(src):
+        return True
+
     fob = open_file(src, "r")
     if not fob:
         return False
