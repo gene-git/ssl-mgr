@@ -31,6 +31,7 @@ class CAInfo():
         self.ca_desc = ''
         self.ca_type = None
         self.ca_validation = None
+        self.ca_preferred_chain = None
 
     def init_ca_name(self, top_dir:str, ca_name:str):
         """

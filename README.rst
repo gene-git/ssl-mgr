@@ -64,6 +64,18 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * Support Letsencrypt alternate root chain.
+
+   Set via *ca_preferred_chain* option in *ca-info.conf* file (see example file).
+
+   By default LE root cert is *ISRG Root X1* (RSA). Since it is standard to use ECC for 
+   certificates, it is preferable to use LE *ISRG Root X2* (ECC) which is smaller and faster
+   since less data is exchanged during TLS handshake.
+
+   X2 cert is cross-signed by X1 cert, so any client trusting X1 should trust X2.
+   
+   Some more info here: `LE Certificates: <https://letsencrypt.org/certificates>`_ and `Compatibility <https://letsencrypt.org/docs/certificate-compatibility>`_.
+
  * Fixed: sslm-info now shows all SANS including IP addresses.
  
  * Fixed: typo in dns_primary when domain specific dns server provided caused it not to be used. 
@@ -129,6 +141,7 @@ Recent changes and important info goes here.
 
      * While things can take longer than previous versions, teting to date has shown it 
        to be robust and working well with letsencrypt.
+
 
 More Detail
 ===========

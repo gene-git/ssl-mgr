@@ -100,8 +100,11 @@ def certbot_options(certbot:'Certbot', challenge_type:str, cert_dir:str,
     opts += ['--chain-path', chain_path]
     opts += ['--fullchain-path', fullchain_path]
 
-    if certbot.opts.verb:
-        opts += ['--debug']
+    #
+    # LE defaults to 'ISRG Root X1' (RSA) - can also use ca_preferred_chain = 'ISRG Root X2' (ECC)
+    #
+    if ssl_ca.info.ca_preferred_chain:
+        opts += ['--preferred-chain', ssl_ca.info.ca_preferred_chain]
 
     #
     # Are we testing -
@@ -115,6 +118,9 @@ def certbot_options(certbot:'Certbot', challenge_type:str, cert_dir:str,
     #
     #if ssl_ca.test :               # old way
     #
+    if certbot.opts.verb:
+        opts += ['--debug']
+
     if certbot.opts.test :
         opts += ['--test-cert']
 
