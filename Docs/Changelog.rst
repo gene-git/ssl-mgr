@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**[5.1.0] ----- 2024-12-16** ::
+
+	    Add support for certbot "--preferred-chain" flag in ca-info.conf
+	      New config for letsencrypt CA : preferred_chain defaults to unset (uses LE default).
+	       e.g. to switch to newer ECC root set: ca_preferred_chain = "ISRG Root X2"
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[5.0.0] ----- 2024-12-13** ::
 
 	    Bug Fix: Its not an error if copy_file(src, dst) when src non-existent.
