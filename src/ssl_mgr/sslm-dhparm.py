@@ -146,7 +146,7 @@ def _get_options():
     act = 'action'
     act_on = 'store_true'
 
-    keys = 'ffdhe8192,ffdhe6144,ffdhe4096'
+    keys = 'ffdhe8192,ffdhe6144,ffdhe4096,ffdhe3072,ffdhe2048'
     ohelp = f'Comma sep list of pre-defined names or key sizes, first used as default ({keys})'
     opt = [('-k', '--keys'), {'help' : ohelp, 'type' : str, 'default' : keys}]
     opts.append(opt)
