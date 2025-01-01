@@ -1,6 +1,14 @@
 Changelog
 =========
 
+**[5.2.0] ----- 2024-12-31** ::
+
+	    Git tags are now signed.
+	    Add git signing key to Arch Package
+	    Bump python vers
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[5.1.0] ----- 2024-12-16** ::
 
 	    Add support for certbot "--preferred-chain" flag in ca-info.conf
