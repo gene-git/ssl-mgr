@@ -11,7 +11,7 @@ def _get_rand_adjust_days(spread:int|None):
     If using renew_expire_days_spread > 0 then
     Generate and return random integer in range:
         [-spread, spread]
-    Return 
+    Return
         (spread, adjustment)
         returned spread is set to 0 if input is negative
     '''
@@ -51,15 +51,21 @@ def time_to_renew(service):
     renew = True
     db_name = service.db.db_names['curr']
     if db_name:
-        (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
-        days_to_renew = days_left - renew_expire_days
+        cert_expires = service.cert[db_name].cert_expires()
+        expiry_date_str = cert_expires.expiration_date_str()
+        expiry_str = cert_expires.expiration_string()
+        days_left = cert_expires.days()
 
-        msg = f'↪ Current cert expires: {expiry_date_str} ({days_left} days)'
+        #(expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
+        #msg = f'↪ Current cert expires: {expiry_date_str} ({days_left} days)'
+        # renew if less than a day to expiration
+        days_to_renew = int(days_left - renew_expire_days)
+        msg = f'↪ Current cert expires: {expiry_date_str} ({expiry_str})'
 
         if days_to_renew > -renew_adjust :
             renew = False
             renew_in = _renew_in_text(spread, days_to_renew)
-            service.logs(f'{msg} 🗘 Renew in {renew_in}', opt=log_space)
+            service.logs(f'{msg} 🗘 Renew in {renew_in} days', opt=log_space)
         else:
             service.logs(f'{msg} 🗘 Renew now', opt=log_space)
     else:
@@ -71,8 +77,13 @@ def log_cert_expiry(service, lname):
     """ log curr/cert expiry """
     log_space = 'mspace'
     db_name = service.db.db_names[lname]
+
+    cert_expires = service.cert[db_name].cert_expires()
+    expiry_date_str = cert_expires.expiration_date_str()
+    expiry_str = cert_expires.expiration_string()
+
     (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
-    service.logs(f'↪ Renewed cert expires: {expiry_date_str} ({days_left} days)', opt=log_space)
+    service.logs(f'↪ Renewed cert expires: {expiry_date_str} ({expiry_str})', opt=log_space)
 
 def _age_in_mins(age_secs):
     """ convert secs to mins secs """

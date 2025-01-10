@@ -24,9 +24,11 @@ def cert_status(svc:'Service'):
                 continue
 
             expiry_date_str = cert_info.expiry_date_str
-            days_left = cert_info.days_left
+            #days_left = cert_info.days_left
+            expiry_string = cert_info.expiry_string
 
-            expire_info = f'expires: {expiry_date_str} ({days_left} days)'
+            #expire_info = f'expires: {expiry_date_str} ({days_left} days)'
+            expire_info = f'expires: {expiry_date_str} ({expiry_string})'
             logs(f'{space} {lname:<12s} : {expire_info}')
             logs(f'{space} {"issuer":>12s} : CN={cert_info.issuer_CN} O={cert_info.issuer_O}')
             logs(f'{space} {"subject":>12s} : CN={cert_info.subject_CN}')

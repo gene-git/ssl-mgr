@@ -31,7 +31,7 @@ def cert_info_print(info:CertInfo, log=print) -> None:
         return
 
     if info.expiry_date_str:
-        log(f'Expires  : {info.expiry_date_str} ({info.days_left} days)')
+        log(f'Expires  : {info.expiry_date_str} ({info.expiry_string})')
 
     if info.issuer_rfc4514:
         log(f'Issuer   : {info.issuer_rfc4514}')

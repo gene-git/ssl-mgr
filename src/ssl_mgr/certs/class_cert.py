@@ -22,7 +22,8 @@ from .self_sign_cert import self_signed_root_cert
 from .cert_hash import cert_hash
 from .cert_hash import csr_hash
 from .cert_hash import pubkey_hash
-from .cert_info import cert_info, cert_time_to_expire
+from .cert_info import (cert_info, cert_expires, cert_time_to_expire)
+from .cert_expires import CertExpires
 
 class SslCert():
     """
@@ -194,6 +195,18 @@ class SslCert():
         self.chain = read_chain_pem(self.db_dir)
         self.fullchain = read_fullchain_pem(self.db_dir)
         return True
+
+    def cert_expires(self) -> CertExpires|None:
+        '''
+        Retrurns this cert expiration as CertExpires
+        '''
+        if not self.cert:
+            return None
+
+        cert_pem = self.cert
+        cert = load_pem_x509_certificate(cert_pem)
+        expires = cert_expires(cert)
+        return expires
 
     def cert_expiration(self):
         """

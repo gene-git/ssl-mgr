@@ -4,8 +4,8 @@
 Check if cert is expiring
 """
 from dataclasses import dataclass,field
-from datetime import datetime
-from dateutil import tz
+#from datetime import datetime
+#from dateutil import tz
 import cryptography
 from cryptography import x509
 #from cryptography.x509 import load_pem_x509_certificate
@@ -17,6 +17,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
+
+from .cert_expires import CertExpires
 
 def _v42_plus():
     """ check if using cryptography v42 or later """
@@ -34,27 +36,17 @@ def cert_time_to_expire(cert:x509.Certificate) -> (str, int):
     N.B. cryptography as of version 42 not_valid_after is deprecated.
          time zone must be used. Must change to:
         - not_valid_after_utc
-    Returns (days_remaining)
+    Returns
+        (expiry_date, days_left)
     """
     if not cert:
-        return (-1, -1)
+        return ('', -1)
 
-    if _v42_plus():
-        expiry = cert.not_valid_after_utc
-    else:
-        expiry = cert.not_valid_after
-        expiry = expiry.replace(tzinfo=tz.UTC)
+    expires = cert_expires(cert)
+    expiry_date_str = expires.expiration_date_str()
+    days = int(expires.days())        # truncated
 
-    today = datetime.now(tz.UTC)
-
-    expiry_date_str = str(expiry)
-
-    time_to_expire = expiry - today
-    days_left = time_to_expire.days
-    #hours_left = int(time_to_expire.seconds/3600)
-
-    return (expiry_date_str, days_left)
-
+    return (expiry_date_str, days)
 
 @dataclass
 class CertInfo:
@@ -62,8 +54,11 @@ class CertInfo:
     Useful cert info
     """
     # pylint: disable=invalid-name,too-many-instance-attributes
+    expires : CertExpires = None
     expiry_date_str: str = None
     days_left :int = -1
+    seconds_left : int = -1
+    expiry_string : str = ''
     issuer_rfc4514: str = None
     issuer_CN: str = None
     issuer_O: str = None
@@ -154,6 +149,16 @@ def csr_info(csr):
 
     return info
 
+def cert_expires(cert:x509.Certificate) -> CertExpires|None:
+    '''
+    Return CertExpires instance
+    '''
+    if not cert:
+        return None
+
+    expires = CertExpires(cert.not_valid_after_utc)
+    return expires
+
 def cert_info(cert:x509.Certificate):
     """
     Extract useful info from cert
@@ -164,10 +169,14 @@ def cert_info(cert:x509.Certificate):
         return info
 
     # expiration
-    (expiry_date_str, days_left) = cert_time_to_expire(cert)
-
-    info.expiry_date_str = expiry_date_str
-    info.days_left = days_left
+    info.expires = cert_expires(cert)
+    #(expiry_date_str, days_left, hours_left, mins_left, secs_left) = cert_time_to_expire(cert)
+    #info.expiry_date_str = expiry_date_str
+    #info.days_left = days_left
+    info.expiry_date_str = info.expires.expiration_date_str()
+    info.days_left = int(info.expires.days())        # truncated
+    info.seconds_left = info.expires.seconds()
+    info.expiry_string = info.expires.expiration_string()
 
     # issuer
     info.issuer_rfc4514 = cert.issuer.rfc4514_string()
