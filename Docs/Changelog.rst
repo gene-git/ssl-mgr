@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[5.4.0] ----- 2025-01-10** ::
+
+	    Time to cert expiration now shown with more granularity
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[5.2.0] ----- 2024-12-31** ::
 
 	    Git tags are now signed.
