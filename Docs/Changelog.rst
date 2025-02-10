@@ -1,6 +1,17 @@
 Changelog
 =========
 
+**[5.6.0] ----- 2025-02-09** ::
+
+	    Less logging to stdout when not verbose. Keep details in log file
+	    Increase default saved logs to 200k plus 4 backup files
+	    Avoid double log of cert expiration when renewing.
+	      Once when checking and again when renewing
+	    fix: time_to_renew() now returns the expiration string and caller chooses to log or not
+	    small logging improvements
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[5.4.0] ----- 2025-01-10** ::
 
 	    Time to cert expiration now shown with more granularity
