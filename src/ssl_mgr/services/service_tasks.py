@@ -135,9 +135,10 @@ def renew_cert(service):
     """
     Make new cert if current cert expring, expired or non-existent
     """
-    renew = time_to_renew(service)
+    (is_time_to_renew, expires_text) = time_to_renew(service)
 
-    if renew:
+    if is_time_to_renew:
+        service.logs(expires_text, opt='mspace')
         service.logs('    Renewing cert')
         if not new_cert(service):
             service.okay = False
@@ -194,7 +195,7 @@ def roll_next_to_curr(service):
 
     msg = f'cert is {cert_age} mins old'
     if ok_to_roll:
-        service.logs(f'Okay to roll: {msg}', opt=log_space)
+        service.logs(f'Okay to roll: {msg}', opt='mspace')
     else:
         service.logs(f'Too soon to roll: {msg} < {service.opts.min_roll_mins} mins', opt=log_space)
         return True         # not an error

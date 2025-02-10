@@ -23,7 +23,7 @@ def group_to_production(group, prod_group_dir):
     Copy all certs/keys -> production area:
         <prod_group_dir>/<service>/xxx.pem
     """
-    group.logs(f'Group : {group.grp_name} to production')
+    group.logs(f'{group.grp_name} : to production')
     for svc in group.services:
         svc_name = svc.svc_name
         svc_dir = os.path.join(prod_group_dir, svc_name)
@@ -127,11 +127,15 @@ def execute_tasks(group):
 
     for svc in group.services:
         logs(f'  {svc.svc_name}')
-        #
-        # check for renew_cert
-        #
-        if tasks.renew_cert and not svc.time_to_renew():
-            continue
+
+        #if tasks.renew_cert and not svc.time_to_renew():
+        if tasks.renew_cert :
+            (is_time_to_renew, expires_text) = svc.time_to_renew()
+
+            if not is_time_to_renew:
+                logs(expires_text, opt='mspace')
+                continue
+            logsv(expires_text, opt='mspace')
 
         if not execute_tasks_one_svc(group, svc):
             group.okay = False

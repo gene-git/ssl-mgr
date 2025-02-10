@@ -21,7 +21,7 @@ def execute_tasks(ssl_mgr):
     #
     # Each group executes its tasks
     #
-    logs('Start group tasks :', opt='ldash')
+    logs('Start group/domain tasks :', opt='ldash')
     for (grp_name, group) in ssl_mgr.groups.items():
         if not group.do_tasks():
             logs(f' Errors with {grp_name}')
@@ -31,15 +31,6 @@ def execute_tasks(ssl_mgr):
         # keep any changes
         ssl_mgr.changes.add_group_change(grp_name, group.change)
 
-        #if group.tlsa_changed :
-        #    tlsa_changed = True
-        #    tlsa_changed_domains.append(grp_name)
-
-        #if group.cert_changed:
-        #    certs_changed = True
-
-        #if group.curr_cert_changed:
-        #    curr_certs_changed = True
 
     logs('')
     logs('Done group tasks:')

@@ -17,7 +17,7 @@ from .service_tasks import check_curr_cert_changed, check_next_cert_changed
 from .service_tasks import new_key_pair, new_next, new_csr, new_cert
 from .service_tasks import copy_curr_to_next, next_to_curr, renew_cert, roll_next_to_curr
 from .service_tasks import svc_tlsa_generate
-from .service_time import time_to_renew
+from .service_time import (time_to_renew, get_expiration_text)
 from .cert_status import cert_status
 
 class Service():
@@ -124,14 +124,18 @@ class Service():
         return new_csr(self)
 
     def new_cert(self):
-        """ display cert status for curr/next """
+        """ generate a new cert for next """
+        expiration_text = get_expiration_text(self, 'curr')
+        if expiration_text:
+            self.logs(expiration_text, opt='mspace')
+
         return new_cert(self)
 
-    def time_to_renew(self):
+    def time_to_renew(self) -> (bool, str):
         """ check if cert is expiring """
         return time_to_renew(self)
 
-    def renew_cert(self):
+    def renew_cert(self) -> bool:
         """
         make new_cert only if current cert is expiring
         """

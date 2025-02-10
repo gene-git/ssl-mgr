@@ -64,6 +64,9 @@ New / Interesting
 
 Recent changes and important info goes here.
 
+ * Reduce log messages to stdout. Keep details in log file.
+   Increase the saved log files to 200k plus 4 backup files.
+
  * All git tags are signed with arch@sapience.com key which is available via WKD
    or download from https://www.sapience.com/tech. Add the key to your package builder gpg keyring.
    The key is included in the Arch package and the source= line with *?signed* at the end can be used
@@ -1241,7 +1244,7 @@ Dependencies
 =================== ==================================
  Package             Comment
 =================== ==================================
- python              3.11 or later
+ python              3.13 or later
  dnspython           
  cryptography
  dateutil

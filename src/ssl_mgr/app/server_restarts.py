@@ -115,9 +115,9 @@ def _do_one_restart(ssl_mgr:'SslMgr', cmds:Union[str, List[str]], host=None) -> 
         if ssl_mgr.opts.debug:
             logs(f'  debug: {pargs}')
         else:
-            [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.log)
+            [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.logsv)
             if retc != 0:
-                logs(f'Error: restarting {pargs}')
+                logs(f'Error: restarting {pargs} (see logfile)')
                 num_fails += 1
 
     return num_fails
@@ -197,16 +197,17 @@ def server_restarts_dns(ssl_mgr:'SslMgr') -> bool:
     opts = ssl_mgr.opts
     okay = True
     logs = ssl_mgr.logs
-    log = ssl_mgr.log
+    logsv = ssl_mgr.logsv
+    #log = ssl_mgr.log
     dns = getattr(ssl_mgr.opts, 'dns')
 
     restart_needed = _check_restart_needed(ssl_mgr, dns)
     if restart_needed:
         domains = ssl_mgr.changes.dns_domains_changed
         logs(f'  DNS restart for {domains}')
-        okay = dns_restart(domains, opts, debug=opts.debug, log=log)
+        okay = dns_restart(domains, opts, debug=opts.debug, log=logsv)
         if not okay:
-            logs('   Error DNS restart failed')
+            logs('   Error DNS restart failed (see logfile)')
     return okay
 
 def server_restarts(ssl_mgr:'SslMgr') -> bool:

@@ -103,7 +103,7 @@ class SslLog:
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.INFO)
 
-        handler = RotatingFileHandler(self.log_path, maxBytes=102400, backupCount=1)
+        handler = RotatingFileHandler(self.log_path, maxBytes=204800, backupCount=4)
         handler.setFormatter(formatter)
 
         self.logger.addHandler(handler)

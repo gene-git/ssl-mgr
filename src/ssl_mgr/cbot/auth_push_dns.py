@@ -82,6 +82,8 @@ def auth_push_dns(certbot:'CertbotHook', auth_data_rows:[str], check_nameservers
      - acme-challenge validation
     """
     logs = certbot.logs
+    logsv = certbot.logsv
+
     logs('auth_push_dns', opt='sdash')
 
     apex_domain = certbot.apex_domain
@@ -109,17 +111,17 @@ def auth_push_dns(certbot:'CertbotHook', auth_data_rows:[str], check_nameservers
     # dns_acme_dir has one or more directories
     #
     dns_acme_dir = certbot.opts.dns.acme_dir
-    isokay = dns_zone_update(dns_path, dns_acme_dir, debug=deb, log=logs)
+    isokay = dns_zone_update(dns_path, dns_acme_dir, debug=deb, log=logsv)
     if not isokay:
-        logs('Error with dns_zone_update')
+        logs('Error with dns_zone_update (see log file)')
 
     #
     # DNS update = (sign zone and restart primary)
     # auth-hook will be called by certbot to check that all
     #
-    isokay = dns_restart(apex_domain, certbot.opts, debug=deb, log=logs)
+    isokay = dns_restart(apex_domain, certbot.opts, debug=deb, log=logsv)
     if not isokay:
-        logs('Error with dns_restart')
+        logs('Error with dns_restart (see log file)')
 
     #
     # Cleanup doesn't need any nameserver checks

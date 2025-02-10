@@ -30,12 +30,15 @@ def _renew_in_text(spread:int, days_to_renew:int) -> str:
             when= f'0 ± {spread}'
     return when
 
-def time_to_renew(service):
+def time_to_renew(service:'Service', lname:str = 'curr') -> (bool, str):
     """
     Check if time to renew
     renew when:
      - no cert
      - days to expiration < ssl_svc.renew_expire_days
+    :returns:
+        (istime, expiration_string)
+        
     """
     #
     # If renew_expire_days_spread > 0 then get a random number
@@ -47,33 +50,32 @@ def time_to_renew(service):
     #
     # Have cert - check if ready or too new to renew/refresh
     #
-    log_space = 'mspace'
-    renew = True
-    db_name = service.db.db_names['curr']
+    is_time_to_renew = True
+    cert_expires = None
+    db_name = service.db.db_names[lname]
     if db_name:
         cert_expires = service.cert[db_name].cert_expires()
+
+    if cert_expires:
         expiry_date_str = cert_expires.expiration_date_str()
         expiry_str = cert_expires.expiration_string()
         days_left = cert_expires.days()
-
-        #(expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
-        #msg = f'↪ Current cert expires: {expiry_date_str} ({days_left} days)'
-        # renew if less than a day to expiration
         days_to_renew = int(days_left - renew_expire_days)
-        msg = f'↪ Current cert expires: {expiry_date_str} ({expiry_str})'
+
+        exp_curr_str = f'↪ Current cert expires: {expiry_date_str} ({expiry_str})'
 
         if days_to_renew > -renew_adjust :
-            renew = False
+            is_time_to_renew = False
             renew_in = _renew_in_text(spread, days_to_renew)
-            service.logs(f'{msg} 🗘 Renew in {renew_in} days', opt=log_space)
+            exp_curr_str += f' 🗘 Renew in {renew_in} days'
         else:
-            service.logs(f'{msg} 🗘 Renew now', opt=log_space)
+            exp_curr_str += f' 🗘 Renew now'
     else:
-        service.logs(' Warning - no curr certs (first cert or missed roll?) - generating new next')
+        exp_curr_str = 'No curr certs (first cert or missed roll?) - generating new cert'
 
-    return renew
+    return (is_time_to_renew, exp_curr_str)
 
-def log_cert_expiry(service, lname):
+def log_cert_expiry(service:'Service', lname:str):
     """ log curr/cert expiry """
     log_space = 'mspace'
     db_name = service.db.db_names[lname]
@@ -82,8 +84,16 @@ def log_cert_expiry(service, lname):
     expiry_date_str = cert_expires.expiration_date_str()
     expiry_str = cert_expires.expiration_string()
 
-    (expiry_date_str, days_left) = service.cert[db_name].cert_expiration()
+    #service.logs(f'  {service.svc_name}')
     service.logs(f'↪ Renewed cert expires: {expiry_date_str} ({expiry_str})', opt=log_space)
+
+def get_expiration_text(service:'Service', lname:str) -> str:
+    '''
+    Standard expiration string
+    '''
+    (_is_time_to_renew, expiration_str) = time_to_renew(service, lname)
+
+    return expiration_str
 
 def _age_in_mins(age_secs):
     """ convert secs to mins secs """
