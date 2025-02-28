@@ -42,7 +42,12 @@ N.B. DNSSEC is required for DANE otherwise it is not needed. However, I do recom
 and I have made available the tool I use to manage it DNS/DNSSEC [#dnstool]_.
 
 DANE can use either self-signed certs or known CA signed certs. *ssl-mgr* makes it straightforward 
-to create self-signed certs as well.
+to create self-signed certs as well. However, in practice, it is safer to use CA signed certs for 
+SMTP to avoid delivery problems in the event some servers require CA chain of trust. 
+We therefore recommend using CA signed certificates and therefore publishing DANE TLSA records using 
+those certificiates. Each MX will have its own TLSA record.
+
+While DANE may be used for other TLS services, such as https, in practice it is only used with email.
 
 For convenience, there is a PDF version of this document in the Docs directory.
 
@@ -308,6 +313,8 @@ I don't see much point in reusing the old keys. Of course using new keys offers 
 .. [#tlsa-1] DANE can use either public key or the cert. Cert does change when it's reneweed even if the
    public key is unchanged. I believe pretty much everyone uses the public key not the cert in
    TLSA reords.
+
+Note that each MX for the mail domain will have a TLSA record as required by the standard.
 
 Acme Challenge
 --------------
@@ -778,11 +785,17 @@ directories specified in the *[dns]* section of *ssl-mgr.conf*.
 Each directory, *<tlsa_1>*, *<tlsa_2>* etc, will be populated with one file per apex_domain 
 containing the TLSA records for that domain. The file will be named:
 
+**N.B.** Mail server needs a TLSA record for each key/certificate is used. If, for example,
+postfix is set up to use either *RSA* or *EC* certs, then you **must** provide a TLSA record
+for both of them. And there must be record for the apex domain as well as every MX host.
+We determine the MX hosts via DNS lookup of the apex domain.
+
 .. code-block::
 
    tlsa.<apex_domain> 
 
 Each file should be included by the DNS zone file for that apex domain.
+
 
 Certbot
 =======

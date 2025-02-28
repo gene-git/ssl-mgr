@@ -11,7 +11,11 @@ signing_ca = 'le-dns'
 renew_expire_days = 30
 
 # Include tls.example.com in zone file to use
-#  => [[port, proto, usage, selector, match], ...]
+#  => [item1, ..item2, ...] where item = [port, proto, usage, selector, match [, optional-subtype]]
+# subtype determines which subdomains get TLSA records in addition to the apex domain.
+# can be 'MX' or 'SANS'. Default if not specified is MX for port 25 otherwise SANS. SANS means
+# every subdomain listed in x509 SAN list (below).
+#
 dane_tls = [[25, 'tcp', 3, 1, 1]]
 
 [KeyOpts]
