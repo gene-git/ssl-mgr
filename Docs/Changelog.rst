@@ -1,6 +1,16 @@
 Changelog
 =========
 
+**[5.7.0] ----- 2025-02-28** ::
+
+	    DANE update:
+	      for port 25 tlsa records are generated for each MX record same as always.
+	      But now, if port is not 25, then TLSA records are for each subdomain in the x509 SAN domain list.
+	      There is also a capability to specify this with additional elemein in the dane_tls item which can be "MX" or "SANS"
+	    Expand dane tlsa example config file
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[5.6.0] ----- 2025-02-09** ::
 
 	    Less logging to stdout when not verbose. Keep details in log file
