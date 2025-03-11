@@ -1,6 +1,12 @@
 Changelog
 =========
 
+**[5.7.1] ----- 2025-03-11** ::
+
+	    After latex update we needed to fix building latex pdf to avoid error
+	    update Docs/Changelog.rst Docs/ssl-mgr.pdf
+
+
 **[5.7.0] ----- 2025-02-28** ::
 
 	    DANE update:
