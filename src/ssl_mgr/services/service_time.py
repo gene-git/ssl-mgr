@@ -81,8 +81,13 @@ def log_cert_expiry(service:'Service', lname:str):
     db_name = service.db.db_names[lname]
 
     cert_expires = service.cert[db_name].cert_expires()
-    expiry_date_str = cert_expires.expiration_date_str()
-    expiry_str = cert_expires.expiration_string()
+    if cert_expires:
+        # check in case of failure
+        expiry_date_str = cert_expires.expiration_date_str()
+        expiry_str = cert_expires.expiration_string()
+    else:
+        expiry_date_str = 'not found'
+        expiry_str = 'missing cert?'
 
     #service.logs(f'  {service.svc_name}')
     service.logs(f'↪ Renewed cert expires: {expiry_date_str} ({expiry_str})', opt=log_space)
