@@ -3,18 +3,23 @@
 """
 Push curr keys/certs to designated directory
 """
-# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code, too-many-locals
 import os
+
 from utils import make_dir_path
 from utils import run_prog
+from utils import Log
 
-def service_to_production(svc:"SslSvc", prod_svc_dir):
+from ._service_data import ServiceData
+
+
+def service_to_production(svc: ServiceData, prod_svc_dir: str) -> bool:
     """
     Keys/certs are copied to prod_svc_dir
      - saved to: <svc_dir>/<service>/xxx.pem
      - we copy curr and next but only curr is used of course.
        duing roll we advertise curr/next in tlsa so doesn't hurt to copy
-       both. After the roll - then prod curr will be updated and next is 
+       both. After the roll - then prod curr will be updated and next is
        left and is actually then identical to the new curr
        If dont want this just copy 'curr'.
     """
@@ -24,7 +29,8 @@ def service_to_production(svc:"SslSvc", prod_svc_dir):
         if not isok:
             return False
 
-    logs = svc.logs
+    logger = Log()
+    logs = logger.logs
 
     logs(f'{svc.svc_name} :')
 
@@ -51,7 +57,8 @@ def service_to_production(svc:"SslSvc", prod_svc_dir):
             logs(f'  {pargs}')
         else:
             logs(f'  {lname} {db_name}')
-            [ret, _out, _err] = run_prog(pargs, log=svc.log)
+            test = opts.debug
+            (ret, _out, _err) = run_prog(pargs, test=test, verb=True)
             if ret != 0:
                 return False
     return True

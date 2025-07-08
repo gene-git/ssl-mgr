@@ -8,18 +8,26 @@ clean up unused older data from <grp>/<svc>/db/xxx
 import os
 import re
 import shutil
-from utils import dir_list
 
-def _clean_one(num_keep:int, db_dir:str, dlist:[str], log):
+from utils import dir_list
+from utils import Log
+
+from ._mgr_data import SslMgrData
+
+
+def _clean_one(num_keep: int, db_dir: str, dlist: list[str]):
     """
-    clean up dirs from the directory :
+    clean up dirs from the directory:
        db_dir = topdir/group/service/db/
 
-    Using list of candidate directories :
+    Using list of candidate directories:
        dlist
     """
     if len(dlist) <= num_keep:
         return
+
+    logger = Log()
+    log = logger.log
 
     # make list of paths
     plist = [os.path.join(db_dir, adir) for adir in dlist]
@@ -33,13 +41,18 @@ def _clean_one(num_keep:int, db_dir:str, dlist:[str], log):
         log(f'    {item}')
         shutil.rmtree(item)
 
-def filter_candidate_dirs(grp_dir:str, svc:str, all_cands:[str], log):
+
+def filter_candidate_dirs(grp_dir: str, svc: str, all_cands: list[str]
+                          ) -> list[str]:
     """
-    Given list of candidate db directories (all_cands), 
+    Given list of candidate db directories (all_cands),
     Filter the list to those viable candidates
      - must have name in correct data format
      - must not be pointed to by symlinks curr/next/prev
     """
+    logger = Log()
+    log = logger.log
+
     #
     # DB dir names are: yyyymmdd-hh:mm:ss
     #  - regex to check right date format
@@ -61,7 +74,7 @@ def filter_candidate_dirs(grp_dir:str, svc:str, all_cands:[str], log):
         link_targ = None
         if os.path.islink(link_path):
             link_targ = os.readlink(link_path)
-            if link_targ :
+            if link_targ:
                 link_dir_name = os.path.basename(link_targ)
                 link_targs.append(link_dir_name)
 
@@ -69,7 +82,7 @@ def filter_candidate_dirs(grp_dir:str, svc:str, all_cands:[str], log):
     # Filter the list
     #  - all_cands -> ok_cands
     #
-    ok_cands = []
+    ok_cands: list[str] = []
     for cand in all_cands:
         #
         # skip any link targets
@@ -88,24 +101,26 @@ def filter_candidate_dirs(grp_dir:str, svc:str, all_cands:[str], log):
 
     return ok_cands
 
-def cleanup(ssl_mgr:'SslMgr') -> None:
+
+def cleanup(ssl_mgr: SslMgrData):
     """
-    Remove old databse directories from : 
+    Remove old databse directories from :
        top_dir/certs/<group>/service/db/xxx
 
     Skip any pointed to by symlinks:
       {curr, next, prev}
 
-    Targets 
-        ssl_mgr.opts.gprs_svcs 
+    Targets
+        ssl_mgr.opts.gprs_svcs
     unless do_all is set, in which case every group/service is cleaned up
     """
-    log = ssl_mgr.log
-
     top_dir = ssl_mgr.opts.top_dir
     cert_dir = os.path.join(top_dir, 'certs')
     num_keep = ssl_mgr.opts.clean_keep
     do_all = ssl_mgr.opts.clean_all
+
+    logger = Log()
+    log = logger.log
 
     log('Cleaning older database files')
     #
@@ -123,13 +138,12 @@ def cleanup(ssl_mgr:'SslMgr') -> None:
             # Check known in conf.d/xxx
             #
             grp_config = os.path.join(top_dir, 'conf.d', grp_name)
-            if not os.path.exists(grp_config) and not os.path.isdir(grp_config):
+            if not (os.path.exists(grp_config) or os.path.isdir(grp_config)):
                 continue
 
             #
             # List of services for this group
             #
-            #grp_dir = os.path.join(top_dir, grp_path)
             [_fls, svcs, _lnks] = dir_list(grp_path, path_type='name')
             if svcs:
                 services[grp_name] = svcs
@@ -150,8 +164,9 @@ def cleanup(ssl_mgr:'SslMgr') -> None:
                 if not possible_cands:
                     continue
 
-                good_ones = filter_candidate_dirs(grp_dir, svc, possible_cands, log)
+                good_ones = filter_candidate_dirs(grp_dir, svc,
+                                                  possible_cands)
                 if good_ones:
                     candidate_dirs += good_ones
 
-            _clean_one(num_keep, db_dir, candidate_dirs, log)
+            _clean_one(num_keep, db_dir, candidate_dirs)

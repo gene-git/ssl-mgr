@@ -7,27 +7,34 @@
    - Doing multiples, allows a single DNS update which is more efficient.
    - group services pairs are passedon command line:
      group[:service1,service_2,...] group2[:...
-    Services are required - special service 'ALL' means all available services will be processed
+    Services are required - special service 'ALL'
+    means all available services will be processed
 """
+from typing import (Any)
 import argparse
 from .opts import get_available_options
 
-def _split_group_services(grp_svcs: str) -> (str, [str]):
+
+def _split_group_services(grp_svcs: str) -> tuple[str, list[str]]:
     """
     Split group[:svc1, svc2,...]
      - service must be given - or use 'all'
     """
-    services = []
+    group: str = ''
+    services: list[str] = []
+
     gs_split = grp_svcs.partition(':')
     group = gs_split[0]
-    services = gs_split[2]
-    if services:
-        services = services.split(',')
-    else:
-        services = None
+    if not group:
+        return (group, services)
+    service_string = gs_split[2]
+    if service_string:
+        services = service_string.split(',')
+
     return (group, services)
 
-def _parse_groups_services(all_grps_svcs:[str]) -> [(str, [str])]:
+
+def _parse_groups_services(all_grps_svcs: list[str]) -> dict[str, list[str]]:
     """
     Parse list of grp_svcs from command line
         grp1:svc1,svc2,... grp2:svc1,svc2,...
@@ -37,10 +44,10 @@ def _parse_groups_services(all_grps_svcs:[str]) -> [(str, [str])]:
         ...
        }
     """
+    group_svcs: dict[str, list[str]] = {}
     if not all_grps_svcs:
-        return None
+        return group_svcs
 
-    group_svcs = {}
     for grp_svcs in all_grps_svcs:
         (group, svcs) = _split_group_services(grp_svcs)
         if not svcs:
@@ -51,7 +58,8 @@ def _parse_groups_services(all_grps_svcs:[str]) -> [(str, [str])]:
 
     return group_svcs
 
-def parse_options(defaults:dict) -> dict:
+
+def parse_options(defaults: dict[str, Any]) -> dict[str, Any]:
     """
     Parse command line and return dictionary of options
       Support for dev mode which adds more options.
@@ -67,22 +75,24 @@ def parse_options(defaults:dict) -> dict:
     #
     # Parse options used
     #
-    par = argparse.ArgumentParser(description=desc, epilog=epilog, prog=prog)
+    par = argparse.ArgumentParser(description=desc,
+                                  epilog=epilog,
+                                  prog=prog,
+                                  formatter_class=argparse.RawTextHelpFormatter
+                                  )
 
     for opt in avail_opts:
-        opt_keys, kwargs = opt
-        opt_s = opt_keys[0]
-        if len(opt_keys) > 1 and opt_keys[1]:
-            opt_l = opt_keys[1]
-            par.add_argument(opt_s, opt_l, **kwargs)
+        opt_list, kwargs = opt
+        if isinstance(opt_list, str):
+            par.add_argument(opt_list, **kwargs)
         else:
-            par.add_argument(opt_s, **kwargs)
+            par.add_argument(*opt_list, **kwargs)
 
     #
     # Save as dictionary
     #
     parsed = par.parse_args(argv)
-    opt_dict = {}
+    opt_dict: dict[str, Any] = {}
     if parsed:
         for (opt, val) in vars(parsed).items():
             opt_dict[opt] = val
@@ -91,17 +101,18 @@ def parse_options(defaults:dict) -> dict:
     # Positional args are list of [groups:services, ...]
     #
     grps_svcs = opt_dict.get('grps_svcs')
-    opt_dict['grps_svcs'] = defaults['grps_svcs']
     if grps_svcs:
         opt_dict['grps_svcs'] = _parse_groups_services(grps_svcs)
+    else:
+        opt_dict['grps_svcs'] = defaults['grps_svcs']
 
     #
     # 3.14 deprecated argparse.add_argument 'type' field
     #
-    if opt_dict.get('clean_keep') :
+    if opt_dict.get('clean_keep'):
         opt_dict['clean_keep'] = int(opt_dict['clean_keep'])
 
-    if opt_dict.get('min_roll_mins') :
+    if opt_dict.get('min_roll_mins'):
         opt_dict['min_roll_mins'] = int(opt_dict['min_roll_mins'])
 
     return opt_dict

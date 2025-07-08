@@ -6,7 +6,8 @@ Misc utils
 import os
 from config import service_list_from_dir
 
-def available_services(top_dir:str, grp_name:str) -> [str]:
+
+def available_services(top_dir: str, grp_name: str) -> list[str]:
     """
     Find all "svc" files in the config dir:
         top_dir/conf.d/service/

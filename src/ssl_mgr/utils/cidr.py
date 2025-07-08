@@ -5,9 +5,9 @@ ip address tools
 '''
 import ipaddress
 from ipaddress import (AddressValueError, NetmaskValueError)
-#from ipaddress import (IPv4Network, IPv6Network, IPv4Address, IPv6Address)
 
-def is_valid_ip4(address) -> bool:
+
+def is_valid_ip4(address: str) -> bool:
     ''' check if valid address or cidr '''
     try:
         _check = ipaddress.IPv4Network(address, strict=False)
@@ -15,7 +15,8 @@ def is_valid_ip4(address) -> bool:
     except (AddressValueError, NetmaskValueError, TypeError):
         return False
 
-def is_valid_ip6(address) -> bool:
+
+def is_valid_ip6(address: str) -> bool:
     ''' check if valid address or cidr '''
     try:
         _check = ipaddress.IPv6Network(address, strict=False)
@@ -23,7 +24,8 @@ def is_valid_ip6(address) -> bool:
     except (AddressValueError, NetmaskValueError, TypeError):
         return False
 
-def is_valid_cidr(address) -> bool:
+
+def is_valid_cidr(address: str) -> bool:
     '''
     check if valid ip address
      - returns True/False

@@ -3,12 +3,17 @@
 """
 File tools
 """
+from typing import (IO)
+from collections.abc import (Callable)
+
 import os
-def open_file(path, mode, verb:bool=False):
+
+
+def open_file(path: str, mode: str, verb: bool = False) -> IO | None:
     """
     Open a file and return file object
     """
-    # pylint: disable=W1514,R1732
+    # pylint: disable=unspecified-encoding, consider-using-with
     try:
         fobj = open(path, mode)
     except OSError as err:
@@ -17,7 +22,10 @@ def open_file(path, mode, verb:bool=False):
             print(f'Error opening file {path} : {err}')
     return fobj
 
-def write_file(data:str, targ_dir:str, file:str) -> bool :
+
+def write_file(data: str, targ_dir: str, file: str,
+               log: Callable[..., None] = print
+               ) -> bool:
     """
     Write out text file
     """
@@ -27,15 +35,17 @@ def write_file(data:str, targ_dir:str, file:str) -> bool :
     fpath = os.path.join(targ_dir, file)
     okay = write_path_atomic(data, fpath)
     if not okay:
-        print(f'Failed to write {fpath}')
+        log(f'Failed to write {fpath}')
         return False
     return True
 
-def write_path_atomic(data:str, fpath:str, log=print):
+
+def write_path_atomic(data: str, fpath: str,
+                      log: Callable[..., None] = print
+                      ) -> bool:
     """
     Write data to fpath - atomic version
     """
-
     #
     # Create dst directories if needed
     #
@@ -65,9 +75,12 @@ def write_path_atomic(data:str, fpath:str, log=print):
         return False
     return True
 
-def copy_file_atomic(src, dst, log=print):
+
+def copy_file_atomic(src: str, dst: str,
+                     log: Callable[..., None] = print
+                     ) -> bool:
     """
-    Copy local file from src to dst 
+    Copy local file from src to dst
     """
     if not os.path.exists(src):
         return True
@@ -80,7 +93,7 @@ def copy_file_atomic(src, dst, log=print):
     fob.close()
     try:
         stat = os.stat(src)
-    except OSError :
+    except OSError:
         # stat failed
         stat = None
 
@@ -93,11 +106,12 @@ def copy_file_atomic(src, dst, log=print):
         os.utime(dst, ns=(stat.st_atime_ns, stat.st_mtime_ns))
     return True
 
-def read_file(targ_dir:str, file:str, verb:bool=False) -> bool:
+
+def read_file(targ_dir: str, file: str, verb: bool = False) -> str:
     """ read text file """
 
     if not targ_dir:
-        return None
+        return ''
 
     fpath = os.path.join(targ_dir, file)
     try:
@@ -105,15 +119,17 @@ def read_file(targ_dir:str, file:str, verb:bool=False) -> bool:
         if not fobj:
             if verb:
                 print(f'Failed to read {fpath}')
-            return None
+            return ''
         data = fobj.read()
         return data
 
     except OSError as err:
         print(f'Error with file {fpath} : {err}')
-        return None
+        return ''
+    return ''
 
-def copy_file(src_dir:str, file:str, targ_dir:str) -> bool:
+
+def copy_file(src_dir: str, file: str, targ_dir: str) -> bool:
     """
     Copy file from src_dir to targ_dir
      return True on success
@@ -122,7 +138,8 @@ def copy_file(src_dir:str, file:str, targ_dir:str) -> bool:
     tpath = os.path.join(targ_dir, file)
     return copy_file_atomic(spath, tpath)
 
-def write_pem(pem:bytes, db_dir:str, file:str) -> bool:
+
+def write_pem(pem: bytes, db_dir: str, file: str) -> bool:
     """
     write pem byte string to file
      - pem is bytes => decode to string
@@ -134,12 +151,14 @@ def write_pem(pem:bytes, db_dir:str, file:str) -> bool:
         is_okay = False
     return is_okay
 
-def read_pem(db_dir:str, pem_file:str) -> bytes:
+
+def read_pem(db_dir: str, pem_file: str) -> bytes:
     """
     read pem file and return PEM byte string
     """
-    pem = None
+    pem = b''
     pem_str = read_file(db_dir, pem_file)
     if pem_str:
-        pem = bytes(pem_str, 'utf-8')
+        # pem = bytes(pem_str, 'utf-8')
+        pem = pem_str.encode('utf-8')
     return pem

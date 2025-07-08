@@ -3,19 +3,21 @@
 """
  file utils
 """
+from typing import (Any)
 import os
 import stat
 import tempfile
 from .read_write import open_file
 from .toml import dict_to_toml_string
 
-def save_prev_symlink(fdir, orig):
+
+def save_prev_symlink(fdir: str, orig: str):
     """
     If link exists rename to orig.prev
     If not a link then move to unique subdir
         fdir/fname -> fdir/saved.xxx/fname
     """
-    if os.path.exists(orig) :
+    if os.path.exists(orig):
         if os.path.islink(orig):
             saved = f'{orig}.prev'
         else:
@@ -24,7 +26,8 @@ def save_prev_symlink(fdir, orig):
             saved = os.path.join(save_dir, basefile)
         os.rename(orig, saved)
 
-def make_symlink(target, linkname):
+
+def make_symlink(target: str, linkname: str):
     """
     file_symlink(target, linkname)
     Does equivalent to:  ln -s target linkname
@@ -42,9 +45,10 @@ def make_symlink(target, linkname):
             os.unlink(linkname)
 
     if not done:
-        os.symlink (target, linkname)
+        os.symlink(target, linkname)
 
-def write_conf_file(header, data_dict, path):
+
+def write_conf_file(header: str, data_dict: dict[str, Any], path: str):
     """
     Write config file - header at top and data follows
      - set perms to user,group = RW
@@ -65,19 +69,21 @@ def write_conf_file(header, data_dict, path):
     os.chmod(path, file_perm)
     return okay
 
-def os_scandir(tdir):
+
+def os_scandir(tdir: str):
     """
     wrapper around scandir to handle exceptions
     """
     scan = None
-    if os.path.exists(tdir) and os.path.isdir(tdir) :
+    if os.path.exists(tdir) and os.path.isdir(tdir):
         try:
             scan = os.scandir(tdir)
         except OSError as _error:
             scan = None
     return scan
 
-def dir_list (indir, path_type='name'):
+
+def dir_list(indir: str, path_type: str = 'name') -> list[list[str]]:
     """
     Get a list of files in a local directory
     returns a list of files/dirs/links in a directory
@@ -104,7 +110,7 @@ def dir_list (indir, path_type='name'):
             if item.is_symlink():
                 llist.append(file)
 
-            elif item.is_file() :
+            elif item.is_file():
                 flist.append(file)
 
             elif item.is_dir():
@@ -112,7 +118,8 @@ def dir_list (indir, path_type='name'):
         scan.close()
     return [flist, dlist, llist]
 
-def os_chmod(path, perm):
+
+def os_chmod(path: str, perm: int) -> bool:
     """
     os.chmod with exception check
      - returns True/False if all okay/not okay
@@ -125,12 +132,13 @@ def os_chmod(path, perm):
 
     return okay
 
-def set_restictive_file_perms(topdir):
+
+def set_restictive_file_perms(topdir: str, strict_dir: bool = False) -> bool:
     """
     Restrict permissions recursively
         user = rwX
         group = rX
-        other =
+        other = (if strict_dir False, then directories allow o=rX)
      where X means x if a dir
      Return True unless any os.chmod() throws exception
     """
@@ -142,6 +150,9 @@ def set_restictive_file_perms(topdir):
     file_perm_x = stat.S_IRWXU | stat.S_IXGRP | stat.S_IRGRP
     file_perm = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP
     dir_perm = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP
+    if not strict_dir:
+        # allow o=rx for non-strict directories
+        dir_perm |= stat.S_IROTH | stat.S_IXOTH
 
     is_ok = os_chmod(topdir, dir_perm)
     if not is_ok:
@@ -173,7 +184,8 @@ def set_restictive_file_perms(topdir):
                 okay = False
     return okay
 
-def make_dir_path(path_dir):
+
+def make_dir_path(path_dir: str) -> bool:
     """
     makes directory and any missing path components
       - set reasonable permissions (owner / group)
@@ -187,7 +199,8 @@ def make_dir_path(path_dir):
         okay = False
     return okay
 
-def touch(path):
+
+def touch(path: str) -> bool:
     """
     If path not existing, create it,
     Othwewise update with current time
@@ -202,11 +215,12 @@ def touch(path):
         try:
             os.utime(path)
         except OSError as err:
-            print(f'Failed to touch {path} : {err}')
+            print(f'Failed to touch {path}: {err}')
             return False
     return True
 
-def rename_backup(fpath:str, ext:str):
+
+def rename_backup(fpath: str, ext: str) -> bool:
     """
     Rename file fpath => fpath.ext
     Any existing fpath.ext is removed
@@ -215,7 +229,7 @@ def rename_backup(fpath:str, ext:str):
         return False
 
     if not ext:
-        print('Error : rename_backup {fpath} missing ext')
+        print('Error: rename_backup {fpath} missing ext')
         return False
 
     backup = f'{fpath}{ext}'
@@ -223,17 +237,18 @@ def rename_backup(fpath:str, ext:str):
         try:
             os.unlink(backup)
         except OSError as err:
-            print(f'Failed to unlink {backup} : {err}')
+            print(f'Failed to unlink {backup}: {err}')
             return False
     try:
         os.rename(fpath, backup)
     except OSError as err:
-        print(f'Failed to rename {fpath} to {backup} : {err}')
+        print(f'Failed to rename {fpath} to {backup}: {err}')
         return False
 
     return True
 
-def get_file_time_ns(fpath:str) -> int:
+
+def get_file_time_ns(fpath: str) -> int:
     """
     Return mtime of fpath in nanosecs
     If file not found return None
@@ -241,6 +256,6 @@ def get_file_time_ns(fpath:str) -> int:
     try:
         fstat = os.stat(fpath)
     except OSError:
-        return None
+        return -1
 
     return fstat.st_mtime_ns

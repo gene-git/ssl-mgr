@@ -1,12 +1,18 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
 """
-  service level tasks
+service level tasks
 """
+# pylint: disable=too-many-locals
 import time
 import random
 
-def _get_rand_adjust_days(spread:int|None):
+from utils import Log
+
+from ._service_data import ServiceData
+
+
+def _get_rand_adjust_days(spread: int | None) -> tuple[int, int]:
     '''
     If using renew_expire_days_spread > 0 then
     Generate and return random integer in range:
@@ -16,36 +22,42 @@ def _get_rand_adjust_days(spread:int|None):
         returned spread is set to 0 if input is negative
     '''
     if not spread or spread <= 0:
-        return (0,0)
+        return (0, 0)
+
     adjust = random.randrange(-spread, spread + 1)
     return (spread, adjust)
 
-def _renew_in_text(spread:int, days_to_renew:int) -> str:
-    ''' message for next renewal '''
-    when= f'{days_to_renew}'
+
+def _renew_in_text(spread: int, days_to_renew: int) -> str:
+    '''
+    message for next renewal
+    '''
+    when = f'{days_to_renew}'
     if spread > 0:
         if days_to_renew > 0:
             when = f'{days_to_renew} ± {spread}'
         else:
-            when= f'0 ± {spread}'
+            when = f'0 ± {spread}'
     return when
 
-def time_to_renew(service:'Service', lname:str = 'curr') -> (bool, str):
+
+def time_to_renew(service: ServiceData,
+                  lname: str = 'curr') -> tuple[bool, str]:
     """
     Check if time to renew
     renew when:
      - no cert
      - days to expiration < ssl_svc.renew_expire_days
-    :returns:
+    Returns:
         (istime, expiration_string)
-        
     """
     #
     # If renew_expire_days_spread > 0 then get a random number
     # of days between -spread and + spread
     #
     renew_expire_days = service.svc.renew_expire_days
-    (spread, renew_adjust) = _get_rand_adjust_days(service.svc.renew_expire_days_spread)
+    renew_expire_days_spread = service.svc.renew_expire_days_spread
+    (spread, renew_adjust) = _get_rand_adjust_days(renew_expire_days_spread)
 
     #
     # Have cert - check if ready or too new to renew/refresh
@@ -62,21 +74,29 @@ def time_to_renew(service:'Service', lname:str = 'curr') -> (bool, str):
         days_left = cert_expires.days()
         days_to_renew = int(days_left - renew_expire_days)
 
-        exp_curr_str = f'↪ Current cert expires: {expiry_date_str} ({expiry_str})'
+        txt = f'{expiry_date_str} ({expiry_str})'
+        exp_curr_str = f'↪ Current cert expires: {txt}'
 
-        if days_to_renew > -renew_adjust :
+        if days_to_renew > -renew_adjust:
             is_time_to_renew = False
             renew_in = _renew_in_text(spread, days_to_renew)
             exp_curr_str += f' 🗘 Renew in {renew_in} days'
         else:
-            exp_curr_str += f' 🗘 Renew now'
+            exp_curr_str += ' 🗘 Renew now'
     else:
-        exp_curr_str = 'No curr certs (first cert or missed roll?) - generating new cert'
+        exp_curr_str = 'No curr certs (first cert or missed roll?): '
+        exp_curr_str += 'generating new cert'
 
     return (is_time_to_renew, exp_curr_str)
 
-def log_cert_expiry(service:'Service', lname:str):
-    """ log curr/cert expiry """
+
+def log_cert_expiry(service: ServiceData, lname: str):
+    """
+    log curr/cert expiry
+    """
+    logger = Log()
+    logs = logger.logs
+
     log_space = 'mspace'
     db_name = service.db.db_names[lname]
 
@@ -89,10 +109,12 @@ def log_cert_expiry(service:'Service', lname:str):
         expiry_date_str = 'not found'
         expiry_str = 'missing cert?'
 
-    #service.logs(f'  {service.svc_name}')
-    service.logs(f'↪ Renewed cert expires: {expiry_date_str} ({expiry_str})', opt=log_space)
+    # logs(f'  {service.svc_name}')
+    txt = f'{expiry_date_str} ({expiry_str})'
+    logs(f'↪ Renewed cert expires: {txt}', opt=log_space)
 
-def get_expiration_text(service:'Service', lname:str) -> str:
+
+def get_expiration_text(service: ServiceData, lname: str) -> str:
     '''
     Standard expiration string
     '''
@@ -100,13 +122,17 @@ def get_expiration_text(service:'Service', lname:str) -> str:
 
     return expiration_str
 
-def _age_in_mins(age_secs):
-    """ convert secs to mins secs """
+
+def _age_in_mins(age_secs: float) -> int:
+    """
+    convert secs to mins secs
+    """
     secs = round(age_secs, 0)
     mins = max(int(secs / 60), 1)
     return mins
 
-def time_to_roll(service):
+
+def time_to_roll(service: ServiceData) -> tuple[int, bool]:
     """
     Check if next/cert is at least min_roll_mins old
     return true if time to roll

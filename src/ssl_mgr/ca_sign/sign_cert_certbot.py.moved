@@ -1,0 +1,29 @@
+#!/usr/bin/python
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+"""
+Crypto primative - certs
+Called from ssl_ca.sign_cert()
+"""
+# pylint: disable=too-many-locals
+from cbot import CertbotHook
+from crypto import SslCsr
+
+from .ca_certbot import CACertbot
+
+
+def sign_cert_certbot(ca_certbot: CACertbot, db_dir: str, ssl_csr: SslCsr):
+    """
+    Give csr to appropriate CA to get a signed cert
+    """
+    #
+    # Signed by letencrypt (via Certbot)
+    #
+    apex_domain = ssl_csr.svc.group
+    service = ssl_csr.svc.service
+    opts = ca_certbot.opts
+
+    certbot = CertbotHook('next', apex_domain, service, opts, debug=ca_certbot.debug)
+    (cert_pem, chain_pem) = certbot.sign_cert(db_dir, ca_certbot, ssl_csr)
+
+    return (cert_pem, chain_pem)

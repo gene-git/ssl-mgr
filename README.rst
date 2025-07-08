@@ -11,15 +11,15 @@ Certificate management tool.
 
 By way of background, I wrote this with 3 goals. Specifically to:
 
- * simplify certificate management - (i.e. automatic, simple and robust)
+ * Simplify certificate management - (i.e. automatic, simple and robust)
 
- * support *dns-01* acme challenge with Letsencrypt (and *http-01*)
+ * Support *dns-01* acme challenge with Letsencrypt (as well as *http-01*)
 
- * support *DANE TLS*
+ * Support *DANE TLS*
 
 The aim is to make things as robust, complete and as simple to use as possible. Under the hood, make it 
-sensible and be as automated as is feasible. A good tool does things correctly and
-makes it as easy and simple as it can be; but no simpler.
+sensible and automate wherever it is feasible. A good tool does things correctly and
+makes it straightforward and as simple as possible; but no simpler.
 
 In practical terms, there are only 2 common commands that are needed with *sslm-mgr*:
 
@@ -28,12 +28,13 @@ In practical terms, there are only 2 common commands that are needed with *sslm-
  * **roll** - moves *next* to become the new *curr*.
 
 Once things are set up these can be run out of cron - renew, then wait, then roll.
-Clean and simple. Strictly speaking, rolling of certs is only needed when they are advertized via DNS (say)
-and rolling provides a mechanism for both old and new keys to be made available for some
+Clean and simple. Strictly speaking, rolling of certs is only needed when they are advertized 
+via DNS (say).  Rolling provides for both old and new keys to be made available for some
 period while DNS servers update. The last step is to advertize new certs only.
-Changing to new certs without rolling can be problematic if some DNS servers still have the old certs.
+Changing to new certs without rolling can be problematic if some DNS servers 
+still point to the older certs.
 
-While there are lots of other command line options, the **-s,  --status** option provides 
+While there are other command line options, the **-s,  --status** option provides 
 a convenient view of all managed certificates along with their expiration and 
 time remaining before renewal. The **sslm-info** standalone program provides a 
 convenient way to display information about certs (or chains of certs), CSRs etc.
@@ -51,6 +52,13 @@ While DANE may be used for other TLS services, such as https, in practice it is 
 
 For convenience, there is a PDF version of this document in the Docs directory.
 
+Note:
+
+All git tags are signed with arch@sapience.com key which is available via WKD
+or download from https://www.sapience.com/tech. Add the key to your package builder gpg keyring.
+The key is included in the Arch package and the source= line with *?signed* at the end can be used
+to verify the git tag.  You can also manually verify the signature
+
 Key Features
 ============
 
@@ -65,17 +73,38 @@ Key Features
 
 
 New / Interesting
-==================
+=================
 
-Recent changes and important info goes here.
+**Recent changes important info.**
 
- * Reduce log messages to stdout. Keep details in log file.
-   Increase the saved log files to 200k plus 4 backup files.
+ * New **major version 6.0** released. Includes:
 
- * All git tags are signed with arch@sapience.com key which is available via WKD
-   or download from https://www.sapience.com/tech. Add the key to your package builder gpg keyring.
-   The key is included in the Arch package and the source= line with *?signed* at the end can be used
-   to verify the git tag.  You can also manually verify the signature
+    * PEP-8, PEP-257 and PEP-484 style and type annotations.
+    * Major re-write and tidy ups.
+    * Split up various modules (e.g. certs -> 5 separate crypto modules.)
+    * Ensure config and command line options are 100% backward compatible.
+    * Improve 2 config values: 
+
+      Background: Local CAs have self-signed a root CA certificate which is then used 
+      to sign an intermediate CA cert.  The intermediate CA is in turn used to sign 
+      application certificates.
+
+      * ca-info.conf: Intermediate local CA entries.
+        
+        * ca_type = "local" is preferred to "self" (NB both work). 
+          "self" should still be used for self-signed root CAs where it
+          makes more sense.
+
+      * CA service config file for self-signed root certificate:
+       
+        *  "signing_ca" = "self" is now preferred to an empty string (NB Both work).
+
+      * These 2 changes are optional but preferred. No other config file changes.
+
+    * Simplify logging code.
+
+
+Older Changes:
 
  * Support Letsencrypt alternate root chain.
 
@@ -88,20 +117,6 @@ Recent changes and important info goes here.
    X2 cert is cross-signed by X1 cert, so any client trusting X1 should trust X2.
    
    Some more info here: `LE Certificates: <https://letsencrypt.org/certificates>`_ and `Compatibility <https://letsencrypt.org/docs/certificate-compatibility>`_.
-
- * Fixed: sslm-info now shows all SANS including IP addresses.
- 
- * Fixed: typo in dns_primary when domain specific dns server provided caused it not to be used. 
-
- * Feature: config services list can now be wildcard (ALL or \*) same as command line
-
- * New config variable : renew_expire_days_spread (default 0)
-   When set to value > 0, renew will happen between expiry_days ±spread days.
-   Where spread days is randomly drawn from a uniform distribution between -spread and spread.
-   Using this keeps the average renewal time the same but with multiple certificates
-   this helps renewals not all fall on same day even if have same expiration.
-
- * Improve messages
 
  * New config option *post_copy_cmd*
 
@@ -196,7 +211,13 @@ Curr & Next
 -----------
 
 These are kept in directories that contain different versions of the same set of files. 
-Of course *next* has newer versions.
+Of course *next* has newer versions. For example for the group *example.com*
+and the service *web-ec* these directories would be located in:
+
+.. code-block:: bash
+
+    certs/example.com/web-rc/curr/
+    certs/example.com/web-rc/next/
 
 In order of creation these are:
 
@@ -215,6 +236,9 @@ info            Contains date/time when next was rolled to curr (curr only)
 Once config is setup, a cron/timer to run *renew* followed by *roll* 2 or 3 hours later
 should take care of everything. Can be run daily or weekly. 
 
+The *curr/next* directories will also be copied to the production directory, 
+as specified in *conf.d/ssl-mgr.conf* by the variable *prod_cert_dir*.
+
 Diffie-Hellman Parameters
 -------------------------
 
@@ -229,8 +253,8 @@ named groups. The default is *ffdhe4096*. Pre-defined named groups only need to 
 and will only be generated if absent. 
 
 Strictly these don't need to be in cron, but its convenient to 
-have the program check and create the DH parameters should they be missing. May
-happen occasionally when adding new domain.
+have the program check and create DH parameters should the file be missing. May
+happen occasionally after adding new domain.
 
 .. _rfc_7919: https://datatracker.ietf.org/doc/html/rfc7919
 
@@ -374,7 +398,7 @@ sslm-verify             verifies any cert.pem file using public key from chain.p
 ===================     ===========================================================
 
 Groups & Services
-==================
+=================
 
 To help us organize all the data we introduce groups and services.
 
@@ -916,14 +940,22 @@ The configuration file for ssl-mgr is ...
 
 .. sslm-mgr-opts:
 
-Log files
+Log Files
 =========
 
-Logs are found:
+Logs are found in the log directory specified by the global config variable:
 
  .. code-block:: bash
 
-    ${HOME}/log/ssl-mgr
+    [globals]
+        ...
+        logdir = 'xxx'
+
+There are 3 kinds of log files in the log directory. 
+
+ * *<logdir>/sslm*: General application log
+ * *<logdir>/cbot*: Application log while interacting with letsencrypt via certbot.
+ * *<logdir>/letsencrypt/letsencrypt.log.<N>*: Letsencrypt log provided by cerbot.
 
 ########
 Appendix
@@ -965,19 +997,15 @@ Sample Cron File
 
     #
     # Renew certs
-    #  - avoid dnsec key rolls times 
-    #    dns_tools uses locking so just nice not to overlap
-    #    dnssec renews on 2nd of every month at 8 am and rolls 10 am
-    #  - certs renew (check) every Tue afternoon and roll 2 hours later
+    #  - certs renew (check) every Tue afternoon and roll 3 hours later
     #
     30 14 * * 2 root /usr/bin/sslm-mgr -renew
-    30 16 * * 2 root /usr/bin/sslm-mgr -roll
+    30 17 * * 2 root /usr/bin/sslm-mgr -roll
 
     #
     # update dh parms:
     # will update if existing file is older than min age.
     # The default min age is 120 days. Use -a to change min age.
-    # Update early morning ahead of any cert renewal.
     #
     30 2 5 * 2 root /usr/bin/sslm-dhparm -s /etc/ssl-mgr/prod-certs
 
@@ -1003,7 +1031,7 @@ Config ca-info.conf
 
     [my-sub]  # Used to sign client certs
         ca_desc = 'My intermediate : EC signs client certs'
-        ca_type = 'self'
+        ca_type = 'local'
 
 
 .. _config-ssl-mgr:
@@ -1101,7 +1129,7 @@ Config ssl-mgr.conf
         restart_cmd = ''
 
 Config Service : example.com/mail-ec
-=====================================
+====================================
 
 .. code-block:: bash
 

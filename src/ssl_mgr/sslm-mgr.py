@@ -5,10 +5,11 @@
 """
 Certificate Managerment Tools
    In broad terms there are 2 types of group entities
-    - CA 
-    - Domain 
+    - CA
+    - Domain
 """
 from app import SslMgr
+
 
 def main():
     """
@@ -19,7 +20,7 @@ def main():
     if not okay:
         print('Failed to perform required task(s)')
 
+
 # -----------------------------------------------------
 if __name__ == '__main__':
     main()
-# -------------------- All Done ------------------------

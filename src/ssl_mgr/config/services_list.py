@@ -4,22 +4,23 @@ Generate list of services in a directory
 '''
 import os
 import re
-from typing import Union
 
 from utils import (dir_list, open_file)
 
-def read_file(file):
+
+def read_file(file: str) -> list[str]:
     '''
     Read and return rows
     '''
     fob = open_file(file, 'r')
-    data = None
+    data: list[str] = []
     if fob:
         data = fob.readlines()
         fob.close()
     return data
 
-def is_wildcard_services(services: Union[str,[str]]):
+
+def is_wildcard_services(services: str | list[str]) -> bool:
     '''
     Check if wild card (* or ALL)
     '''
@@ -34,7 +35,8 @@ def is_wildcard_services(services: Union[str,[str]]):
         return True
     return False
 
-def check_is_service(group:str, file:str) -> bool:
+
+def check_is_service(group: str, file: str) -> bool:
     '''
     Check file is a service config
     '''
@@ -72,7 +74,7 @@ def check_is_service(group:str, file:str) -> bool:
     return is_service_config
 
 
-def service_list_from_dir(conf_dir:str, group:str) -> [str] :
+def service_list_from_dir(conf_dir: str, group: str) -> list[str]:
     '''
     Generate list of service configs located in conf_dir/group_dir
     '''

@@ -4,13 +4,17 @@
   service level tasks
 """
 # pylint: disable=invalid-name
+from utils import Log
+from ._service_data import ServiceData
 
-def cert_status(svc:'Service'):
+
+def cert_status(svc: ServiceData) -> bool:
     """
     Display cert status
     Add info about production cert? Has to be at app level not here
     """
-    logs = svc.logs
+    logger = Log()
+    logs = logger.logs
 
     space = 8 * ' '
 
@@ -24,13 +28,14 @@ def cert_status(svc:'Service'):
                 continue
 
             expiry_date_str = cert_info.expiry_date_str
-            #days_left = cert_info.days_left
             expiry_string = cert_info.expiry_string
 
-            #expire_info = f'expires: {expiry_date_str} ({days_left} days)'
             expire_info = f'expires: {expiry_date_str} ({expiry_string})'
             logs(f'{space} {lname:<12s} : {expire_info}')
-            logs(f'{space} {"issuer":>12s} : CN={cert_info.issuer_CN} O={cert_info.issuer_O}')
+
+            issuer_info = f'CN={cert_info.issuer_CN} O={cert_info.issuer_O}'
+            logs(f'{space} {"issuer":>12s} : {issuer_info}')
+
             logs(f'{space} {"subject":>12s} : CN={cert_info.subject_CN}')
             logs(f'{space} {"pubkey":>12s} : {cert_info.pubkey_info}')
 

@@ -4,20 +4,21 @@
  Track what changed
 """
 # pylint: disable=too-many-instance-attributes, too-few-public-methods
-from dataclasses import dataclass,field
+from dataclasses import (dataclass, field)
+
 
 @dataclass
 class GroupChange:
     """ changes for one group"""
-    svc_names:list[str] = field(default_factory=list)
-    curr_cert_changed:bool = False                           # any service change
-    next_cert_changed:bool = False                           # any service change
-    cert_changed:bool = False                           # any service change
-    tlsa_changed:bool = False
-    dns_changed:bool = False
-    depends:set = field(default_factory=set)
+    svc_names: list[str] = field(default_factory=list)
+    curr_cert_changed: bool = False                      # any service change
+    next_cert_changed: bool = False                      # any service change
+    cert_changed: bool = False                           # any service change
+    tlsa_changed: bool = False
+    dns_changed: bool = False
+    depends: set = field(default_factory=set)
 
-    def add_svc_name(self, svc_name):
+    def add_svc_name(self, svc_name: str):
         """ add one service name to list """
         self.svc_names.append(svc_name)
         self.cert_changed = True
@@ -30,14 +31,17 @@ class GroupChange:
         self.depends.add('tlsa')
         self.depends.add('dns')
 
-class GroupChanges:
-    """ collects changes for all groups """
-    def __init__(self):
-        self.group = {}
-        self.any = GroupChange()
-        self.dns_domains_changed = []
 
-    def add_group_change(self, group_name, group_change:GroupChange):
+class GroupChanges:
+    """
+    collects changes for all groups
+    """
+    def __init__(self):
+        self.group: dict[str, GroupChange] = {}
+        self.any: GroupChange = GroupChange()
+        self.dns_domains_changed: list[str] = []
+
+    def add_group_change(self, group_name: str, group_change: GroupChange):
         """ add to list """
         self.group[group_name] = group_change
 

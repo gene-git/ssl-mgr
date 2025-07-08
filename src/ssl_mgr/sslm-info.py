@@ -3,17 +3,17 @@
 # SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
 """
 Certificate Managerment Tools
-
- - Display Info about keys and certs (in pem format)
- - Default mode uses internal code 
- - With "-v" invokes "openssl" to give independent view.
+- Display Info about keys and certs (in pem format)
+- Default mode uses internal code
+- With "-v" invokes "openssl" to give independent view.
 """
 # pylint: disable=invalid-name
 import sys
 from utils import open_file
 from utils import run_prog
-from certs import csr_pem_info, cert_pem_info, key_pem_info
-from certs import cert_info_print, cert_split_pem_string
+from crypto_base import (csr_pem_info, cert_pem_info, key_pem_info)
+from crypto_base import cert_split_pem_string
+
 
 def _help():
     """
@@ -21,21 +21,22 @@ def _help():
     """
     me = sys.argv[0]
     print(f'{me} [-s] [-h] [pem file(s)]')
-    print('  Disply information about cert, key, chain or csr file(s) in pem format')
+    print('  Disply info cert, key, chain or csr file(s) in pem format')
     print('  Pem files read from stdin if not specified')
     print('  By default uses internal code to display summary ')
     print('  -v :  provide more verbose details calling openssl')
 
-def _options():
+
+def _options() -> tuple[bool, list[str]]:
     """
     If "-s" then summary => True
     All remaining args are passed back
     in argv (or None)
     Returns
-      (summary, argv)
+        tuple(summary: bool, argv: list[str])
     """
     summary = True
-    argv = None
+    argv: list[str] = []
     if len(sys.argv) > 1:
         if sys.argv[1] in ('-h', '--help'):
             _help()
@@ -49,16 +50,16 @@ def _options():
 
     return (summary, argv)
 
-def _read_cert(argv):
+
+def _read_cert(argv: list[str]) -> dict[str, str]:
     """
     Read into buffer
     """
-    data = {}
-    if argv :
+    data: dict[str, str] = {}
+    if argv:
         for file in argv:
             fobj = open_file(file, 'r')
             if fobj:
-                #buf = fobj.readlines()
                 buf = fobj.read()
                 data[file] = buf
                 fobj.close()
@@ -66,17 +67,17 @@ def _read_cert(argv):
                 print(f'Error reading {file}')
     else:
         fobj = sys.stdin
-        #buf = fobj.readlines()
         buf = fobj.read()
         data['stdin'] = buf
 
     return data
 
-def _show_one(label:str, pem_string:str):
+
+def _show_one(label: str, pem_string: str):
     """
     Print content of one item
     Can handle:
-      Certificate       : 'cert' 
+      Certificate       : 'cert'
       Key (EC or RSA)   : 'key'
       CSR               : 'req'
     """
@@ -88,33 +89,38 @@ def _show_one(label:str, pem_string:str):
     else:
         ssl_cmd = 'x509'
 
+    line = 70 * '-'
+    print(line)
     pargs = ['/usr/bin/openssl', ssl_cmd, '-text', '-noout']
-    [retc, out, err] = run_prog(pargs, input_str=pem_string)
+    (retc, out, err) = run_prog(pargs, input_str=pem_string)
     if retc != 0:
         print(f'Error : {retc}')
         print(err)
     elif out:
         print(out)
 
-def _show_summary(label:str, pem_string:str):
+
+def _show_summary(label: str, pem_string: str):
     """
     Use internal library to parse the certificate
     """
+    line = 70 * '-'
+    print(line)
     pem_bytes = pem_string.encode()
     if 'KEY' in label:
         info = key_pem_info(pem_bytes)
-        print(info)
+        info.print(print)
 
     elif 'REQUEST' in label:
         info = csr_pem_info(pem_bytes)
-        cert_info_print(info)
+        info.print(print)
 
     else:
         info = cert_pem_info(pem_bytes)
-        cert_info_print(info)
+        info.print(print)
 
 
-def _process_all(summary, data):
+def _process_all(summary: bool, data: dict[str, str]):
     """
     Process each item in data.
       Each item may need to be split into individuaal parts
@@ -134,6 +140,7 @@ def _process_all(summary, data):
             else:
                 _show_one(label, cert_pem)
 
+
 def main():
     """
     Certificate manager
@@ -142,7 +149,6 @@ def main():
     data = _read_cert(argv)
     _process_all(summary, data)
 
-# -----------------------------------------------------
+
 if __name__ == '__main__':
     main()
-# -------------------- All Done ------------------------

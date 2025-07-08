@@ -4,61 +4,14 @@
 Convert data dictionary to class instance
 """
 # pylint: disable=too-many-instance-attributes
-from dataclasses import dataclass,field
+from typing import (Any)
 
-@dataclass
-class ConfSvcDep:
-    """ servers depend on 1 or more of these to trigger restart """
-    domain:str = None
-    services:list[str] = field(default_factory=list)
+from ._opts_data import (SslOptsData)
 
-@dataclass
-class ConfDns:
-    """ data for dns """
-    #primary_server:str = None
-    #primary_port:int = -1
-    restart_cmd:str = None
-    acme_dir:str = None
-    tlsa_dirs:list[str] = field(default_factory=list)
-    depends:list[str] = field(default_factory=list)
-    svc_depends:list[ConfSvcDep] = field(default_factory=list)
-    skip_prod_copy:bool = False
 
-    def __getattr__(self, name):
-        return None
-
-@dataclass
-class ConfServ:
-    """ data for dns """
-    servers:list[str] = field(default_factory=list)
-    depends:list[str] = field(default_factory=list)
-    svc_depends:list[ConfSvcDep] = field(default_factory=list)
-    restart_cmd:str = None
-    server_dir:str = None
-    skip_prod_copy:bool = False     # testing or if server gets via NFS
-
-def subdict_data_parse(valdict, this):
+def dict_to_opts(opts: SslOptsData, data_dict: dict[str, Any]):
     """
-    Parse sub dictionary into data class instance
-    """
-    for (subkey, subval) in valdict.items():
-        if subkey == 'svc_depends':
-            if not this.svc_depends:
-                this.svc_depends = []
-
-            svc_depends = this.svc_depends
-            one_dep = ConfSvcDep()
-            svc_depends.append(one_dep)
-
-            for (domain, services) in subval :
-                one_dep.domain = domain
-                one_dep.services = services
-        else:
-            setattr(this, subkey, subval)
-
-def dict_to_opts(opts:"SslOpts", data_dict:dict):
-    """
-    Map config data dictionary to SslOpts class instance
+    Map config data dictionary to SslOpts class instance data
     """
     if not data_dict:
         return
@@ -66,22 +19,20 @@ def dict_to_opts(opts:"SslOpts", data_dict:dict):
     for (key, val) in data_dict.items():
         if isinstance(val, dict):
             if key in ('smtp', 'imap', 'web', 'other'):
-                this = ConfServ()
-                setattr(opts, key, this)
+                serv = getattr(opts, key)
+                serv.from_dict(val)
+                continue
 
-            elif key in ('dns'):
-                this = ConfDns()
+            if key in ('dns'):
+                dns = getattr(opts, key)
+                dns.from_dict(val)
+                continue
 
-            elif key in ('group', 'grps_svcs'):
+            if key in ('group', 'grps_svcs'):
                 setattr(opts, key, val)
                 continue
 
-            else:
-                print(f'Config parser : uknown {key} {val}')
-                # unknown ignore
-                continue
-
-            setattr(opts, key, this)
-            subdict_data_parse(val, this)
-        else:
-            setattr(opts, key, val)
+            print(f'Config parser : uknown {key} {val}')
+            # unknown ignore
+            continue
+        setattr(opts, key, val)

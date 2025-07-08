@@ -5,17 +5,24 @@ Copy existing private key and CSR
 """
 # pylint: disable=invalid-name
 import os
+
 from utils import copy_file_atomic
+from utils import Log
 from db import SslDb
 
-def copy_key_csr(db:SslDb, db_src, db_dst, logs):
+
+def copy_key_csr(db: SslDb, db_src: str, db_dst: str) -> bool:
     """
     Copy private key and CSR from one database to another
     This is used to make a new 'next' but keeping the CSR
-    This allows to keep the key pairs and therefore DNS DANE TLSA 
+    This allows to keep the key pairs and therefore DNS DANE TLSA
     records don't change as public key is same.
     Since state is from file time we copy that too.
     """
+    logger = Log()
+    log = logger.log
+    logs = logger.logs
+
     src_dir = os.path.join(db.db_dir, db_src)
     dst_dir = os.path.join(db.db_dir, db_dst)
 
@@ -25,7 +32,7 @@ def copy_key_csr(db:SslDb, db_src, db_dst, logs):
         src_file = os.path.join(src_dir, file)
         dst_file = os.path.join(dst_dir, file)
 
-        okay = copy_file_atomic(src_file, dst_file)
+        okay = copy_file_atomic(src_file, dst_file, log=log)
         if not okay:
             logs(f'Error: Failed to copy {src_file} -> {dst_file}')
 

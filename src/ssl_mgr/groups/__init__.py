@@ -4,4 +4,4 @@
 services
 """
 from .class_group import SslGroup
-from .class_change import GroupChanges
+from .class_change import (GroupChange, GroupChanges)

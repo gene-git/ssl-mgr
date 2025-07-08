@@ -1,30 +1,39 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# pylint: disable=too-many-locals
 """
 certbot auth hook
- - cerbot runs standaline program sslm_auth_hook='/usr/lib/ssl-mgr/sslm-auth-hook
+ - cerbot runs standaline program
+   sslm_auth_hook='/usr/lib/ssl-mgr/sslm-auth-hook
  - this supports that executable
  - http push to web server
  - dns has file with acme-challenges copied to dns zone include area
    then zone(s) are signed and pushed to dns-primary server
  - certbot calls this hook for each domain in cert.
    We accumulate till have all domains for this cert.
-   certbot sets env variables 
+   certbot sets env variables
    e.g. telling us when last (sub) domain is passed in which we then
-   use to trigger sending all acme-challenges out (to web or dns server as appropriate)
+   use to trigger sending all acme-challenges out
+   (to web or dns server as appropriate)
 """
 import os
-#from .class_certbot import Certbot
+# from .class_certbot import Certbot
 from utils import open_file
 from utils import read_file
 from utils import rename_backup
+from utils import Log
+
+from .certbothook_data import CertbotHookData
 from .auth_push import auth_push
 
-def auth_hook(certbot:'CertbotHook'):
+
+def auth_hook(certbot: CertbotHookData):
     """
     Auth hook handler
     """
-    log = certbot.log
+    logger = Log()
+    log = logger.log
+
     result = ''
     certbot.env.refresh()
     domain = certbot.env.domain
@@ -70,9 +79,15 @@ def auth_hook(certbot:'CertbotHook'):
     if os.path.exists(auth_data_path):
         # subsequent calls for this cert => Append each (sub)domain
         fobj = open_file(auth_data_path, 'a')
+        if not fobj:
+            log(f'Fatal error opening file {auth_data_path}')
+            raise OSError(f'Fatal error opening file {auth_data_path}')
     else:
         # first call for this cert => create new auth_data file
         fobj = open_file(auth_data_path, 'w')
+        if not fobj:
+            log(f'Fatal error opening file {auth_data_path}')
+            raise OSError(f'Fatal error opening file {auth_data_path}')
         hdr = f'# {domain} {certbot.challenge_proto}\n'
         hdr += f'# Domains = {certbot.env.all_domains}\n'
         fobj.write(hdr)

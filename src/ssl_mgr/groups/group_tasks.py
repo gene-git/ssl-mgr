@@ -4,12 +4,18 @@
   group tasks
 """
 import os
-from ssl_dns import dns_file_hash
-from tlsa import tlsa_update_domain
-from tlsa import tlsa_to_production
-from tlsa import tlsa_copy_to_dns_serv
 
-def check_tlsa_changed(group):
+from dns_base import dns_file_hash
+from services import Service
+from utils import Log
+
+from ._group_data import GroupData
+from .tlsa_update_domain import tlsa_update_domain
+from .tlsa_to_prod import tlsa_to_production
+from .tlsa_to_dns_serv import tlsa_copy_to_dns_serv
+
+
+def check_tlsa_changed(group: GroupData) -> bool:
     """
     get hash of current tlsa file
     """
@@ -18,12 +24,15 @@ def check_tlsa_changed(group):
         return True
     return False
 
-def group_to_production(group, prod_group_dir):
+
+def group_to_production(group: GroupData, prod_group_dir: str) -> bool:
     """
     Copy all certs/keys -> production area:
         <prod_group_dir>/<service>/xxx.pem
     """
-    group.logs(f'{group.grp_name} : to production')
+    logger = Log()
+    logger.logs(f'{group.grp_name} : to production')
+
     for svc in group.services:
         svc_name = svc.svc_name
         svc_dir = os.path.join(prod_group_dir, svc_name)
@@ -39,12 +48,14 @@ def group_to_production(group, prod_group_dir):
         group.okay = False
     return group.okay
 
-def cleanup(_group):
+
+def cleanup(_group: GroupData):
     """
     ask each service to clean itself
     """
 
-def execute_tasks_one_svc(group, svc):
+
+def execute_tasks_one_svc(group: GroupData, svc: Service) -> bool:
     """
     Do the requested tasks
     """
@@ -54,7 +65,8 @@ def execute_tasks_one_svc(group, svc):
     #
     # Order tasks: key, csr, cert then next-to-curr
     #
-    logsv = group.logsv
+    logger = Log()
+    logsv = logger.logsv
     tasks = group.task_mgr.tasks
 
     if tasks.status:
@@ -104,7 +116,8 @@ def execute_tasks_one_svc(group, svc):
 
     return True
 
-def execute_tasks(group):
+
+def execute_tasks(group: GroupData) -> bool:
     """
     Do the requested tasks
     """
@@ -112,8 +125,10 @@ def execute_tasks(group):
     if not group.okay:
         return False
 
-    logs = group.logs
-    logsv = group.logsv
+    logger = Log()
+    logs = logger.logs
+    logsv = logger.logsv
+
     logs(f'{group.grp_name}', opt='ldash')
 
     #
@@ -128,8 +143,7 @@ def execute_tasks(group):
     for svc in group.services:
         logs(f'  {svc.svc_name}')
 
-        #if tasks.renew_cert and not svc.time_to_renew():
-        if tasks.renew_cert :
+        if tasks.renew_cert:
             (is_time_to_renew, expires_text) = svc.time_to_renew()
 
             if not is_time_to_renew:
@@ -148,7 +162,9 @@ def execute_tasks(group):
         change.cert_changed = curr_changed or next_changed
         if change.cert_changed:
             change.add_svc_name(svc.svc_name)
-            logsv(f'  cert changed: {svc.svc_name} (curr, next) = ({curr_changed}, {next_changed})')
+            txt1 = f'{svc.svc_name} (curr, next)'
+            txt2 = f' ({curr_changed}, {next_changed})'
+            logsv(f'  cert changed: {txt1} = {txt2}')
 
     #
     # update domain level tlsa  file

@@ -3,7 +3,5 @@
 """
 TLSA
 """
-from .tlsa_generate import tlsa_generate
-from .tlsa_update import tlsa_update_domain
-from .tlsa_to_production import tlsa_to_production
-from .tlsa_copy_to_dns_serv import tlsa_copy_to_dns_serv
+from .tlsa_info import (TlsaItem)
+from .generate_file import tlsa_generate_file

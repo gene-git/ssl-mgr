@@ -3,11 +3,15 @@
 """
 Read variables from conf.d/ssl-mgr.conf
 """
+from typing import (Any)
 import os
 from utils import read_toml_file
-from .services_list import (is_wildcard_services, service_list_from_dir)
 
-def read_ssl_mgr_conf(opts:"SslOpts"):
+from .services_list import (is_wildcard_services, service_list_from_dir)
+from ._opts_data import SslOptsData
+
+
+def read_ssl_mgr_conf(opts: SslOptsData) -> dict[str, Any]:
     """
     Read up application config
      - convert dictionary provided by toml reader
@@ -18,7 +22,7 @@ def read_ssl_mgr_conf(opts:"SslOpts"):
     conf_dict = read_toml_file(conf_file)
 
     if not conf_dict:
-        return None
+        return conf_dict
 
     #
     # [[groups]]        # array of tables
@@ -46,12 +50,13 @@ def read_ssl_mgr_conf(opts:"SslOpts"):
         if domain and services:
             grps_svcs[domain] = services
         else:
-            print(f'Warning: Config has bad active item : domain={domain} services={services}')
+            txt = f'domain={domain} services={services}'
+            print(f'Warning: Config has bad active item : {txt}')
 
     #
-    # Keeping toml gloabls in their own section reduces chance of variable being attached
-    # to a diff section if section is above globals. So we always kepe globals in
-    # their own section.
+    # Keeping toml globals in their own section reduces chance
+    # of variable being attached to a diff section if section is
+    # above globals. So we always kepe globals in their own section.
     # For our code - we Map globals to top level
     #
     conf_globals = conf_dict.get('globals')

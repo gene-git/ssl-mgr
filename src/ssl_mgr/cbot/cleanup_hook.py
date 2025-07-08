@@ -7,11 +7,13 @@ certbot cleanup hook
 """
 from .cleanup_http import cleanup_hook_http
 from .cleanup_dns import cleanup_hook_dns
+from .certbothook_data import CertbotHookData
 
-def cleanup_hook(certbot:'CertbotHook'):
+
+def cleanup_hook(certbot: CertbotHookData):
     """
     Clean
-     - remove http token validation files 
+     - remove http token validation files
      - remove dns acme_chellenge TXT records and push dns
     """
     token = certbot.env.token

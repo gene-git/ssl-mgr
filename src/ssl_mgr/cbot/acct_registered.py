@@ -4,18 +4,20 @@
 Check if an LE account exists
 """
 import os
+
 from utils import dir_list
 
-def acct_registered(cb_dir:str, staging:bool=False):
+
+def acct_registered(cb_dir: str, staging: bool = False) -> bool:
     """
     Determine if have LE account
     (can always pass down reg info)
     cb_dir=./group/service/cb
-    Check for presence of 
+    Check for presence of
        <cb_dir>/<domain>/accounts/acme-v02.api.letsencrypt.org/directory/???
          meta.json, private_key.json
     """
-    stage=''
+    stage = ''
     if staging:
         stage = '-staging'
 

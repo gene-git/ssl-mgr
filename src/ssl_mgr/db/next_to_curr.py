@@ -5,11 +5,16 @@
 """
 # pylint: disable=invalid-name
 import os
+
 from utils import current_date_time_str
 from utils import dir_list
 from utils import write_path_atomic
+from utils import Log
 
-def _has_all_needed_files(path_real:str, logs):
+from ._db_data import SslDbData
+
+
+def _has_all_needed_files(path_real: str):
     """
     Check that this path holds iall the requierdd files:
      - privkey. cert, chain, fullchain, csr and bundle
@@ -19,6 +24,8 @@ def _has_all_needed_files(path_real:str, logs):
 
     [files_found, _dirs, _lnks] = dir_list(path_real)
 
+    logger = Log()
+    logs = logger.logs
     for item in required:
         file = f'{item}.pem'
         if file not in files_found:
@@ -27,17 +34,19 @@ def _has_all_needed_files(path_real:str, logs):
     return all_ok
 
 
-def _add_info_file(svc_name:str, fpath:str, log):
+def _add_info_file(svc_name: str, fpath: str) -> bool:
     """
     Add file to fpath with current date time
     """
+    logger = Log()
     info_path = os.path.join(fpath, 'info')
     data = f'# {svc_name} rolled to curr : '
     data += current_date_time_str() + '\n'
-    okay = write_path_atomic(data, info_path, log=log)
+    okay = write_path_atomic(data, info_path, log=logger.logs)
     return okay
 
-def next_to_curr(db) -> None:
+
+def next_to_curr(db: SslDbData) -> bool:
     """
     Update
         curr ==> prev
@@ -47,7 +56,9 @@ def next_to_curr(db) -> None:
     lcurr = 'curr'
     lprev = 'prev'
     lnext = 'next'
-    logs = db.logs
+
+    logger = Log()
+    logs = logger.logs
 
     lnext_path = os.path.join(db.work_dir, lnext)
     if not lnext_path:
@@ -56,7 +67,7 @@ def next_to_curr(db) -> None:
     #
     # Before making next the new curr, ensure it has needed files
     #
-    if not _has_all_needed_files(lnext_path, logs):
+    if not _has_all_needed_files(lnext_path):
         return False
 
     curr_b4 = db.db_names[lcurr]
@@ -64,7 +75,7 @@ def next_to_curr(db) -> None:
 
     lcurr_path = os.path.join(db.work_dir, lcurr)
     lprev_path = os.path.join(db.work_dir, lprev)
-    if os.path.exists(lcurr_path) :
+    if os.path.exists(lcurr_path):
         if os.path.exists(lprev_path):
             os.unlink(lprev_path)
         os.rename(lcurr_path, lprev_path)
@@ -72,11 +83,11 @@ def next_to_curr(db) -> None:
 
     os.rename(lnext_path, lcurr_path)
     db.db_names[lcurr] = next_b4
-    db.db_names[lnext] = None
+    db.db_names[lnext] = ''
 
     #
     # Add info file in the new 'curr'
     # Ignore any write prob
     #
-    _add_info_file(db.service, lcurr_path, logs)
+    _add_info_file(db.service, lcurr_path)
     return True

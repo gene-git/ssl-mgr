@@ -1,0 +1,330 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+"""
+Check if cert is expiring
+"""
+from typing import (Tuple)
+from dataclasses import (dataclass, field)
+import cryptography
+from cryptography import x509
+from cryptography.x509 import NameOID
+from cryptography.x509 import Extensions
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.x509 import load_pem_x509_csr
+from cryptography.x509 import CertificateSigningRequest
+from cryptography.x509 import ObjectIdentifier
+from cryptography.x509 import NameAttribute
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.asymmetric import dsa
+from cryptography.hazmat.primitives.asymmetric import ed25519
+from cryptography.hazmat.primitives.asymmetric import ed448
+from cryptography.hazmat.primitives.asymmetric import x25519
+from cryptography.hazmat.primitives.asymmetric import x448
+from cryptography.hazmat.primitives.asymmetric import dh
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+
+from .cert_expires import CertExpires
+
+type KeyTypePrv = (
+        ec.EllipticCurvePrivateKey |
+        rsa.RSAPrivateKey |
+        dsa.DSAPrivateKey |
+        ed25519.Ed25519PrivateKey |
+        ed448.Ed448PrivateKey |
+        x25519.X25519PrivateKey |
+        x448.X448PrivateKey |
+        dh.DHPrivateKey
+        )
+
+type KeyTypePub = (
+        ec.EllipticCurvePublicKey |
+        rsa.RSAPublicKey |
+        dsa.DSAPublicKey |
+        ed25519.Ed25519PublicKey |
+        ed448.Ed448PublicKey |
+        x25519.X25519PublicKey |
+        x448.X448PublicKey |
+        dh.DHPublicKey
+        )
+
+def cert_time_to_expire(cert: x509.Certificate) -> Tuple[str, int]:
+    """
+    Returns cert expiration days relative to now
+     - negative means already expired
+    N.B. cryptography as of version 42 not_valid_after is deprecated.
+         time zone must be used. Must change to:
+        - not_valid_after_utc
+    Returns
+        (expiry_date, days_left)
+    """
+    if not cert:
+        return ('', -1)
+
+    expires = cert_expires(cert)
+    if expires:
+        expiry_date_str = expires.expiration_date_str()
+        days = int(expires.days())        # truncated
+    else:
+        expiry_date_str = '-'
+        days = -1
+
+    return (expiry_date_str, days)
+
+
+@dataclass
+class CertInfo:
+    """
+    Useful cert info
+    """
+    # pylint: disable=invalid-name,too-many-instance-attributes
+    expires: CertExpires | None = None
+    expiry_date_str: str = ''
+    days_left: int = -1
+    seconds_left: int = -1
+    expiry_string: str = ''
+    issuer_rfc4514: str = ''
+    issuer_CN: str = ''
+    issuer_O: str = ''
+    subject_rfc4514: str = ''
+    subject_CN: str = ''
+    sans: list[str] = field(default_factory=list)
+    pubkey_info: str = ''
+    sig_algo: str = ''
+    sig_hash: str = ''
+
+
+def get_name_field(x509_name: x509.Name, name_oid: ObjectIdentifier) -> str:
+    """
+    extract x509.NAME field
+    Args:
+        x509_name (x509.Name):
+
+        name_oid (ObjectIdentifier)
+        e.g. NameOID.COMMON_NAME
+
+    Returns:
+        the string value (take from first in list as should
+        only be 1 item returned for our use case)
+    """
+    item = ''
+    items: list[NameAttribute] = []
+    if x509_name:
+        items = x509_name.get_attributes_for_oid(name_oid)
+        if items:
+            val = items[0].value
+            if isinstance(val, bytes):
+                item = val.decode()
+            else:
+                item = val
+    return item
+
+
+def get_sans(extensions: Extensions) -> list[str]:
+    """
+    extract sans
+    """
+    san_names: list[str] = []
+    if not extensions:
+        return san_names
+
+    try:
+        sans_ext = extensions.get_extension_for_class(x509.SubjectAlternativeName)
+        if sans_ext:
+            sans = sans_ext.value
+            if sans:
+                san_names = sans.get_values_for_type(x509.DNSName)
+                ipas = sans.get_values_for_type(x509.IPAddress)
+                if ipas:
+                    ips = [str(ip) for ip in ipas]
+                    san_names += ips
+        return san_names
+
+    except cryptography.x509.ExtensionNotFound:
+        san_names = []
+        return san_names
+
+
+def key_info(key: KeyTypePrv | KeyTypePub) -> str:
+    """
+    ec or rsa
+    """
+    if isinstance(key, ec.EllipticCurvePrivateKey):
+        curve = key.curve.name
+        info = f'prvkey-{curve}'
+
+    elif isinstance(key, ec.EllipticCurvePublicKey):
+        curve = key.curve.name
+        info = f'pubkey-{curve}'
+
+    elif isinstance(key, rsa.RSAPublicKey):
+        key_size = key.key_size
+        info = f'pubkey-rsa-{key_size}'
+
+    elif isinstance(key, rsa.RSAPrivateKey):
+        key_size = key.key_size
+        info = f'prvkey-rsa-{key_size}'
+
+    elif isinstance(key, dsa.DSAPublicKey):
+        key_size = key.key_size
+        info = f'pubkey-dsa-{key_size}'
+
+    elif isinstance(key, dsa.DSAPrivateKey):
+        key_size = key.key_size
+        info = f'prvkey-dsa-{key_size}'
+
+    elif isinstance(key, ed25519.Ed25519PrivateKey):
+        info = 'prvkey-ed25519'
+
+    elif isinstance(key, ed25519.Ed25519PublicKey):
+        info = 'pubkey-ed25519'
+
+    elif isinstance(key, ed448.Ed448PrivateKey):
+        info = 'prvkey-ed448'
+
+    elif isinstance(key, ed448.Ed448PublicKey):
+        info = 'pubkey-ed448'
+
+    elif isinstance(key, x448.X448PrivateKey):
+        info = 'prvkey-x448'
+
+    elif isinstance(key, x448.X448PublicKey):
+        info = 'pubkey-x448'
+
+    elif isinstance(key, dh.DHPrivateKey):
+        key_size = key.key_size
+        info = f'prvkey-dh-{key_size}'
+
+    else:
+        info = 'key type unknown'
+    return info
+
+
+def csr_info(csr: CertificateSigningRequest) -> CertInfo:
+    """
+    Summary fields of CSR
+    """
+    # pylint: disable=protected-access
+    info = CertInfo()
+
+    # pubkey
+    pubkey = csr.public_key()
+    info.pubkey_info = key_info(pubkey)
+
+    # subject
+    info.subject_rfc4514 = csr.subject.rfc4514_string()
+    info.subject_CN = get_name_field(csr.subject, NameOID.COMMON_NAME)
+    info.sans = get_sans(csr.extensions)
+
+    # signature
+    # algo is really same info as pubkey + hash
+    # we dont have pubkey of signer only pubkey of subject
+    if csr.signature_hash_algorithm:
+        info.sig_hash = csr.signature_hash_algorithm.name
+        info.sig_algo = csr.signature_algorithm_oid._name
+    # info.sig_algo = f'{info.pubkey_info}-{info.sig_hash}'
+
+    return info
+
+
+def cert_expires(cert: x509.Certificate) -> CertExpires | None:
+    '''
+    Return CertExpires instance
+    '''
+    if not cert:
+        return None
+
+    expires = CertExpires(cert.not_valid_after_utc)
+    return expires
+
+
+def cert_info(cert: x509.Certificate):
+    """
+    Extract useful info from cert
+    """
+    # pylint: disable=protected-access
+    info = CertInfo()
+    if not cert:
+        return info
+
+    # expiration
+    info.expires = cert_expires(cert)
+    # (expiry_date_str, days_left, hours_left, mins_left, secs_left)
+    #  = cert_time_to_expire(cert)
+    # info.expiry_date_str = expiry_date_str
+    # info.days_left = days_left
+    if info.expires:
+        info.expiry_date_str = info.expires.expiration_date_str()
+        info.days_left = int(info.expires.days())        # truncated
+        info.seconds_left = info.expires.seconds()
+        info.expiry_string = info.expires.expiration_string()
+
+    # issuer
+    if cert.issuer:
+        info.issuer_rfc4514 = cert.issuer.rfc4514_string()
+        info.issuer_CN = get_name_field(cert.issuer, NameOID.COMMON_NAME)
+        info.issuer_O = get_name_field(cert.issuer, NameOID.ORGANIZATION_NAME)
+
+    # subject
+    if cert.subject:
+        info.subject_rfc4514 = cert.subject.rfc4514_string()
+        info.subject_CN = get_name_field(cert.subject, NameOID.COMMON_NAME)
+        info.sans = get_sans(cert.extensions)
+
+    # public key info
+    info.pubkey_info = key_info(cert.public_key())
+
+    # sig
+    # algo is really same info as pubkey + hash
+    # we dont have pubkey of signer only pubkey of subject
+    if cert.signature_hash_algorithm:
+        info.sig_hash = cert.signature_hash_algorithm.name
+        info.sig_algo = cert.signature_algorithm_oid._name
+    # info.sig_algo = f'{info.pubkey_info}-{info.sig_hash}'
+
+    return info
+
+
+def cert_pem_info(cert_pem: bytes) -> CertInfo:
+    """
+    Extract info from certificate pem bytes
+    """
+    cert = load_pem_x509_certificate(cert_pem)
+    info = cert_info(cert)
+
+    return info
+
+
+def key_pem_info(key_pem: bytes) -> str:
+    """
+    Extract info from key pem bytes
+    """
+    info = ''
+    try:
+        key_prv = load_pem_private_key(key_pem, password=None)
+        if key_prv:
+            info = key_info(key_prv)
+
+    except ValueError:
+        try:
+            key_pub = load_pem_public_key(key_pem)
+            if key_pub:
+                info = key_info(key_pub)
+
+        except ValueError:
+            pass
+    return info
+
+
+def csr_pem_info(csr_pem: bytes) -> CertInfo | None:
+    """
+    Extract info from CSR pem bytes
+    """
+    info: CertInfo | None = None
+    try:
+        csr = load_pem_x509_csr(csr_pem)
+        info = csr_info(csr)
+    except ValueError:
+        pass
+    return info

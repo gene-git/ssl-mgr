@@ -3,11 +3,11 @@
 """
 Misc utils
 """
-#import os
 import socket
 from datetime import datetime
 
-def current_date_time_str(fmt='%Y%m%d-%H:%M:%S'):
+
+def current_date_time_str(fmt: str = '%Y%m%d-%H:%M:%S') -> str:
     """
     date time string
     """
@@ -15,13 +15,15 @@ def current_date_time_str(fmt='%Y%m%d-%H:%M:%S'):
     today_str = today.strftime(fmt)
     return today_str
 
-def get_my_hostname():
+
+def get_my_hostname() -> tuple[str, str]:
     """ return (hostname, fqdn) """
     fqdn = socket.gethostname()
     host = fqdn.split('.')[0]
     return (host, fqdn)
 
-def get_domain():
+
+def get_domain() -> str:
     """ return domain name of current host """
     fqdn = socket.gethostname()
     dsplit = fqdn.split('.')

@@ -8,16 +8,18 @@ Certificate Managerment Tools
 """
 # pylint: disable=invalid-name
 import sys
-from certs import read_cert, cert_time_to_expire
+from crypto_base import (read_cert, cert_time_to_expire)
 
-def _parse_args():
+
+def _parse_args() -> list[str]:
     """
-    Read into buffer
+    Returns list of cert filenames.
     """
-    cert_files = None
+    cert_files: list[str] = []
     if len(sys.argv) > 1:
         cert_files = sys.argv[1:]
     return cert_files
+
 
 def main():
     """
@@ -42,7 +44,6 @@ def main():
             renew = 'yes'
         print(f'{file} Expires={date_str} ({days_left} days) -> Renew={renew}')
 
-# -----------------------------------------------------
+
 if __name__ == '__main__':
     main()
-# -------------------- All Done ------------------------

@@ -5,17 +5,20 @@ Set up a new "next" directory and symlink
 """
 # pylint: disable=invalid-name
 import os
-from utils import current_date_time_str
-from utils import make_dir_path
-from utils import make_symlink
 
-def new_next(db, date_str:str=None) -> bool:
+from utils import current_date_time_str
+from utils import (make_dir_path, make_symlink)
+
+from ._db_data import SslDbData
+
+
+def new_next(db: SslDbData, date_str: str = '') -> bool:
     """
     Make new db/date and set next symlink to point to it
      - allow caller to set date_str so can use same one for application run
     """
     lnext = 'next'
-    if not date_str :
+    if not date_str:
         date_str = current_date_time_str()
 
     db.db_names[lnext] = date_str

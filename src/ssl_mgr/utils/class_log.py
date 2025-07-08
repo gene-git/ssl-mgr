@@ -2,13 +2,27 @@
 # SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
 """
 File logger class
+Provides to separate logging facilities:
+ one for certbot and one for non-certbot tools.
+
+Each offers log to file, log to stdout and verbose/non-verbose
+capabilities. They also provide for additional tags
+such as leading spaces,  dashes and warn/info/error.
 """
+# pylint: disable=missing-function-docstring
+# pylint: disable=global-statement
 import os
+from enum import Enum
+
 import logging
 from logging.handlers import RotatingFileHandler
 from .file_tools import make_dir_path
 
-def _opt_tag(msg, opt:str):
+
+# --------------------------------
+#     PRIVATE INTERNAL
+#
+def _opt_tag(msg: str, opt: str) -> tuple[str, str]:
     '''
     log additional tag
       can be above or in front of message
@@ -16,7 +30,7 @@ def _opt_tag(msg, opt:str):
     # pylint: disable=too-many-branches
     above = ''
     front = ''
-    if opt :
+    if opt:
         if opt == 'dash':
             above = len(msg) * '-'
 
@@ -61,7 +75,8 @@ def _opt_tag(msg, opt:str):
 
     return (above, front)
 
-def _opt_tags(msg, opt:str|list[str]|None=None) -> str:
+
+def _opt_tags(msg: str, opt: str | list[str] | None = None) -> tuple[str, str]:
     '''
     Process any optional tags
     '''
@@ -82,12 +97,13 @@ def _opt_tags(msg, opt:str|list[str]|None=None) -> str:
             front += this_front
     return (above, front)
 
-class SslLog:
+
+class _SslLog:
     """
     Our little logger tool
      - on instance per named log
     """
-    def __init__(self, logdir, name):
+    def __init__(self, logdir: str, name: str):
         self.log_path = os.path.join(logdir, name)
         self.verb = False
 
@@ -103,55 +119,59 @@ class SslLog:
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.INFO)
 
-        handler = RotatingFileHandler(self.log_path, maxBytes=204800, backupCount=4)
+        handler = RotatingFileHandler(self.log_path,
+                                      maxBytes=204800, backupCount=4)
         handler.setFormatter(formatter)
 
         self.logger.addHandler(handler)
 
-    def set_verb(self, verb:bool):
-        """ set verbose flag """
+    def set_verb(self, verb: bool):
+        """
+        set verbose flag state
+        """
         self.verb = verb
 
-    def log(self, msg:str, opt:str|list[str]|None=None):
+    def log(self, msg: str, opt: str | list[str] | None = None):
         """
-        write this to log
+        Write msg to:
+         - log file
         """
-        (above,front) = _opt_tags(msg, opt)
+        (above, front) = _opt_tags(msg, opt)
         if above:
             self.logger.info(above)
         self.logger.info(front + msg)
 
-    def logs(self, msg:str, opt:str|list[str]|None=None):
+    def logs(self, msg: str, opt: str | list[str] | None = None):
         """
         write msg to
-         - log
+         - log file
          - stdout
         """
-        (above,front) = _opt_tags(msg, opt)
+        (above, front) = _opt_tags(msg, opt)
         if above:
             self.logger.info(above)
             print(above)
         self.logger.info(front + msg)
         print(front + msg)
 
-    def logv(self, msg:str, opt:str|list[str]|None=None):
+    def logv(self, msg: str, opt: str | list[str] | None = None):
         """
         write to
-         - log if verb is true
+         - log file but only if verb is true
         """
         if self.verb:
-            (above,front) = _opt_tags(msg, opt)
+            (above, front) = _opt_tags(msg, opt)
             if above:
                 self.logger.info(above)
             self.logger.info(front + msg)
 
-    def logsv(self, msg:str, opt:str|list[str]|None=None):
+    def logsv(self, msg: str, opt: str | list[str] | None = None):
         """
-        write msg to
-         - log
-         - stdout when verb is true
+        Write msg to
+         - log file
+         - stdout only if verb is true
         """
-        (above,front) = _opt_tags(msg, opt)
+        (above, front) = _opt_tags(msg, opt)
         if above:
             self.logger.info(above)
             if self.verb:
@@ -162,34 +182,75 @@ class SslLog:
             print(front + msg)
 
     def logfile(self):
-        """ where to find log """
+        """
+        Return log file path.
+        """
         return self.log_path
 
-# --------- GLOBAL LOGGERS -------------------
-MGR_LOGGER = None
-CERTBOT_LOGGER = None
 
-def init_logging(logdir):
+# --------------------------------
+#     PUBLIC
+#
+class LogZone(Enum):
     """
-    Set up logging facility
-    Logging
-     - mgr_logger  : logs for ssl-mgr et al
-     - cbot_logger : logs for by certbot
+    Way to request which log file is written.
+    Better than passing around functions.
     """
-    # pylint: disable=global-statement
-    mgr_logger = SslLog(logdir, 'sslm')
-    cbot_logger = SslLog(logdir, 'cbot')
+    GENERAL = 0
+    CERTBOT = 1
 
-    global MGR_LOGGER
-    MGR_LOGGER = mgr_logger
 
-    global CERTBOT_LOGGER
-    CERTBOT_LOGGER = cbot_logger
+class Log:
+    """
+    Handle all logging
+    """
+    _zone: LogZone = LogZone.GENERAL
+    _general: _SslLog
+    _certbot: _SslLog
+    _log: _SslLog
+    _initialized: bool = False
 
-def get_logger():
-    """ logger for ssl-mgr """
-    return MGR_LOGGER
+    @staticmethod
+    def initialize(logdir: str, zone: LogZone = LogZone.GENERAL):
+        if not Log._initialized:
+            Log._general = _SslLog(logdir, 'sslm')
+            Log._certbot = _SslLog(logdir, 'cbot')
+            Log._initialized = True
+            Log.set_zone(zone)
 
-def get_certbot_logger():
-    """ logger for certbot programs """
-    return CERTBOT_LOGGER
+    @staticmethod
+    def set_zone(zone: LogZone):
+        Log._zone = zone
+        if Log._zone == LogZone.CERTBOT:
+            Log._log = Log._certbot
+        else:
+            Log._log = Log._general
+
+    @staticmethod
+    def is_initialized():
+        return Log._initialized
+
+    @staticmethod
+    def log(msg: str, opt: str | list[str] | None = None):
+        if Log._initialized:
+            Log._log.log(msg, opt)
+
+    @staticmethod
+    def logs(msg: str, opt: str | list[str] | None = None):
+        if Log._initialized:
+            Log._log.logs(msg, opt)
+
+    @staticmethod
+    def logv(msg: str, opt: str | list[str] | None = None):
+        if Log._initialized:
+            Log._log.logv(msg, opt)
+
+    @staticmethod
+    def logsv(msg: str, opt: str | list[str] | None = None):
+        if Log._initialized:
+            Log._log.logsv(msg, opt)
+
+    @staticmethod
+    def set_verb(verb: bool):
+        if Log._initialized:
+            Log._log.set_verb(verb)

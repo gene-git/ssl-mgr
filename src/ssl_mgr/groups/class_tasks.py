@@ -6,6 +6,10 @@ Task manager
 # pylint: disable=too-many-instance-attributes
 from dataclasses import dataclass
 
+from config import SslOpts
+from utils import Log
+
+
 @dataclass
 class TaskList:
     """
@@ -39,7 +43,7 @@ class TaskList:
     cert_change_requested: bool = False
 
 
-def _is_cert_change_requested(tasks:TaskList):
+def _is_cert_change_requested(tasks: TaskList):
     """
     Check chert change is requested or status only.
     On occasion certs in 'next' may be newer
@@ -63,14 +67,13 @@ def _is_cert_change_requested(tasks:TaskList):
 
     tasks.cert_change_requested = cert_change
 
+
 class TaskMgr:
     """
     Service task support
     """
-    def __init__(self, opts, logs):
-
-        self.tasks= TaskList()
-        self.logs = logs
+    def __init__(self, opts: SslOpts):
+        self.tasks: TaskList = TaskList()
         self.opts = opts
 
         self.update_tasks()
@@ -132,7 +135,11 @@ class TaskMgr:
         #
         # Derived tasks
         #
-        if tasks.renew or tasks.new_keys or tasks.new_csr or tasks.new_cert or tasks.reuse :
+        if (tasks.renew
+                or tasks.new_keys
+                or tasks.new_csr
+                or tasks.new_cert
+                or tasks.reuse):
             tasks.new_next = True
             tasks.tlsa_update = True
 
@@ -152,15 +159,18 @@ class TaskMgr:
         """
         Checker
         """
+        logger = Log()
+        logs = logger.logs
+
         tasks = self.tasks
         if tasks.renew and tasks.roll:
-            self.logs('Warning - renew and roll both set?')
+            logs('Warning - renew and roll both set?')
 
         if tasks.renew and tasks.next_to_curr:
-            self.logs('Warning - renew and next_to_curr both set?')
+            logs('Warning - renew and next_to_curr both set?')
 
         if tasks.reuse and tasks.new_keys:
-            self.logs('Warning - Reuse keys/certs and new keys both set?')
+            logs('Warning - Reuse keys/certs and new keys both set?')
 
         if tasks.new_cert and tasks.renew_cert:
-            self.logs('Warning - new cert and renew cert both set?')
+            logs('Warning - new cert and renew cert both set?')

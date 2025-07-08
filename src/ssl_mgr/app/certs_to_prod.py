@@ -5,29 +5,40 @@ Push keys/certs to designated directory
  prod_cert_dir: defined in ssh-mgr.conf
 """
 import os
-from utils import make_dir_path, run_prog
 
-def _copy_local_prod(ssl_mgr:"SslMgr") -> bool:
+from utils import (make_dir_path, run_prog)
+from utils import Log
+from config import (ConfServ)
+
+from ._mgr_data import SslMgrData
+
+
+def _copy_local_prod(ssl_mgr: SslMgrData) -> bool:
     """
     Copy from certs/group/svc -> prod_cert_dir
     """
+    logger = Log()
+    logs = logger.logs
+    logsv = logger.logsv
+
     prod_cert_dir = ssl_mgr.opts.prod_cert_dir
     if not os.path.exists(prod_cert_dir):
         isok = make_dir_path(prod_cert_dir)
         if not isok:
-            ssl_mgr.logs(f'Error - Failed to make dir {prod_cert_dir}')
+            logs(f'Error - Failed to make dir {prod_cert_dir}')
             return False
 
     # copy groups 1 at a time
     for (grp_name, group) in ssl_mgr.groups.items():
-        ssl_mgr.logsv(f'  -> prod {grp_name}')
+        logsv(f'  -> prod {grp_name}')
         prod_group_dir = os.path.join(prod_cert_dir, grp_name)
 
         if not group.to_production(prod_group_dir):
             return False
     return True
 
-def _copy_local_to_remote(ssl_mgr, host) -> bool:
+
+def _copy_local_to_remote(ssl_mgr: SslMgrData, host: str) -> bool:
     """
     Copy production certs/keys to remote server
      - Skip if host is note remote
@@ -39,8 +50,9 @@ def _copy_local_to_remote(ssl_mgr, host) -> bool:
     if host in (ssl_mgr.this_host, ssl_mgr.this_fqdn):
         # skip as already copied to myself (local) host
         return True
-    logs = ssl_mgr.logs
 
+    logger = Log()
+    logs = logger.logs
     #
     # copy contents to same remote dir
     #
@@ -59,21 +71,29 @@ def _copy_local_to_remote(ssl_mgr, host) -> bool:
         logs(f'  debug: {pargs}')
     else:
         logs(f'  Copying certs to remote {host}')
-        [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.log)
+        test = ssl_mgr.opts.debug
+        (retc, _sout, _serr) = run_prog(pargs, test=test, verb=True)
         if retc != 0:
             logs(f'Error: copying certs to {remote_cert_dir}')
             return False
     return True
 
-def _copy_to_server(ssl_mgr, serv_class, servers_done, log):
+
+def _copy_to_server(ssl_mgr: SslMgrData,
+                    serv_class: ConfServ,
+                    servers_done: set[str],
+                    ):
     """
     Copy production cers to server
     """
+    logger = Log()
+    logs = logger.logs
+
     if not (serv_class and serv_class.servers):
         return True
 
     if serv_class.skip_prod_copy:
-        log(' skip_prod_copy set - skipping')
+        logs(' skip_prod_copy set - skipping')
         return True
 
     okay = True
@@ -85,7 +105,8 @@ def _copy_to_server(ssl_mgr, serv_class, servers_done, log):
             okay = False
     return okay
 
-def _post_copy_command(ssl_mgr:"SslMgr"):
+
+def _post_copy_command(ssl_mgr: SslMgrData):
     """
     After certs are copied run any post_copy_cmd programs
     post_copy_cmd ~ [[host1, command1], [host2, command2], ..]
@@ -96,7 +117,9 @@ def _post_copy_command(ssl_mgr:"SslMgr"):
       command failures are treated as non-fatal. Log and continue
       We dont want one failure to prevent the remainder of things being done.
     """
-    logs = ssl_mgr.logs
+    logger = Log()
+    logs = logger.logs
+
     num_fails = 0
 
     if not ssl_mgr.opts.post_copy_cmd:
@@ -108,13 +131,15 @@ def _post_copy_command(ssl_mgr:"SslMgr"):
             logs(f'  debug: {pargs}')
         else:
             logs(f' Post Copy : [{host}, {cmd}]')
-            [retc, _sout, _serr] = run_prog(pargs, log=ssl_mgr.log)
+            test = ssl_mgr.opts.debug
+            (retc, _sout, _serr) = run_prog(pargs, test=test, verb=True)
             if retc != 0:
                 logs(f'Error: {pargs} - continuing')
                 num_fails += 1
     return num_fails
 
-def certs_to_production(ssl_mgr:"SslMgr"):
+
+def certs_to_production(ssl_mgr: SslMgrData) -> bool:
     """
     1) Keys/certs are copied to prod_cert_dir defined in ssm-mgr.conf.
      - saved to: <prod_cert_dir>/<apex_domain>/<service>/xxx.pem
@@ -122,12 +147,15 @@ def certs_to_production(ssl_mgr:"SslMgr"):
 
     2) Copy to all other servers (skipping _self)
     """
-    logs = ssl_mgr.logs
+    logger = Log()
+    logs = logger.logs
     #
     # Check if any changes
     #
     changes = ssl_mgr.changes
-    if changes.any.cert_changed or changes.any.dns_changed or ssl_mgr.opts.certs_to_prod:
+    if (changes.any.cert_changed
+            or changes.any.dns_changed
+            or ssl_mgr.opts.certs_to_prod):
         logs('ssl-mgr: Changes => copy certs/dns to production')
     else:
         return True
@@ -142,10 +170,10 @@ def certs_to_production(ssl_mgr:"SslMgr"):
     # List of server types we know about
     #
     server_types = ('smtp', 'imap', 'web', 'other')
-    servers_done = set()
+    servers_done: set[str] = set()
     for stype in server_types:
         server = getattr(ssl_mgr.opts, stype)
-        if not _copy_to_server(ssl_mgr, server, servers_done, logs):
+        if not _copy_to_server(ssl_mgr, server, servers_done):
             return False
 
     #

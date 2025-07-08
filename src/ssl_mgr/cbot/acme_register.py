@@ -5,10 +5,18 @@
 """
 # pylint: disable=too-many-locals
 import time
+
 from utils import run_prog
+from utils import (Log)
+from crypto_csr import (SslCsr)
+from ca_sign import (CACertbot)
+
+from .certbothook_data import CertbotHookData
 from .acct_registered import acct_registered
 
-def certbot_register_options(certbot:'Certbot', ssl_csr:'SslCsr'):
+
+def _certbot_register_options(certbot: CertbotHookData, ssl_csr: SslCsr
+                              ) -> list[str]:
     """
     Construct options to pass to certbot
      - Cerbot puts account info into 'config-dir'
@@ -20,7 +28,7 @@ def certbot_register_options(certbot:'Certbot', ssl_csr:'SslCsr'):
     email = ssl_csr.svc.x509.email
 
     opts = ['register']
-    #opts += ['--quiet']
+    # opts += ['--quiet']
     opts += ['--config-dir', cb_dir]
     opts += ['--logs-dir', certbot.logdir_letsencrypt]
     opts += ['--work-dir', certbot.workdir_letsencrypt]
@@ -34,7 +42,9 @@ def certbot_register_options(certbot:'Certbot', ssl_csr:'SslCsr'):
 
     return opts
 
-def certbot_acct_check(certbot:'Certbot', ssl_ca:'SslCA',  ssl_csr:'SslCsr'):
+
+def certbot_acct_check(certbot: CertbotHookData, ca_certbot: CACertbot,
+                       ssl_csr: SslCsr) -> bool:
     """
     Check if acme account registered, if not register letsencrypt ACME account
      - This must be done before attmpeting to get a certificate
@@ -42,8 +52,9 @@ def certbot_acct_check(certbot:'Certbot', ssl_ca:'SslCA',  ssl_csr:'SslCsr'):
     returns True if account already registered or success registering now.
             False if failed to register new account
     """
-    logs = certbot.logs
-    log = certbot.log
+    logger = Log()
+    logs = logger.logs
+    log = logger.log
 
     cb_dir = certbot.db.cb_dir
     apex_domain = certbot.apex_domain
@@ -51,9 +62,8 @@ def certbot_acct_check(certbot:'Certbot', ssl_ca:'SslCA',  ssl_csr:'SslCsr'):
 
     #
     # Check if LE account already registered
-    # stop using ssl_ca.test - now use command line -t / -n
+    # stop using ca_certbot.test - now use command line -t / -n
     #
-    #is_staging = ssl_ca.test
     is_staging = certbot.opts.test
     acct_is_reg = acct_registered(certbot.db.cb_dir, staging=is_staging)
     if acct_is_reg:
@@ -64,14 +74,15 @@ def certbot_acct_check(certbot:'Certbot', ssl_ca:'SslCA',  ssl_csr:'SslCsr'):
     #
     # certbot does the work
     #
-    reg_opts = certbot_register_options(certbot, ssl_csr)
+    reg_opts = _certbot_register_options(certbot, ssl_csr)
 
     cmd = ['/usr/bin/certbot']
     pargs = cmd + reg_opts
 
     log(f'Certbot command: {pargs}')
-    if not ssl_ca.debug:
-        [ret, _sout, _serr] = run_prog(pargs, log=logs)
+    if not ca_certbot.debug:
+        test = certbot.opts.debug
+        (ret, _sout, _serr) = run_prog(pargs, test=test, verb=True)
         if ret != 0:
             logs(f'  Error registering account {apex_domain}/{service}')
             return False
@@ -81,7 +92,8 @@ def certbot_acct_check(certbot:'Certbot', ssl_ca:'SslCA',  ssl_csr:'SslCsr'):
         # Ad hoc timeout
         #
         le_timeout = 2
-        logs(f'  Ad hoc sleep after new account before using it ({le_timeout} secs)')
+        txt = f'Ad hoc sleep before using new account: {le_timeout} secs'
+        logs(f'  {txt}')
         time.sleep(le_timeout)
 
     return True

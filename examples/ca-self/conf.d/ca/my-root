@@ -6,7 +6,7 @@
 name = 'my-root'
 group = 'ca'
 service = 'my-root' 
-signing_ca = ''
+signing_ca = 'self'
 dane_tls = []
 
 [KeyOpts] 

@@ -6,8 +6,11 @@ File locking
 import os
 import sys
 import pwd
-import hashlib
 from lockmgr import LockMgr
+
+from utils import Log
+from crypto_hash import (lookup_hash_algo, make_hash)
+
 
 class SslLockMgr:
     """
@@ -17,9 +20,8 @@ class SslLockMgr:
      (no longer used: 2 parts - advisory lockfile and companion pid file)
     """
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, conf_dir:str):
+    def __init__(self, conf_dir: str):
         self.conf_dir = conf_dir
-        self.log = print
 
         self.euid = os.geteuid()
         self.username = pwd.getpwuid(self.euid)[0]
@@ -32,24 +34,23 @@ class SslLockMgr:
         lockdir = f'/tmp/sslm-mgr-lck.{self.euid}'
         os.makedirs(lockdir, exist_ok=True)
 
-        lockname =  hashlib.sha3_224(conf_dir.encode())
-        lockname = lockname.hexdigest()
-        lockname = lockname[:32]
+        hash_algo = lookup_hash_algo('SHA3_224')
+        hashbytes = make_hash(conf_dir.encode(), hash_algo)
+        lockname = hashbytes.hex()[:32]
         self.lockfile = f'{lockdir}/{lockname}'
 
         self.lockmgr = LockMgr(self.lockfile)
-        self.acquired =  self.lockmgr.acquired
+        self.acquired = self.lockmgr.acquired
 
     def lock_info(self):
         """ print lock info """
-        attrs = ['lockfile', 'name', 'euid' ]
+        logger = Log()
+        log = logger.log
+
+        attrs = ['lockfile', 'name', 'euid']
         for attr in attrs:
             item = getattr(self, attr)
-            print(f'{attr} : {item}')
-
-    def set_logger(self, log):
-        """ use provided logger """
-        self.log = log
+            log(f'{attr} : {item}')
 
     def acquire(self):
         """ acquire lock """

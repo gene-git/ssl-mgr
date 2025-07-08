@@ -3,5 +3,5 @@
 """
 Certbot Class
 """
-from .class_certbot import CertbotHook
-from .class_certbot import Certbot
+from .certbot import (Certbot, CertbotHook)
+from .sign_cert_wrap import sign_cert_wrap

@@ -4,16 +4,24 @@
 Read ny variables from conf.d/<group>/ssl-group.conf
 """
 import os
-from utils import read_toml_file
+from typing import (Any)
 
-def _dict_to_sslgroup(ssl_group:"SslGroup", data:dict):
-    """ map dictioanry to class instance """
+from utils import read_toml_file
+from .class_group import SslGroup
+
+
+def _dict_to_sslgroup(ssl_group: SslGroup, data: dict[str, Any]):
+    """
+    map dictioanry to class instance
+    """
     if not data:
         return
+
     for (key, val) in data.items():
         setattr(ssl_group, key, val)
 
-def read_group_conf(ssl_group:"SslGroup"):
+
+def read_group_conf(ssl_group: SslGroup):
     """
     Load up application config
     """

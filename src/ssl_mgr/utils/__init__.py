@@ -3,7 +3,7 @@
 """
 support utils for ssl_mgr
 """
-from .run_prog import run_prog
+from .run_prog_local import run_prog
 
 from .read_write import open_file
 from .read_write import read_file
@@ -11,6 +11,8 @@ from .read_write import write_file
 from .read_write import read_pem
 from .read_write import write_pem
 from .read_write import write_path_atomic, copy_file_atomic
+
+from .read_file_time import read_file_time
 
 from .utils import get_my_hostname
 from .utils import get_domain
@@ -27,4 +29,6 @@ from .toml import read_toml_file
 from .toml import write_toml_file
 
 from .cidr import (is_valid_ip4, is_valid_ip6, is_valid_cidr)
-from .class_log import SslLog, init_logging, get_logger, get_certbot_logger
+from .class_log import (Log, LogZone)
+
+from .merge import merge_lists

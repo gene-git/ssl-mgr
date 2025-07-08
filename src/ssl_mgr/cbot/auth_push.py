@@ -3,17 +3,22 @@
 """
 Auth push
 """
+from utils import Log
+
 from .auth_push_dns import auth_push_dns
 from .auth_push_http import auth_push_http
+from .certbothook_data import CertbotHookData
 
-def auth_push(certbot:'CertbotHook', auth_data_rows:[str]) -> None:
+
+def auth_push(certbot: CertbotHookData, auth_data_rows: list[str]):
     """
     Push acme validation
-    Input : list of validations strings 
+    Input : list of validations strings
     Push back to certbot for validation via:
     http or rdns
     """
-    certbot.log(f'auth_push acme: {certbot.challenge_proto}', opt='sdash')
+    logger = Log()
+    logger.log(f'auth_push acme: {certbot.challenge_proto}', opt='sdash')
     if certbot.challenge_proto == 'http':
         auth_push_http(certbot, auth_data_rows)
     else:

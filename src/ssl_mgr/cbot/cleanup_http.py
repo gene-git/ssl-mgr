@@ -6,11 +6,15 @@ certbot cleanup hook
  - dns - accumulate till have domains for this cert
 """
 import os
+
 from utils import open_file
 from utils import run_prog
-from .auth_push_http import acme_http_token_path
 
-def _unlink_file(path:str):
+from .auth_push_http import acme_http_token_path
+from .certbothook_data import CertbotHookData
+
+
+def _unlink_file(path: str):
     """ remove file - no errors if not exist """
     if os.path.exists(path):
         try:
@@ -18,27 +22,30 @@ def _unlink_file(path:str):
         except OSError:
             pass
 
-def _remove_web_server_token(certbot, token_path):
+
+def _remove_web_server_token(certbot: CertbotHookData, token_path: str):
     """
     Remove 1 token
     """
-    if not (certbot.web and certbot.web.servers):
+    if not (certbot.opts.web and certbot.opts.web.servers):
         return
 
-    for web_serv in certbot.web.servers:
+    for web_serv in certbot.opts.web.servers:
         if web_serv in (certbot.this_host, certbot.this_fqdn):
             rm_cmd = '/usr/bin/rm -f {token_path}'
             pargs = ['/usr/bin/ssh', web_serv, rm_cmd]
-            [_ret, _out, _err] = run_prog(pargs, log=print)
+            test = certbot.opts.debug
+            (_ret, _out, _err) = run_prog(pargs, test=test, verb=True)
         else:
             _unlink_file(token_path)
 
-def cleanup_hook_http(certbot:'CertbotHook'):
+
+def cleanup_hook_http(certbot: CertbotHookData):
     """
     clean http-01
        - remove the acme challenge token fils from web server(s)
     """
-    #domain = certbot.env.domain
+    # domain = certbot.env.domain
     cb_dir = certbot.db.cb_dir
     web_token_path = acme_http_token_path(cb_dir)
 

@@ -4,12 +4,14 @@
 Config directory
 """
 import os
-def get_conf_dir():
+
+
+def get_conf_dir() -> str:
     """
     Returns the current config dir
         Locate conf.d in first of (./, /etc/ssl-mgr, '/opt/Local/etc/ssl-mgr')
     """
-    conf_dir = None
+    conf_dir = ''
     dirs = ('./', '/etc/ssl-mgr/', '/opt/Local/etc/ssl-mgr')
     conf_name = 'conf.d'
     for this_dir in dirs:
