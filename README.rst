@@ -103,7 +103,7 @@ New / Interesting
 
 * New dev option *--force-server-restarts*.
 
-* Add ability to specif the top level directory (where configs and outputs
+* Add ability to specify the top level directory (where configs and outputs
   are read from / saved to) via environment variable *SSL_MGR_TOPDIR*.
 
 * External programs are run using a local copy of *run_prog()* from 
@@ -239,8 +239,17 @@ every update as requiring a key roll.
 Again, a *roll* is required for *DANE TLS* but is not needed for things such as web server 
 certificate update. 
 
-Furthermore, admin always has the control, should it be needed, to do 
-whatever they choose.
+If you are not advertizing certificate info using DNS servers (e.g. DNSSEC, DANE) 
+then there is no need have any delay between making a new certificate
+using *-renew* and doing the *-roll*.
+
+In this case, you can set the config variable *min_roll_mins* to **0** minutes.
+The default min roll time is 90 minutes. And if automating (via cron or similar) then
+you can also use a smaller do the *roll* immediately after the *renew* as well.
+In cron you could have roll set to run 1 minutes after the renew.
+
+Furthermore, you are always in control and, should it be needed, you can do 
+whatever you choose.
 
 e.g. Using *-f* will force things to happen (a roll or create new certs and so on.)
 
@@ -776,7 +785,7 @@ privkey.pem     private key
 csr.pem         certificate signing request
 cert.pem        certificate
 chain.pem       root + intermediate CA cert
-fullchain.pem   cert.pem + cert + chain
+fullchain.pem   cert + chain
 bundle.pem      privkey + fullchain
 info            Contains date/time when next was rolled to curr (curr only)
 =============   ============================================================
@@ -1399,8 +1408,8 @@ Dependencies
  dnspython           
  cryptography
  dateutil
- netaddr
- lockmgr            Ensures only 1 app runs at a time
+ lockmgr            Ensures 1 app runs at a time
+ pyconcurrent       Optional - provides run_prog()
 =================== ==================================
 
 * Building Package:
