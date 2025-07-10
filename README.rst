@@ -458,27 +458,28 @@ Certificate Authorities:
 
 The job of a CA is to take a CSR and send back a signed cert.
 
- * Self signed
+* Self signed
 
-   * self-signed certs use intermediate CA to sign certs. Intermediate CA, in turn,  
-     is signed by self signed root CA. Using self signed is a good place to start
-     when getting set up and exploring.
+  self-signed certs use intermediate CA to sign certs. Intermediate CA, in turn,  
+  is signed by self signed root CA. Using self signed is a good place to start
+  when getting set up and exploring.
 
-  * Letsencrypt
+* Letsencrypt
 
-    When comfortable, using their test server, which is more generous with limits, is a good 
-    way to prepare for the final version. LE's test server is invoked by using the *-t*
-    option.  When all is working as you desire, simply drop the test option and you're ready 
-    to go live.
+  When comfortable, using their test server, which is more generous with limits, is a good 
+  way to prepare for the final version. LE's test server is invoked by using the *-t*
+  option.  When all is working as you desire, simply drop the test option and you're ready 
+  to go live.
 
 
-Apex Domains:
+Apex Domains
+------------
 
-    An Apex domain is the *main* part of the domain that has it's own DNS authority. 
+An Apex domain is the *main* part of the domain that has it's own DNS authority. 
 
-    If *example.com* has a DNS SOA record, then it would be the apex domain and any
-    subdomain, such as *foo.example.com* would be a part of that apex domain. So, 
-    whenever we deal with DNS, we always deal with the apex domain.
+If *example.com* has a DNS SOA record, then it would be the apex domain and any
+subdomain, such as *foo.example.com* would be a part of that apex domain. So, 
+whenever we deal with DNS, we always deal with the apex domain.
 
 Services
 --------
