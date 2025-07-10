@@ -7,12 +7,23 @@ Tags
 
 ::
 
-	2.2.0 (2024-03-29) -> 6.1.0 (2025-07-10)
-	71 commits.
+	2.2.0 (2024-03-29) -> 6.2.0 (2025-07-10)
+	75 commits.
 
 Commits
 =======
 
+
+* 2025-07-10  : **6.2.0**
+
+::
+
+                Make sure all changes to certs/ are properly marked so that production is
+                updated for any change.
+                Fix buglet with min_roll_mins option.
+                Update readme
+                Update to README
+                update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-07-10  : **6.1.0**
 
