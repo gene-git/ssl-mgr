@@ -3,7 +3,7 @@
 """
 Project ssl-mgr
 """
-__version__ = "6.1.0"
+__version__ = "6.2.0"
 __date__ = "2025-07-10"
 __reldev__ = "release"
 

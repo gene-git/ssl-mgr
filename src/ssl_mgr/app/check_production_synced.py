@@ -133,6 +133,8 @@ def check_production_synced(mgr: SslMgrData):
     if not check.certs_synced():
         return False
 
+    logs('  All good.')
+
     return True
 
 

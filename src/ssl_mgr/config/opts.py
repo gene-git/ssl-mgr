@@ -85,8 +85,8 @@ def get_available_options(defaults: dict[str, str]):
                       'action': 'store_true'}
                      ))
 
-    min_roll_mins = ''
-    if defaults.get('min_roll_mins'):
+    min_roll_mins = '90'
+    if isinstance(defaults.get('min_roll_mins'), int):
         min_roll_mins = str(defaults.get('min_roll_mins'))
 
     ohelp = 'Only roll if next is older than this (config min_roll_mins)'
@@ -107,8 +107,8 @@ def get_available_options(defaults: dict[str, str]):
                      ))
 
     ohelp = 'Clean database dirs keeping newest N (see --clean-all)'
-    clean_keep = ''
-    if defaults.get('clean_keep'):
+    clean_keep = '5'
+    if isinstance(defaults.get('clean_keep'), int):
         clean_keep = str(defaults.get('clean_keep'))
 
     std_opts.append((('-clean-keep', '--clean-keep'),

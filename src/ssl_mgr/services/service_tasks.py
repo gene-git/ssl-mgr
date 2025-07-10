@@ -62,6 +62,7 @@ def new_next(service: ServiceData) -> bool:
     if not service.db.new_next():
         service.okay = False
     refresh_paths(service)
+    service.next_cert_changed = True
     return service.okay
 
 
@@ -98,6 +99,7 @@ def new_key_pair(service: ServiceData) -> bool:
         return False
 
     refresh_paths(service)
+    service.next_cert_changed = True
     return True
 
 
@@ -121,6 +123,7 @@ def new_csr(service: ServiceData) -> bool:
     if not service.cert[db_name].new_csr():
         service.okay = False
     refresh_paths(service)
+    service.next_cert_changed = True
     return service.okay
 
 
@@ -159,6 +162,7 @@ def new_cert(service: ServiceData) -> bool:
         return False
 
     refresh_paths(service)
+    service.next_cert_changed = True
 
     log_cert_expiry(service, lname)
 
@@ -269,6 +273,7 @@ def next_to_curr(service: ServiceData) -> bool:
     else:
         refresh_paths(service)
         service.curr_cert_changed = True
+        service.next_cert_changed = True
     return service.okay
 
 

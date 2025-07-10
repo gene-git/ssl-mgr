@@ -155,12 +155,14 @@ def certs_to_production(ssl_mgr: SslMgrData) -> bool:
     #
     # Check if any changes
     #
+    logs('Certs to production: checking for changes')
     changes = ssl_mgr.changes
     if (changes.any.cert_changed
             or changes.any.dns_changed
             or ssl_mgr.opts.certs_to_prod):
-        logs('ssl-mgr: Changes => copy certs/dns to production')
+        logs('    : Changes => copy certs/dns to production')
     else:
+        logs('    : No changes')
         return True
 
     #
