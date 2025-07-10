@@ -7,12 +7,42 @@ Tags
 
 ::
 
-	2.2.0 (2024-03-29) -> 6.0.0 (2025-07-08)
-	69 commits.
+	2.2.0 (2024-03-29) -> 6.1.0 (2025-07-10)
+	71 commits.
 
 Commits
 =======
 
+
+* 2025-07-10  : **6.1.0**
+
+::
+
+                *Version 6.1 :*
+                * New integrity check.
+                  On each run *sslm-mgr* validates that the production directory is up to
+                  date
+                  and consistent with the current suite of certificates, keys and TLSA
+                  files.
+                  If not, it explains what the problem is and suggests possible ways to
+                  proceed.
+                  Note that the first run after updating to *6.1* it will
+                  automatically re-sync production directory if necessary. No action is
+                  required by you.
+                * Keep certs and production certs fully synced.
+                  Includes removing *next* directory from production after the *roll*
+                  has happened and *next* is no longer needed. This change allows us to
+                  check
+                  that production is correctly synchronized. Earlier versions did not
+                  remove any files from production, needed or not.
+                * New dev option *--force-server-restarts*.
+                * Add ability to specif the top level directory (where configs and outputs
+                  are read from / saved to) via environment variable *SSL_MGR_TOPDIR*.
+                * External programs are run using a local copy of *run_prog()* from
+                  the *pyconcurrent* module.
+                You can also install *pyconcurrent* which will ensure the latest
+                  version is always used.
+ 2025-07-08     update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-07-08  : **6.0.0**
 
