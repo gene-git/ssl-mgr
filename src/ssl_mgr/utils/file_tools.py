@@ -7,6 +7,7 @@ from typing import (Any)
 import os
 import stat
 import tempfile
+
 from .read_write import open_file
 from .toml import dict_to_toml_string
 
@@ -70,53 +71,57 @@ def write_conf_file(header: str, data_dict: dict[str, Any], path: str):
     return okay
 
 
-def os_scandir(tdir: str):
+def dir_list(indir: str, path_type: str = 'name'
+             ) -> tuple[list[str], list[str], list[str]]:
     """
-    wrapper around scandir to handle exceptions
-    """
-    scan = None
-    if os.path.exists(tdir) and os.path.isdir(tdir):
-        try:
-            scan = os.scandir(tdir)
-        except OSError as _error:
-            scan = None
-    return scan
+    Get a list of files / directories in a directory.
 
+    Returns a tuple of lists of files/dirs/links:
 
-def dir_list(indir: str, path_type: str = 'name') -> list[list[str]]:
-    """
-    Get a list of files in a local directory
-    returns a list of files/dirs/links in a directory
-    path_type - 'name' returns filename, 'path' returns the 'path'
-    [flist, dlist, llist]
+    path_type
+        - 'name' returns filename
+        - 'path' returns the full 'path'
+
+    (flist, dlist, llist)
         flist = list of files
-        dlist = list of dirds
+        dlist = list of dirs
         llist = list of links
+
     NB order care needed - symlinks are also files or dirs -
     so always check link before file or dir as we want links separated
     whether or not they point to a dir or file.
     """
-    flist = []
-    dlist = []
-    llist = []
+    flist: list[str] = []
+    dlist: list[str] = []
+    llist: list[str] = []
 
-    scan = os_scandir(indir)
-    if scan:
-        for item in scan:
-            file = item.name
-            if path_type == 'path':
-                file = item.path
+    if not os.path.isdir(indir):
+        return (flist, dlist, llist)
 
-            if item.is_symlink():
-                llist.append(file)
+    try:
+        scan = os.scandir(indir)
+        if not scan:
+            return (flist, dlist, llist)
 
-            elif item.is_file():
-                flist.append(file)
+    except OSError:
+        return (flist, dlist, llist)
 
-            elif item.is_dir():
-                dlist.append(file)
-        scan.close()
-    return [flist, dlist, llist]
+    for item in scan:
+        file = item.name
+        if path_type == 'path':
+            file = item.path
+
+        if item.is_symlink():
+            llist.append(file)
+
+        elif item.is_file():
+            flist.append(file)
+
+        elif item.is_dir():
+            dlist.append(file)
+    scan.close()
+
+    return (flist, dlist, llist)
 
 
 def os_chmod(path: str, perm: int) -> bool:

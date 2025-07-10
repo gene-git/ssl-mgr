@@ -114,6 +114,7 @@ class SslOptsData:
         self.debug: bool = False
         self.test: bool = False
         self.force: bool = False
+        self.force_server_restarts: bool = False
         self.reuse_keys: bool = False     # reuse curr/{key,csr}
         self.dry_run: bool = False
 

@@ -7,7 +7,7 @@ import os
 from typing import (Any)
 
 from utils import read_toml_file
-from .class_group import SslGroup
+from .group import SslGroup
 
 
 def _dict_to_sslgroup(ssl_group: SslGroup, data: dict[str, Any]):

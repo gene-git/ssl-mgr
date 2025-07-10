@@ -9,12 +9,19 @@ import os
 def get_conf_dir() -> str:
     """
     Returns the current config dir
-        Locate conf.d in first of (./, /etc/ssl-mgr, '/opt/Local/etc/ssl-mgr')
+        Locate conf.d in first of (./, /etc/ssl-mgr)
     """
+    # env variable takes precedence
+    topdir_env: str = os.getenv('SSL_MGR_TOPDIR', '')
+
+    top_dirs: tuple[str, str] | tuple[str, str, str]
+    top_dirs = ('./', '/etc/ssl-mgr/')
+    if topdir_env:
+        top_dirs = (topdir_env,) + top_dirs
+
     conf_dir = ''
-    dirs = ('./', '/etc/ssl-mgr/', '/opt/Local/etc/ssl-mgr')
     conf_name = 'conf.d'
-    for this_dir in dirs:
+    for this_dir in top_dirs:
         conf_dir = os.path.join(this_dir, conf_name)
         if os.path.isdir(conf_dir):
             break

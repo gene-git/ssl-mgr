@@ -122,7 +122,7 @@ def _get_subdirs(topdir: str) -> list[str]:
     if not topdir:
         return subdirs
 
-    [_fls, dirs, _lnks] = dir_list(topdir, path_type='name')
+    (_fls, dirs, _lnks) = dir_list(topdir, path_type='name')
     if dirs:
         for subdir in dirs:
             if subdir.lower() != 'ca':

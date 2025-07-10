@@ -25,6 +25,8 @@ from .file_tools import make_symlink
 from .file_tools import rename_backup
 from .file_tools import get_file_time_ns
 
+from .remove_path import remove_path
+
 from .toml import read_toml_file
 from .toml import write_toml_file
 

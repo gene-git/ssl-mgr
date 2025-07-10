@@ -9,7 +9,7 @@ from dns_base import dns_file_hash
 from services import Service
 from utils import Log
 
-from ._group_data import GroupData
+from .group_data import GroupData
 from .tlsa_update_domain import tlsa_update_domain
 from .tlsa_to_prod import tlsa_to_production
 from .tlsa_to_dns_serv import tlsa_copy_to_dns_serv

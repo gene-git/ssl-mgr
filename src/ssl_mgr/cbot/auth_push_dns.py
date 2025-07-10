@@ -98,7 +98,7 @@ def auth_push_dns(certbot: CertbotHookData,
     logger = Log()
     logs = logger.logs
 
-    logs('    auth_push_dns', opt='sdash')
+    logs('    auth_push_dns')
 
     apex_domain = certbot.apex_domain
     cb_dir = certbot.db.cb_dir

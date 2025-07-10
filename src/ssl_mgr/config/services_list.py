@@ -79,7 +79,7 @@ def service_list_from_dir(conf_dir: str, group: str) -> list[str]:
     Generate list of service configs located in conf_dir/group_dir
     '''
     group_dir = os.path.join(conf_dir, group)
-    [files, _dirs, _links] = dir_list(group_dir)
+    (files, _dirs, _links) = dir_list(group_dir)
     if not files:
         return []
 

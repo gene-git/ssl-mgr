@@ -7,12 +7,17 @@
 """
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
-from utils import Log
+import os
 
-from ._mgr_data import SslMgrData
+from utils import Log
+from utils import write_path_atomic
+from utils import current_date_time_str
+
+from .ssl_mgr_data import SslMgrData
 from .clean import cleanup
 from .certs_to_prod import certs_to_production
 from .server_restarts import server_restarts
+from .check_production_synced import check_production_synced
 
 
 class SslMgr(SslMgrData):
@@ -23,7 +28,88 @@ class SslMgr(SslMgrData):
         """
         Run whatever been tasked to do
         """
-        return _execute_tasks(self)
+        okay = _check_production_synced(self)
+        if not okay:
+            # add auto fix here?
+            # Set on:
+            #   opts.roll
+            #   opts.certs_to_prod
+            #   opts.force_server_restrarts
+            # Then continue to run tasks.
+            #
+            self.okay = False
+            return False
+        okay = _execute_tasks(self)
+        return okay
+
+
+def _check_production_synced(mgr: SslMgr) -> bool:
+    """
+    Check produciton is up to date.
+    Can get our of date when there are problems
+    like failing to restart server after renew
+    """
+    logger = Log()
+    logs = logger.logs
+
+    #
+    # Set up the warning message
+    warn_msg = '''** Warning **
+  Production is out of sync.
+  Suggest getting production in sync by running:
+    sslm-mgr dev --force --certs-to-prod
+
+  and possibly:
+    sslm-mgr dev --force-server-restarts
+
+  followed by:
+    sslm-mgr -renew
+
+  and then wait the usual 2-3 hours and roll as usual:
+    sslm-mgr -roll'''
+
+    auto_fix_msg = '''** Note **
+  Update to new version requires re-sync of production directory.
+  Updating now.'''
+
+    now = current_date_time_str()
+    semaphore_file = f'{mgr.opts.top_dir}/.flags/6_1_updated'
+    semaphore_data = f'6.1 Update: production dir sync done: {now}\n'
+    have_semaphore = _have_semaphore_file(semaphore_file)
+
+    okay = check_production_synced(mgr)
+    if not okay:
+        if have_semaphore:
+            logs(warn_msg)
+            if not mgr.opts.force:
+                return False
+            logs(' --force option in effect - continuing')
+            # should we push to prod?
+            # mgr.opts.certs_to_prod = True
+        else:
+            logs(auto_fix_msg)
+            mgr.opts.force = True
+            mgr.opts.certs_to_prod = True
+
+    if not have_semaphore:
+        if not _create_semaphore_file(semaphore_data, semaphore_file):
+            logs(f'Warning: failed to create file : {semaphore_file}')
+    return True
+
+
+def _have_semaphore_file(file: str) -> bool:
+    """
+    Return true if semaphore flag exists.
+    """
+    return os.path.exists(file)
+
+
+def _create_semaphore_file(data: str, file: str) -> bool:
+    """
+    Version 6.1 requires prod dir re-sync.
+    Use semaphore flag to indicate if run or not.
+    """
+    return write_path_atomic(data, file)
 
 
 def _execute_tasks(ssl_mgr: SslMgr):

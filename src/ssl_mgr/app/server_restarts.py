@@ -11,7 +11,7 @@ from dns_base import dns_restart
 from config import (ConfServ, ConfDns, ConfSvcDep)
 from groups import (GroupChange, GroupChanges)
 
-from ._mgr_data import SslMgrData
+from .ssl_mgr_data import SslMgrData
 
 
 def _check_svc_deps(group_change: GroupChange,
@@ -89,6 +89,9 @@ def _check_restart_needed(ssl_mgr: SslMgrData,
 
     if not server or not server.restart_cmd:
         return False
+
+    if ssl_mgr.opts.force_server_restarts:
+        return True
 
     #
     # Check depends and svc_depends

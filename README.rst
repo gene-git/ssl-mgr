@@ -11,11 +11,9 @@ Certificate management tool.
 
 By way of background, I wrote this with 3 goals. Specifically to:
 
- * Simplify certificate management - (i.e. automatic, simple and robust)
-
- * Support *dns-01* acme challenge with Letsencrypt (as well as *http-01*)
-
- * Support *DANE TLS*
+* Simplify certificate management - (i.e. automatic, simple and robust)
+* Support *dns-01* acme challenge with Letsencrypt (as well as *http-01*)
+* Support *DANE TLS*
 
 The aim is to make things as robust, complete and as simple to use as possible. Under the hood, make it 
 sensible and automate wherever it is feasible. A good tool does things correctly and
@@ -23,9 +21,8 @@ makes it straightforward and as simple as possible; but no simpler.
 
 In practical terms, there are only 2 common commands that are needed with *sslm-mgr*:
 
- * **renew** - creates the new certificate(s) in *next* : current ones remain in *curr*. 
-
- * **roll** - moves *next* to become the new *curr*.
+* **renew** - creates new certificate(s) in *next* : current certs remain in *curr*. 
+* **roll** - moves *next* to become the new *curr*.
 
 Once things are set up these can be run out of cron - renew, then wait, then roll.
 Clean and simple. Strictly speaking, rolling of certs is only needed when they are advertized 
@@ -62,14 +59,19 @@ to verify the git tag.  You can also manually verify the signature
 Key Features
 ============
 
- * Handles creating new and renewing certificates
- * Generates key pairs and Certificate Signing Request, CSR, to provide maximum control 
- * Supports http-01 and dns-01 acme challenges
- * Outputs DNS files for acme DNS-01 authentication as well as optioanal DANE TLSA files.
-   These files are to be included by the apex domain zone file. This makes updates 
-   straightforward.
- * Uses certbot in manual mode to handle communication with letsencrypt, account tracking etc.
- * Processes multiple domains, where each domain each can have multiple certs for different purposes.
+* Handles creating new and renewing certificates
+
+* Generates key pairs and Certificate Signing Request, CSR, to provide maximum control 
+
+* Supports http-01 and dns-01 acme challenges
+
+* Outputs DNS files for acme DNS-01 authentication as well as optioanal DANE TLSA files.
+  These files are to be included by the apex domain zone file. This makes updates 
+  straightforward.
+
+* Uses certbot in manual mode to handle communication with letsencrypt, account tracking etc.
+
+* Processes multiple domains, where each domain each can have multiple certs for different purposes.
 
 
 New / Interesting
@@ -77,98 +79,133 @@ New / Interesting
 
 **Recent changes important info.**
 
- * New **major version 6.0** released. Includes:
+**Version 6.1 :**
 
-    * PEP-8, PEP-257 and PEP-484 style and type annotations.
-    * Major re-write and tidy ups.
-    * Split up various modules (e.g. certs -> 5 separate crypto modules.)
-    * Ensure config and command line options are 100% backward compatible.
-    * Improve 2 config values: 
+* New integrity check.
+ 
+  On each run *sslm-mgr* validates that the production directory is up to date
+  and consistent with the current suite of certificates, keys and TLSA files.
 
-      Background: Local CAs have self-signed a root CA certificate which is then used 
-      to sign an intermediate CA cert.  The intermediate CA is in turn used to sign 
-      application certificates.
+  If not, it explains what the problem is and suggests possible ways to proceed.
 
-      * ca-info.conf: Intermediate local CA entries.
+  Note that the first run after updating to *6.1* it will 
+  automatically re-sync production directory if necessary. No action is 
+  required by you.
+
+  For more details see `Dealing with Possible Problems`_.
+
+* Keep certs and production certs fully synced. 
+  
+  Includes removing *next* directory from production after the *roll* 
+  has happened and *next* is no longer needed. This change allows us to check
+  that production is correctly synchronized. Earlier versions did not
+  remove any files from production, needed or not.
+
+* New dev option *--force-server-restarts*.
+
+* Add ability to specif the top level directory (where configs and outputs
+  are read from / saved to) via environment variable *SSL_MGR_TOPDIR*.
+
+* External programs are run using a local copy of *run_prog()* from 
+  the *pyconcurrent* module.
+  You can also install *pyconcurrent* which will ensure the latest
+  version is always used. It is available in `Github pyconcurrnet`_ and 
+  `AUR pyconcurrnet`_.
+
+**Version 6.0 : Major Changes**
+
+* PEP-8, PEP-257 and PEP-484 style and type annotations.
+* Major re-write and tidy ups.
+* Split up various modules (e.g. certs -> 5 separate crypto modules.)
+* Ensure config and command line options are 100% backward compatible.
+* Improve 2 config values: 
+
+  Background: Local CAs have self-signed a root CA certificate which is then used 
+  to sign an intermediate CA cert.  The intermediate CA is in turn used to sign 
+  application certificates.
+
+  * ca-info.conf: Intermediate local CA entries.
         
-        * ca_type = "local" is preferred to "self" (NB both work). 
-          "self" should still be used for self-signed root CAs where it
-          makes more sense.
+    ca_type = "local" is preferred to "self" (NB both work). 
+    "self" should still be used for self-signed root CAs where it
+    makes more sense. Intermediate are signed by root and
+    are therefore not self-signed.
 
-      * CA service config file for self-signed root certificate:
+  * CA service config file for self-signed root certificate:
        
-        *  "signing_ca" = "self" is now preferred to an empty string (NB Both work).
+    "signing_ca" = "self" is now preferred to an empty string (NB Both work).
 
-      * These 2 changes are optional but preferred. No other config file changes.
+  * These 2 changes are optional but preferred. No other config file changes.
 
-    * Simplify logging code.
+* Simplify logging code.
 
 
-Older Changes:
+**Older Changes:**
 
- * Support Letsencrypt alternate root chain.
+* Support Letsencrypt alternate root chain.
 
-   Set via *ca_preferred_chain* option in *ca-info.conf* file (see example file).
+  Set via *ca_preferred_chain* option in *ca-info.conf* file (see example file).
 
-   By default LE root cert is *ISRG Root X1* (RSA). Since it is standard to use ECC for 
-   certificates, it is preferable to use LE *ISRG Root X2* (ECC) which is smaller and faster
-   since less data is exchanged during TLS handshake.
+  By default LE root cert is *ISRG Root X1* (RSA). Since it is standard to use ECC for 
+  certificates, it is preferable to use LE *ISRG Root X2* (ECC) which is smaller and faster
+  since less data is exchanged during TLS handshake.
 
-   X2 cert is cross-signed by X1 cert, so any client trusting X1 should trust X2.
+  X2 cert is cross-signed by X1 cert, so any client trusting X1 should trust X2.
    
-   Some more info here: `LE Certificates: <https://letsencrypt.org/certificates>`_ and `Compatibility <https://letsencrypt.org/docs/certificate-compatibility>`_.
+  Some more info here: `LE Certificates: <https://letsencrypt.org/certificates>`_ and `Compatibility <https://letsencrypt.org/docs/certificate-compatibility>`_.
 
- * New config option *post_copy_cmd*
+* New config option *post_copy_cmd*
 
-   For each server getting copies of certs may run this command on machine on which sslm-mgr is running.
-   The command is passed server hostname as an argument.
-   Usage Example: if a server needs a file permission change for an application user to read private key(s).
-   This option is a list of *[server-host, command]* pairs. See :ref:`config-ssl-mgr`
+  For each server getting copies of certs may run this command on machine on which sslm-mgr is running.
+  The command is passed server hostname as an argument.
+  Usage Example: if a server needs a file permission change for an application user to read private key(s).
+  This option is a list of *[server-host, command]* pairs. See :ref:`config-ssl-mgr`
 
- * X509v3 Extended Key Usage adds "Time Stamping"
+* X509v3 Extended Key Usage adds "Time Stamping"
 
- * Changed sslm-dhparm to generate RFC-7919
-   Negotiated Finite Field Diffie-Hellman Ephemeral Parameters files - with the default
-   now set to ffdhe8192 instead of ffdhe4096. User options -k overrides the default as usual
+* Changed sslm-dhparm to generate RFC-7919
+  Negotiated Finite Field Diffie-Hellman Ephemeral Parameters files - with the default
+  now set to ffdhe8192 instead of ffdhe4096. User options -k overrides the default as usual
 
-   NB If you manually update DH files in prod-certs, then push to all servers:
+  NB If you manually update DH files in prod-certs, then push to all servers:
 
       sslm-mgr dev -certs-prod
 
-   NB TLSv1.3 restricts DH key exchange to named groups only.
+  NB TLSv1.3 restricts DH key exchange to named groups only.
 
- * openssl trusted certificates there is ExtraData after the cert
-   which has the trust data. cryptography.x509 will not load this so strip it off.
-   see : https://github.com/pyca/cryptography/issues/5242
+* openssl trusted certificates there is ExtraData after the cert
+  which has the trust data. cryptography.x509 will not load this so strip it off.
+  see : https://github.com/pyca/cryptography/issues/5242
 
- * Add a working example of self signed web cert in examples/ca-self.
-   Create ca-certs (./make-ca) then generate new web cert signed by that ca.
-   (sslm-mgr -renew; sslm-mgr -roll)
+* Add a working example of self signed web cert in examples/ca-self.
+  Create ca-certs (./make-ca) then generate new web cert signed by that ca.
+  (sslm-mgr -renew; sslm-mgr -roll)
 
- * It seems letsencrypt dns-01 challenge may not always use the apex domain's
-   authoritative servers or perhaps their (secondary) checks might lag more.
-   At least it seems that way lately.
-   We tackle this with the addition of 2 new variables to the top level config:
+* letsencrypt dns-01 challenge may not always use the apex domain's
+  authoritative servers or perhaps their (secondary) checks might lag more.
+  We tackle this with the addition of 2 new variables to the top level config:
    
-     * *dns-check-delay*. 
-       Given in seconds, this causes a delay before attempting to validate that all authoritative servers 
-       have up to date acme challenge dns txt records.
-       Defaults to 240 seconds - this may well need to be made longer.
-       Obviously, this does lead to longer run times - by design.
+  * *dns-check-delay*. 
 
-     * *dns_xtra_ns*. 
-       List of nameservers (hostname or ip) which will be checked to have up to date acme challenge 
-       dns txt records in addition to each apex domain authoritative nameserver.
-       Default value is:
+    Given in seconds, this causes a delay before attempting to validate that all authoritative servers 
+    have up to date acme challenge dns txt records.
+    Defaults to 240 seconds - this may well need to be made longer.
+    Obviously, this does lead to longer run times - by design.
 
-       dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
+  * *dns_xtra_ns*. 
 
-     * improve the way nameservers are checked for being up to date with acme challenges.
-       First check the primary has all the acme challenge TXT records. Then check 
-       all nameservers, including the *xtra_ns* have the same serial as the primary 
+    List of nameservers (hostname or ip) which will be checked to have up to date acme challenge 
+    dns txt records in addition to each apex domain authoritative nameserver.
+    Default value is:
 
-     * While things can take longer than previous versions, teting to date has shown it 
-       to be robust and working well with letsencrypt.
+    dns_xtra_ns = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '208.67.222.222']
+
+  * improve the way nameservers are checked for being up to date with acme challenges.
+    First check the primary has all the acme challenge TXT records. Then check 
+    all nameservers, including the *xtra_ns* have the same serial as the primary 
+
+  * While things can take longer than previous versions, teting to date has shown it 
+    to be robust and working well with letsencrypt.
 
 
 More Detail
@@ -479,48 +516,48 @@ easy to validate a certificate or display information about it.
 Key/Cert Files
 ==============
 
- * CSR (certificate signing request)
+* CSR (certificate signing request)
 
-   Each certificate for is generated from its CSR which contains the
-   public key. Public key is generated from the private key so there
-   is no need to save a public key.
+  Each certificate for is generated from its CSR which contains the
+  public key. Public key is generated from the private key so there
+  is no need to save a public key.
    
-   A CSR is always used make a cert. This provides control as well as 
-   consistency across CAs, be they self or other.
-   The public key is in the CSR and also in the certificate provided and signed by the CA. 
-   We support both RSA and Elliptic Curve (EC) keys. EC is strongly preferred.
-   In fact, while RSA keys are still used they are only needed by ancient
-   client software for browsers and email. That said, RSA is still in common 
-   use for DKIM [#dkim]_ signing for some reason. We DKIM sign outbound mail with both RSA and EC.
+  A CSR is always used make a cert. This provides control as well as 
+  consistency across CAs, be they self or other.
+  The public key is in the CSR and also in the certificate provided and signed by the CA. 
+  We support both RSA and Elliptic Curve (EC) keys. EC is strongly preferred.
+  In fact, while RSA keys are still used they are only needed by ancient
+  client software for browsers and email. That said, RSA is still in common 
+  use for DKIM [#dkim]_ signing for some reason. We DKIM sign outbound mail with both RSA and EC.
 
- * Cert 
+* Cert 
 
-   Each cert contains the public key which is signed by the CA. It carries the *subject* 
-   apex domain name along with 'subject alternative names' or SANS. SANS allow a certificate to contain
-   multiple domain or subdomain names. The *issuer*, which signed the certificate, has it's name 
-   in the cert as well. Name in this context is an X509 name meaning, common name, organization,
-   organization unit and so on.
+  Each cert contains the public key which is signed by the CA. It carries the *subject* 
+  apex domain name along with 'subject alternative names' or SANS. SANS allow a certificate to contain
+  multiple domain or subdomain names. The *issuer*, which signed the certificate, has it's name 
+  in the cert as well. Name in this context is an X509 name meaning, common name, organization,
+  organization unit and so on.
 
- * Certificate chains
+* Certificate chains
 
-    * **chain** =  CA root cert + Signing CA cert
+  * **chain** =  CA root cert + Signing CA cert
 
-      Signing CA cert is usually the CA Intermediate cart(s)
-      Note that the root cert may or may not be included by CAs other than LE
-      For those client chain = signing ca
+    Signing CA cert is usually the CA Intermediate cart(s)
+    Note that the root cert may or may not be included by CAs other than LE
+    For those client chain = signing ca
 
-    * **fullchain** = Domain cert + chain
+  * **fullchain** = Domain cert + chain
 
-    * **bundle** = priv-key + fullchain. 
+  * **bundle** = priv-key + fullchain. 
       
-      A bundle is just a chain made of the private key plus the fullchain. This is preferred 
-      by postfix [#postfix_tls]_.
+    A bundle is just a chain made of the private key plus the fullchain. This is preferred 
+    by postfix [#postfix_tls]_.
 
- * Private key
+* Private key
 
-   Also called simply the *key*. It is stored in a file with restricted permissions. 
-   The companion public key can be generated from the private key. By always generating
-   the public key from the private key, they are guaranteed to remain consistent.
+  Also called simply the *key*. It is stored in a file with restricted permissions. 
+  The companion public key can be generated from the private key. By always generating
+  the public key from the private key, they are guaranteed to remain consistent.
 
 Key, CSR and certificate files are stored in the convenient PEM format. Certificates use 
 X509.V3 [#x509]_ which provides for *extensions* such as SANS which are critical to have. 
@@ -622,13 +659,14 @@ To see developer help:
 
     options:
     ... same as above plus:
-    -keys, --new-keys     Make next new keys
-    -csr, --new-csr       Make next CSR
     -cert, --new-cert     Make new next/cert
-    -copy, --copy-csr     Copy curr key to next (used by --reuse)
-    -ntoc, --next-to-curr Move next to curr
     -certs-prod, --certs-to-prod
                           Copy keys/certs : (mail, web, tlsa, etc)
+    -copy, --copy-csr     Copy curr key to next (used by --reuse)
+    -csr, --new-csr       Make next CSR
+    -fsr, --force-server-restarts Forces server restarts even if not needed
+    -keys, --new-keys     Make next new keys
+    -ntoc, --next-to-curr Move next to curr
 
     For standard options drop "dev" as 1st argument
 
@@ -677,9 +715,10 @@ and sometimes by the CA as well.
 
 Each (*group*, *service*) pair is described by it's own config located in the file:
 
-.. code-block:: bash
+.. code-block:: text
 
      conf.d/<group>/<service>
+
 
 This file describes the organization and details for one service. This includes
 Which CA is to sign the certificate as well as any DANE TLS [#TLSA]_ info needed to generate
@@ -710,13 +749,13 @@ any impact of key related security issues.
 
 Each config provides:
 
-   * Organization info (CN, O, OU, SAN_Names, ... )
-   * name, org, service (mail, web etc)
-   * Which CA should will be requested to sign this cert
-       + validation method). Self signed dont need a validation method.
-       + Letsencrypt, for example, allows http-01 and dns-01 as validation methods.
-   * DANE TLS info - list of (port, usage, selector, match) - e.g. (25,3,1,1)
-   * Key type for the public/private key pair
+* Organization info (CN, O, OU, SAN_Names, ... )
+* name, org, service (mail, web etc)
+* Which CA should will be requested to sign this cert
+  + validation method). Self signed dont need a validation method.
+  + Letsencrypt, for example, allows http-01 and dns-01 as validation methods.
+* DANE TLS info - list of (port, usage, selector, match) - e.g. (25,3,1,1)
+* Key type for the public/private key pair
 
 Output
 ======
@@ -724,9 +763,9 @@ Output
 All generated data is kepy in a dated directory under the *db* dir and links are provided
 for *curr* and *next* 
 
- * curr -> db/<date-time>
- * next -> db/<date-time>
- * prev -> db/<date-time>
+* curr -> db/<date-time>
+* next -> db/<date-time>
+* prev -> db/<date-time>
 
 After a cert has been successful generated, each dir will contain :
 
@@ -754,14 +793,14 @@ DNS-01 Validation
 
 For dns-01 the location is specified as a directory:
 
-.. code-block::
+.. code-block:: text
 
     [dns]
         acme_dir = '...'
 
 The acme challenges will be saved into a file under *<acme_dir>* with apex domain name as suffix:
 
-.. code-block::
+.. code-block:: text
 
    <acme_dir>/acme-challenge.<apex_domain>
 
@@ -775,7 +814,7 @@ HTTP-01 Validation
 
 For http-01 validation the location is specified by *server_dir* directory:
 
-.. code-block::
+.. code-block:: text
 
     [web]
         server_dir = '...'
@@ -783,7 +822,7 @@ For http-01 validation the location is specified by *server_dir* directory:
 The individual challenge files, one per (sub)domain will be saved in a file following 
 RFC 8555 [#rfc_8555_http]_ spec:
 
-.. code-block::
+.. code-block:: text
 
    <server_dir>/<apex_domain>/.well-known/acme-challenge/<token>
 
@@ -800,7 +839,7 @@ DANE-TLSA DNS File
 If DANE is on for any service, then the TLSA records will be saved under one or more 
 directories specified in the *[dns]* section of *ssl-mgr.conf*. 
 
-.. code-block::
+.. code-block:: text
     
    [dns]
         ...
@@ -814,7 +853,7 @@ postfix is set up to use either *RSA* or *EC* certs, then you **must** provide a
 for both of them. And there must be record for the apex domain as well as every MX host.
 We determine the MX hosts via DNS lookup of the apex domain.
 
-.. code-block::
+.. code-block:: text
 
    tlsa.<apex_domain> 
 
@@ -932,11 +971,25 @@ To run - go to terminal and use :
 Configuration
 -------------
 
-The configuration file for ssl-mgr is ... 
+The configuration file for ssl-mgr is chosen by checking for
+as the first directory containing a *conf.d* directory from the 
+list of *topdir* directories:
 
-.. code-block:: bash
+.. code-block:: text
 
-   /etc/ssl-mgr/config
+   <SSL_MGR_TOPDIR>
+   ./ 
+   /etc/ssl-mgr/
+
+Where the directories are checked in order and *<SSL_MGR_TOPDIR*> 
+is an environment variable that can be set to take preference.
+
+The config files are located in *topdir/conf.d/* and certificates, 
+key files and so on are saved under *topdir/certs*.
+
+For example if there environment variable is not set and the directory
+*./conf.d* exists, then it becomes the top level directory. And all
+configuration files reside under *./conf.d*.  
 
 .. sslm-mgr-opts:
 
@@ -953,13 +1006,70 @@ Logs are found in the log directory specified by the global config variable:
 
 There are 3 kinds of log files in the log directory. 
 
- * *<logdir>/sslm*: General application log
- * *<logdir>/cbot*: Application log while interacting with letsencrypt via certbot.
- * *<logdir>/letsencrypt/letsencrypt.log.<N>*: Letsencrypt log provided by cerbot.
+* *<logdir>/sslm*: General application log
+* *<logdir>/cbot*: Application log while interacting with letsencrypt via certbot.
+* *<logdir>/letsencrypt/letsencrypt.log.<N>*: Letsencrypt log provided by cerbot.
 
 ########
 Appendix
 ########
+
+Dealing with Possible Problems
+==============================
+
+Once the configuration files are set up it can be helpful to start with self-signed CA root
+certificate and a local CA intermediate certificate (signed by that root cert). Use the 
+local intermediate cert to sign your application certificates.
+
+Once this is all working then try using Letsencrypt CA. Upon successful completion
+the *certs* directory holds all outputs including historical data (older certs and so on).
+
+A subset of the output data is then copied to the production directory.
+It may also be copied to remote servers if configs request that. After certs are 
+updated and copied then the list of programs to run specified in the *post_copy_cmd* 
+config variable will be run. 
+
+If there is a problem for some reason, then updating production will be avoided
+to minimize any production impact. It is conceivable that 
+after some error conditions, the production directory could get out of sync.
+
+On any subsequent run after experiencing some error condition, 
+*sslm-mgr* will detect whether any production files are
+out of sync and issue a warning together with a suggestion how to proceeed.
+
+Please note that the very first run of *sslm-mgr* after updating to version *6.1.x* from *6.0.x*,
+will automatically re-sync production dir.
+
+Manual intervention will be required should errors be detected in any runs
+after that first one with auto re-sync.
+
+First step is likely to get production in sync. This can be done using the
+dev option:
+
+.. code-block:: bash
+
+    sslm-mgr dev --force --certs-to-prod
+
+to bring production back in sync. You may want to restart the various servers
+using:
+
+.. code-block:: bash
+
+    sslm-mgr dev --force-server-restarts
+
+You may want to renew the certs:
+
+.. code-block:: bash
+
+    sslm-mgr -renew
+
+and wait the usual 2-3 hours and then roll as usual:
+
+.. code-block:: bash
+
+    sslm-mgr -roll
+
+
 
 Self Signed CA
 ==============
@@ -1327,6 +1437,8 @@ Created by Gene C. and licensed under the terms of the MIT license.
 
 .. _Github: https://github.com/gene-git/ssl-mgr
 .. _Archlinux AUR: https://aur.archlinux.org/packages/ssl-mgr
+.. _AUR pyconcurrnet: https://aur.archlinux.org/packages/pyconcurrent
+.. _Github pyconcurrnet: https://github.com/gene-git/pyconcurrent
 
 .. [1] https://github.com/google/googletest  
 .. [2] https://abseil.io/about/philosophy#upgrade-support

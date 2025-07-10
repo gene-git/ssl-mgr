@@ -7,6 +7,7 @@ Push curr keys/certs to designated directory
 import os
 
 from utils import make_dir_path
+from utils import remove_path
 from utils import run_prog
 from utils import Log
 
@@ -37,7 +38,16 @@ def service_to_production(svc: ServiceData, prod_svc_dir: str) -> bool:
     for lname in svc.db.link_names:
         db_name = svc.db.db_names[lname]
 
+        dst = os.path.join(prod_svc_dir, lname)
+        dst = os.path.abspath(dst)
+        dst = f'{dst}/'
+
         if not db_name:
+            # remove lname from production
+            # Need to stay in sync.
+            okay = remove_path(dst)
+            if not okay:
+                logs('**warning** - error removeing {dst}')
             continue
         db_dir = os.path.join(svc.db.db_dir, db_name)
 
@@ -47,11 +57,7 @@ def service_to_production(svc: ServiceData, prod_svc_dir: str) -> bool:
         src = os.path.abspath(db_dir)
         src = f'{src}/'
 
-        dst = os.path.join(prod_svc_dir, lname)
-        dst = os.path.abspath(dst)
-        dst = f'{dst}/'
-
-        pargs = ['/usr/bin/rsync', '-a', '--mkpath', src, dst]
+        pargs = ['/usr/bin/rsync', '-a', '--delete', '--mkpath', src, dst]
 
         if opts.debug:
             logs(f'  {pargs}')

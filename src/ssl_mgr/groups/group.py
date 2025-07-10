@@ -8,7 +8,7 @@
 
 from .group_tasks import group_to_production
 from .group_tasks import execute_tasks
-from ._group_data import GroupData
+from .group_data import GroupData
 
 
 class SslGroup(GroupData):

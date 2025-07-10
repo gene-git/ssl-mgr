@@ -221,7 +221,7 @@ def certbot_sign_cert(certbot: CertbotHookData,
     #  Should do this in SslCert::check_csr_domain()
     #
     apex_domain = certbot.apex_domain
-    logs(f'    Sign certbot : {apex_domain}', opt='sdash')
+    logs(f'    Sign certbot : {apex_domain}')
     org_cn = ssl_csr.svc.x509.CN
     if apex_domain != org_cn:
         txt = f'{apex_domain} != {org_cn}'

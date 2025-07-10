@@ -133,7 +133,7 @@ def auth_push_http(certbot: CertbotHookData,
     log = logger.logs
     logs = logger.logs
 
-    logs('auth_push_http', opt='sdash')
+    logs('    auth_push_http')
 
     apex_domain = certbot.apex_domain
 

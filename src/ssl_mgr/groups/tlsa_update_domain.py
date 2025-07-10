@@ -9,7 +9,7 @@ import os
 from utils import (write_path_atomic, read_file_time, merge_lists)
 from utils import Log
 
-from ._group_data import GroupData
+from .group_data import GroupData
 
 
 def tlsa_update_domain(group: GroupData) -> bool:

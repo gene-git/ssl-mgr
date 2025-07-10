@@ -9,7 +9,7 @@ import os
 from utils import copy_file_atomic
 from utils import Log
 
-from ._group_data import GroupData
+from .group_data import GroupData
 
 
 def tlsa_to_production(group: GroupData, prod_group_dir: str) -> bool:

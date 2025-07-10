@@ -22,7 +22,7 @@ def _has_all_needed_files(path_real: str):
     all_ok = True
     required = ('privkey', 'cert', 'csr', 'chain', 'fullchain', 'bundle')
 
-    [files_found, _dirs, _lnks] = dir_list(path_real)
+    (files_found, _dirs, _lnks) = dir_list(path_real)
 
     logger = Log()
     logs = logger.logs

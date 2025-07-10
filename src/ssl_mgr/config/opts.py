@@ -55,7 +55,7 @@ def get_available_options(defaults: dict[str, str]):
                      ))
 
     std_opts.append((('-f', '--force'),
-                     {'help': 'Forces renew / roll regardless if too soon',
+                     {'help': 'Forces renew / roll / prod check',
                       'action': 'store_true'}
                      ))
 
@@ -150,6 +150,12 @@ def get_available_options(defaults: dict[str, str]):
                       'action': 'store_true'}
                      ))
 
+    ohelp = 'Forces server restarts even if not needed'
+    dev_opts.append((('-fsr', '--force-server-restarts'),
+                     {'help': ohelp,
+                      'action': 'store_true'}
+                     ))
+
     dev_opts.append((('-keys', '--new-keys'),
                      {'help': 'Make next new keys',
                       'action': 'store_true'}
@@ -160,7 +166,6 @@ def get_available_options(defaults: dict[str, str]):
                       'action': 'store_true'}
                      ))
 
-    ohelp = 'Copy keys/certs : (mail, web, tlsa, etc)'
     dev_opts.append((('-certs-prod', '--certs-to-prod'),
                      {'help': 'Copy keys/certs : (mail, web, tlsa, etc)',
                       'action': 'store_true'}

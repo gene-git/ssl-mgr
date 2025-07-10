@@ -10,7 +10,7 @@ from utils import (make_dir_path, run_prog)
 from utils import Log
 from config import (ConfServ)
 
-from ._mgr_data import SslMgrData
+from .ssl_mgr_data import SslMgrData
 
 
 def _copy_local_prod(ssl_mgr: SslMgrData) -> bool:
@@ -41,7 +41,7 @@ def _copy_local_prod(ssl_mgr: SslMgrData) -> bool:
 def _copy_local_to_remote(ssl_mgr: SslMgrData, host: str) -> bool:
     """
     Copy production certs/keys to remote server
-     - Skip if host is note remote
+     - Skip if host is not remote
     """
     # pylint: disable=duplicate-code
     #
@@ -66,7 +66,10 @@ def _copy_local_to_remote(ssl_mgr: SslMgrData, host: str) -> bool:
         logs(f'  Error: remote copy must be absolute path : {cert_dir}')
         return False
 
-    pargs = ['/usr/bin/rsync', '-a', '--mkpath', cert_dir, remote_cert_dir]
+    # pargs = ['/usr/bin/rsync', '-a', '--mkpath', cert_dir, remote_cert_dir]
+    pargs = ['/usr/bin/rsync']
+    pargs += ['-a', '--delete', '--mkpath', cert_dir, remote_cert_dir]
+
     if ssl_mgr.opts.debug:
         logs(f'  debug: {pargs}')
     else:

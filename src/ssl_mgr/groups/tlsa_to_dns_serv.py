@@ -7,7 +7,7 @@ Generate TLSA resource record file(s)
 from dns_base import dns_zone_update
 from utils import Log
 
-from ._group_data import GroupData
+from .group_data import GroupData
 
 
 def tlsa_copy_to_dns_serv(group: GroupData):

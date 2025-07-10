@@ -31,7 +31,7 @@ def acct_registered(cb_dir: str, staging: bool = False) -> bool:
     #
     # get list of fingerprint dirs - account details under that
     #
-    [_files, fp_dirs, _links] = dir_list(dir_1, path_type='path')
+    (_files, fp_dirs, _links) = dir_list(dir_1, path_type='path')
     if not fp_dirs:
         return False
 

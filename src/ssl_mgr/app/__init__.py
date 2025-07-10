@@ -3,4 +3,4 @@
 """
 Support library for cert_tool
 """
-from .class_mgr import SslMgr
+from .ssl_mgr import SslMgr

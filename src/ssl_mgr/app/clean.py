@@ -7,12 +7,12 @@ clean up unused older data from <grp>/<svc>/db/xxx
 # pylint: disable=too-many-locals,too-many-nested-blocks
 import os
 import re
-import shutil
 
 from utils import dir_list
 from utils import Log
+from utils import remove_path
 
-from ._mgr_data import SslMgrData
+from .ssl_mgr_data import SslMgrData
 
 
 def _clean_one(num_keep: int, db_dir: str, dlist: list[str]):
@@ -39,7 +39,8 @@ def _clean_one(num_keep: int, db_dir: str, dlist: list[str]):
     log(f'Cleaning {db_dir}')
     for item in plist:
         log(f'    {item}')
-        shutil.rmtree(item)
+        if not remove_path(item):
+            log(f' Error removing {item}')
 
 
 def filter_candidate_dirs(grp_dir: str, svc: str, all_cands: list[str]
@@ -130,7 +131,7 @@ def cleanup(ssl_mgr: SslMgrData):
     if do_all:
         services = {}
 
-        [_fls, grps, _lnks] = dir_list(cert_dir, path_type='path')
+        (_fls, grps, _lnks) = dir_list(cert_dir, path_type='path')
         for grp_path in grps:
             grp_name = os.path.basename(grp_path)
 
