@@ -7,12 +7,27 @@ Tags
 
 ::
 
-	2.2.0 (2024-03-29) -> 6.3.0, origin/master (2025-07-10)
-	76 commits.
+	2.2.0 (2024-03-29) -> HEAD (2025-09-08)
+	77 commits.
 
 Commits
 =======
 
+
+* 2025-09-08  : **HEAD**
+
+::
+
+                It is possible that production certs can occasionally get out of sync.
+                Not sure how this can happen under normal circumstances. One possible
+                scenario is server reboot while production certs are being updated.
+                When sslm-mgr starts, it checks for production certs being
+                out of sync and issues a warning if they are.
+                In previous version, it logged recommended commands to remediate.
+                This change automates that and removes the need for manual
+                intervention.
+                In current version, if production certs are out of sync, this is logged
+                and then they are automatically synced and servers restarted.
 
 * 2025-07-10  : **6.3.0, origin/master**
 
