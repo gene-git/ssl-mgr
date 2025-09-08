@@ -85,4 +85,6 @@ def init_primary_dns_server(opts: SslOpts,
     check_delay = opts.dns_check_delay
     xtra_ns = opts.dns_xtra_ns
     ssl_dns = SslDns(apex_domain, dns_server, dns_port, check_delay, xtra_ns)
+    if not ssl_dns.okay:
+        log('Error - DNS unavailable')
     return ssl_dns

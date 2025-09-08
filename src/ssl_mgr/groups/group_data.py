@@ -7,6 +7,7 @@
 import os
 
 from config import (SslOpts, is_wildcard_services)
+from utils import Log
 from dns_base import (SslDns, init_primary_dns_server, dns_file_hash)
 from db import SslDb
 from services import Service
@@ -44,6 +45,13 @@ class GroupData():
         top_dir: str = opts.top_dir
 
         self.ssl_dns = init_primary_dns_server(opts, grp_name)
+        if not self.ssl_dns.okay:
+            logger = Log()
+            logs = logger.logs
+            logs('Error: failed initialize primary dns server')
+            self.okay = False
+            return
+
         self.db = SslDb(opts.top_dir, grp_name, '')
 
         # check state of tlsa file

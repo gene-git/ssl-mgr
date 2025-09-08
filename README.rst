@@ -1041,39 +1041,37 @@ config variable will be run.
 
 If there is a problem for some reason, then updating production will be avoided
 to minimize any production impact. It is conceivable that 
-after some error conditions, the production directory could get out of sync.
+after some error conditions, the production cert directory could get out of sync.
+Or a server reboot while production certs are being updated.
 
 On any subsequent run after experiencing some error condition, 
-*sslm-mgr* will detect whether any production files are
-out of sync and issue a warning together with a suggestion how to proceeed.
+When *sslm-mgr* starts, it detects if any production cert files are
+out of sync. If so,  a warning is issued and production cert dirs are updated 
+and servers are restarted.
 
-Please note that the very first run of *sslm-mgr* after updating to version *6.1.x* from *6.0.x*,
-will automatically re-sync production dir.
+Manual intervention should not be required but if you need it for some reason,
+the *dev* option gives ability to force production resync and to restart
+servers.
 
-Manual intervention will be required should errors be detected in any runs
-after that first one with auto re-sync.
-
-First step is likely to get production in sync. This can be done using the
-dev option:
+This can be done using dev options:
 
 .. code-block:: bash
 
     sslm-mgr dev --force --certs-to-prod
 
-to bring production back in sync. You may want to restart the various servers
-using:
+to bring production back in sync. To restart the servers use:
 
 .. code-block:: bash
 
     sslm-mgr dev --force-server-restarts
 
-You may want to renew the certs:
+And you may alos want to renew the certs:
 
 .. code-block:: bash
 
     sslm-mgr -renew
 
-and wait the usual 2-3 hours and then roll as usual:
+and wait the usual 2-3 hours and roll as usual:
 
 .. code-block:: bash
 
@@ -1431,10 +1429,10 @@ Dependencies
 Philosophy
 ==========
 
-We follow the *live at head commit* philosophy. This means we recommend using the
-latest commit on git master branch. We also provide git tags. 
+We follow the *live at head commit* philosophy as recommended by
+Google's Abseil team [1]_.  This means we recommend using the
+latest commit on git master branch. 
 
-This approach is also taken by Google [1]_ [2]_.
 
 License
 =======
@@ -1450,7 +1448,6 @@ Created by Gene C. and licensed under the terms of the MIT license.
 .. _AUR pyconcurrnet: https://aur.archlinux.org/packages/pyconcurrent
 .. _Github pyconcurrnet: https://github.com/gene-git/pyconcurrent
 
-.. [1] https://github.com/google/googletest  
-.. [2] https://abseil.io/about/philosophy#upgrade-support
+.. [1] https://abseil.io/about/philosophy#upgrade-support
 
 

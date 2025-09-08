@@ -9,6 +9,7 @@ DNS tools
 import dns
 
 from utils import is_valid_cidr
+from utils import Log
 
 from .dns import dns_resolver
 from .dns import auth_nameservers
@@ -61,10 +62,10 @@ class SslDnsData:
         self.resolvers: dict[str, dns.resolver.Resolver] = {}
         self.checks: dict[str, bool] = {}
         self.mx_hosts: dict[str, str] = {}
-        # self.stub_resolver = None
 
         self.check_delay: int = -1
         self.xtra_ns: list[str] = []
+        self.okay: bool = True
 
         if check_delay and check_delay > 0:
             self.check_delay = check_delay
@@ -87,6 +88,12 @@ class SslDnsData:
         self.auth_ns = auth_nameservers(apex_domain,
                                         self.primary_resolver,
                                         self.stub_resolver)
+        if not self.auth_ns:
+            logger = Log()
+            logs = logger.logs
+            logs('Error: unable to get auth nameservers')
+            self.okay = False
+            return
 
         # add any extra nameserver ips to check
         if check_xtra_ns:

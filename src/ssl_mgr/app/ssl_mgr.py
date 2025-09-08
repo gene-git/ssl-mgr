@@ -51,45 +51,21 @@ def _check_production_synced(mgr: SslMgr) -> bool:
     """
     logger = Log()
     logs = logger.logs
-
-    #
-    # Set up the warning message
-    warn_msg = '''** Warning **
-  Production is out of sync.
-  Suggest getting production in sync by running:
-    sslm-mgr dev --force --certs-to-prod
-
-  and possibly:
-    sslm-mgr dev --force-server-restarts
-
-  followed by:
-    sslm-mgr -renew
-
-  and then wait the usual 2-3 hours and roll as usual:
-    sslm-mgr -roll'''
-
-    auto_fix_msg = '''** Note **
-  Update to new version requires re-sync of production directory.
-  Updating now.'''
-
     now = current_date_time_str()
-    semaphore_file = f'{mgr.opts.top_dir}/.flags/6_1_updated'
-    semaphore_data = f'6.1 Update: production dir sync done: {now}\n'
-    have_semaphore = _have_semaphore_file(semaphore_file)
 
     okay = check_production_synced(mgr)
     if not okay:
-        if have_semaphore:
-            logs(warn_msg)
-            if not mgr.opts.force:
-                return False
-            logs(' --force option in effect - continuing')
-            # should we push to prod?
-            # mgr.opts.certs_to_prod = True
-        else:
-            logs(auto_fix_msg)
-            mgr.opts.force = True
-            mgr.opts.certs_to_prod = True
+        logs(' Production resync - updating & restarting servers now')
+        mgr.opts.force = True
+        mgr.opts.certs_to_prod = True
+        mgr.opts.force_server_restarts = True
+
+    #
+    # semaphore file so can check for latest version
+    #
+    semaphore_file = f'{mgr.opts.top_dir}/.flags/6_1_updated'
+    semaphore_data = f'6.1 Update: production dir sync done: {now}\n'
+    have_semaphore = _have_semaphore_file(semaphore_file)
 
     if not have_semaphore:
         if not _create_semaphore_file(semaphore_data, semaphore_file):

@@ -158,6 +158,10 @@ def auth_push_dns(certbot: CertbotHookData,
     # - check each ns has current serial
     #
     dns = init_primary_dns_server(certbot.opts, apex_domain)
+    if not dns.okay:
+        logs('Error setting up primary DNS server')
+        return
+
     if deb:
         subdoms = [sub for (sub, _val) in challenges]
         logs(f'Debug skip: dns acme check {apex_domain} : {subdoms}')

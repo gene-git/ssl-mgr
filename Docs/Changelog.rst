@@ -7,12 +7,18 @@ Tags
 
 ::
 
-	2.2.0 (2024-03-29) -> 6.2.0 (2025-07-10)
-	75 commits.
+	2.2.0 (2024-03-29) -> 6.3.0, origin/master (2025-07-10)
+	76 commits.
 
 Commits
 =======
 
+
+* 2025-07-10  : **6.3.0, origin/master**
+
+::
+
+                update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-07-10  : **6.2.0**
 

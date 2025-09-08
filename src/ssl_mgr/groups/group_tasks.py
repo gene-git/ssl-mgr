@@ -31,7 +31,7 @@ def group_to_production(group: GroupData, prod_group_dir: str) -> bool:
         <prod_group_dir>/<service>/xxx.pem
     """
     logger = Log()
-    logger.logs(f'{group.grp_name} : to production')
+    logger.logs(f'\n{group.grp_name} : to production')
 
     for svc in group.services:
         svc_name = svc.svc_name

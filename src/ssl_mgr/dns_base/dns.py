@@ -24,7 +24,13 @@ def auth_nameservers(apex_domain: str,
     """
     ns_list: dict[str, str] = {}
 
-    response = primary_resolver.resolve(apex_domain, 'NS')
+    try:
+        response = primary_resolver.resolve(apex_domain, 'NS')
+
+    except dns.exception.DNSException:
+        # unable to get answer from DNS
+        # means nds server is unavailable
+        return ns_list
 
     if response.rrset:
         for rec in response.rrset:

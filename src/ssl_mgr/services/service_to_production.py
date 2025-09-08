@@ -33,7 +33,7 @@ def service_to_production(svc: ServiceData, prod_svc_dir: str) -> bool:
     logger = Log()
     logs = logger.logs
 
-    logs(f'{svc.svc_name} :')
+    logs(f'  {svc.svc_name} :')
 
     for lname in svc.db.link_names:
         db_name = svc.db.db_names[lname]
@@ -60,9 +60,9 @@ def service_to_production(svc: ServiceData, prod_svc_dir: str) -> bool:
         pargs = ['/usr/bin/rsync', '-a', '--delete', '--mkpath', src, dst]
 
         if opts.debug:
-            logs(f'  {pargs}')
+            logs(f'    {pargs}')
         else:
-            logs(f'  {lname} {db_name}')
+            logs(f'    {lname} {db_name}')
             test = opts.debug
             (ret, _out, _err) = run_prog(pargs, test=test, verb=True)
             if ret != 0:
