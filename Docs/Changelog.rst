@@ -6,14 +6,19 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> HEAD (2025-09-08)
-	78 commits.
+	2.2.0 (2024-03-29) -> 6.4.0 (2025-11-06)
+	79 commits.
 
 Commits
 =======
 
 
-* 2025-09-08  : **HEAD**
+* 2025-11-06  : **6.4.0**
+
+.. code-block:: text
+
+              - Bug fix whereby state machine can lose track of changes
+ 2025-09-08   ⋯
 
 .. code-block:: text
 

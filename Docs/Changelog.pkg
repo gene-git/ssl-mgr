@@ -1,11 +1,13 @@
 -------------------------------------------------------
  Changelog    : ssl-mgr
- Tags         : 5.7.1 ➙ HEAD
-              : 2025-03-11 ➙ 2025-09-08
+ Tags         : 6.0.0 ➙ 6.4.0
+              : 2025-07-08 ➙ 2025-11-06
               : 6 tags. See Docs for full changelog
 -------------------------------------------------------
 
- 2025-09-08   : HEAD
+ 2025-11-06   : 6.4.0
+              - Bug fix whereby state machine can lose track of changes
+ 2025-09-08   ⋯
               - update Docs/Changelog.rst Docs/ssl-mgr.pdf
               - It is possible that production certs can occasionally get out of sync.
                 Not sure how this can happen under normal circumstances. One possible
@@ -91,9 +93,4 @@
             
                     * Simplify logging code.
  2025-03-11   ⋯
-              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
-
- 2025-03-11   : 5.7.1
-              - After latex update we needed to fix building latex pdf to avoid error
- 2025-02-28   ⋯
               - update Docs/Changelog.rst Docs/ssl-mgr.pdf
