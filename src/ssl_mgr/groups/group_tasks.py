@@ -157,9 +157,15 @@ def execute_tasks(group: GroupData) -> bool:
 
         # check if one or both of curr/next cert changed
         (curr_changed, next_changed) = svc.check_cert_changed()
-        change.curr_cert_changed = curr_changed
-        change.next_cert_changed = next_changed
-        change.cert_changed = curr_changed or next_changed
+        if curr_changed:
+            change.curr_cert_changed = True
+
+        if next_changed:
+            change.next_cert_changed = True
+
+        if curr_changed or next_changed:
+            change.cert_changed = True
+
         if change.cert_changed:
             change.add_svc_name(svc.svc_name)
             txt1 = f'{svc.svc_name} (curr, next)'

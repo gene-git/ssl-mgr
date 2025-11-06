@@ -11,6 +11,7 @@ from utils import Log
 from config import (ConfServ)
 
 from .ssl_mgr_data import SslMgrData
+from .check_production_synced import check_production_synced
 
 
 def _copy_local_prod(ssl_mgr: SslMgrData) -> bool:
@@ -157,11 +158,23 @@ def certs_to_production(ssl_mgr: SslMgrData) -> bool:
     #
     logs('Certs to production: checking for changes')
     changes = ssl_mgr.changes
-    if (changes.any.cert_changed
-            or changes.any.dns_changed
+    do_copy: bool = False
+    if (changes.any.cert_changed or changes.any.dns_changed
             or ssl_mgr.opts.certs_to_prod):
+        #
+        # check state machine
+        #
         logs('    : Changes => copy certs/dns to production')
-    else:
+        do_copy = True
+
+    elif not check_production_synced(ssl_mgr):
+        #
+        # Double check by checking the actual files
+        #
+        logs('    : production needs sync => copy certs/dns to production')
+        do_copy = True
+
+    if not do_copy:
         logs('    : No changes')
         return True
 

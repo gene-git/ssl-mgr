@@ -28,17 +28,7 @@ class SslMgr(SslMgrData):
         """
         Run whatever been tasked to do
         """
-        okay = _check_production_synced(self)
-        if not okay:
-            # add auto fix here?
-            # Set on:
-            #   opts.roll
-            #   opts.certs_to_prod
-            #   opts.force_server_restrarts
-            # Then continue to run tasks.
-            #
-            self.okay = False
-            return False
+        _check_production_synced(self)
         okay = _execute_tasks(self)
         return okay
 
@@ -53,8 +43,8 @@ def _check_production_synced(mgr: SslMgr) -> bool:
     logs = logger.logs
     now = current_date_time_str()
 
-    okay = check_production_synced(mgr)
-    if not okay:
+    in_sync = check_production_synced(mgr)
+    if not in_sync:
         logs(' Production resync - updating & restarting servers now')
         mgr.opts.force = True
         mgr.opts.certs_to_prod = True

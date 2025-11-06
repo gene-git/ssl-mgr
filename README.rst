@@ -79,6 +79,11 @@ New / Interesting
 
 **Recent changes important info.**
 
+**Version 6.4 :**
+
+* Bug fix where the state machine can lose track of changes that happened.
+
+
 **Version 6.1 :**
 
 * New integrity check.
