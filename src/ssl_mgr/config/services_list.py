@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 '''
 Generate list of services in a directory
  - used when services config set to "*"

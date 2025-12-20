@@ -5,10 +5,11 @@ ssl-mgr documentation
 
 .. toctree::
    README
-   Changelog
-   License
-   Contributing
-   Code-of-conduct
+   License/License
+   Changes-7.x
+   Sections/More-Details
+   Sections/Appendix
+   Sections/Changes-6.x
    :maxdepth: 2
    :caption: Contents:
 

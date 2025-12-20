@@ -1,6 +1,6 @@
 #!/usr/bin/python
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 dns-01/http-01 Authentication script for certbot letsencrypt
 Set via the certbot option: --manual-auth-hook /path/to/me

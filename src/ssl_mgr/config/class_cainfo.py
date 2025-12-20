@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Read the ca-info.conf file
 """
@@ -34,11 +34,16 @@ class CAInfo():
     """
     # pylint: disable=too-few-public-methods
     def __init__(self):
+        """
+        Should we limit preferred_acme_profile='tlsserver' for
+        ca_type = 'certbot'
+        """
         self.ca_name: str = ''
         self.ca_desc: str = ''
         self.ca_type: str = ''
         self.ca_validation: str = ''
-        self.ca_preferred_chain: str = ''
+        self.ca_preferred_chain: str = ''       # Not needed any longer with LE Gen Y root
+        self.ca_preferred_acme_profile: str = 'tlsserver'
 
 
 class CAInfos:

@@ -5,14 +5,17 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+latex_engine = 'xelatex'
 
 project = "ssl-mgr"
-copyright = '2023, Gene C'
+copyright = '2023-%Y, Gene C'
 author = 'Gene C'
-release = '6.3.0'
+release = '7.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+suppress_warnings = ['toc.not_included']
+exclude_patterns = ['**/Changelog.rst', 'Misc/*.rst']
 
 #extensions = ['myst_parser']
 #latex_engine = "xelatex"
@@ -28,8 +31,6 @@ extensions = []
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

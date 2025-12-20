@@ -1,6 +1,6 @@
 #!/usr/bin/python
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Certificate Managerment Tools
 - Display Info about keys and certs (in pem format)
@@ -100,12 +100,13 @@ def _show_one(label: str, pem_string: str):
         print(out)
 
 
-def _show_summary(label: str, pem_string: str):
+def _show_summary(file: str, label: str, pem_string: str):
     """
     Use internal library to parse the certificate
     """
     line = 70 * '-'
     print(line)
+    print(file + '\n')
     pem_bytes = pem_string.encode()
     if 'KEY' in label:
         info = key_pem_info(pem_bytes)
@@ -128,7 +129,7 @@ def _process_all(summary: bool, data: dict[str, str]):
     if not data:
         return
 
-    for (_file, buf) in data.items():
+    for (file, buf) in data.items():
         pem_items = cert_split_pem_string(buf)
 
         if not pem_items:
@@ -136,7 +137,7 @@ def _process_all(summary: bool, data: dict[str, str]):
 
         for (label, cert_pem) in pem_items:
             if summary:
-                _show_summary(label, cert_pem)
+                _show_summary(file, label, cert_pem)
             else:
                 _show_one(label, cert_pem)
 

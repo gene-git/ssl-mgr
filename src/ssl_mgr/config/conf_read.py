@@ -1,8 +1,10 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Read variables from conf.d/ssl-mgr.conf
 """
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
 from typing import (Any)
 import os
 from utils import read_toml_file
@@ -60,11 +62,38 @@ def read_ssl_mgr_conf(opts: SslOptsData) -> dict[str, Any]:
     # For our code - we Map globals to top level
     #
     conf_globals = conf_dict.get('globals')
+
+    old_renew_map: dict[str, str] = {
+            'renew_expire_days': 'renew_target_90',
+            'renew_expire_days_spread': 'rand_adj_90',
+            }
+    conf_renew_old: dict[str, float] = {}
+
     if conf_globals:
         for (key, value) in conf_globals.items():
-            conf_dict[key] = value
+            if key in old_renew_map:
+                print(f'Warning: deprecated {key}. See [renew_info] in docs')
+                new_key = old_renew_map[key]
+                conf_renew_old[new_key] = float(value)
+            else:
+                conf_dict[key] = value
         del conf_dict['globals']
 
+    #
+    # Conf renew
+    #
+    conf_renew: dict[str, float] = {}
+    info = conf_dict.get('renew_info')
+    if info:
+        # if missing and available in old globals use old
+        conf_renew = info
+        for (key, value) in conf_renew_old.items():
+            if not conf_renew.get(key):
+                conf_renew[key] = value
+    else:
+        conf_renew = conf_renew_old
+
+    conf_dict['renew_info'] = conf_renew
     conf_dict['grps_svcs'] = grps_svcs
 
     return conf_dict

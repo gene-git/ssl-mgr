@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Project ssl-mgr
 """
-__version__ = "6.4.0"
-__date__ = "2025-11-06"
+__version__ = "7.0.0"
+__date__ = "2025-12-20"
 __reldev__ = "release"
 
 

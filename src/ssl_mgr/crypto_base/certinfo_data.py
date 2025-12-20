@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 # pylint: disable=too-many-instance-attributes, too-few-public-methods
 # pylint: disable=invalid-name
 """
@@ -23,12 +23,18 @@ class CertInfoData:
         # Initialize expires to unix epoch
         #
         unix_epoch = datetime.fromtimestamp(0, timezone.utc)
-        self.expires: CertExpires = CertExpires(unix_epoch)
+        self.expires: CertExpires = CertExpires(unix_epoch, unix_epoch)
 
         self.expiry_date_str: str = ''
-        self.days_left: int = -1
-        self.seconds_left: int = -1
+        self.days_left: float = -1.0
+        self.seconds_left: float = -1.0
         self.expiry_string: str = ''
+
+        self.issue_date_str: str = ''
+        self.issue_days_ago: float = -1
+        self.issue_seconds_ago: float = -1
+        self.issue_string: str = ''
+
         self.issuer_rfc4514: str = ''
         self.issuer_CN: str = ''
         self.issuer_O: str = ''

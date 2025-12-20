@@ -1,6 +1,6 @@
 #!/usr/bin/python
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Crypto primative - certs
 Called from ssl_ca.sign_cert()

@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 (Re)New cert from letsencrypt
 """
@@ -100,6 +100,14 @@ def certbot_options(certbot: CertbotHookData,
     # opts += ['--manual-cleanup-hook', cleanup_hook_w_args]
 
     #
+    # ACME Profile:
+    #   Default letsencrypt acme profile is : tlsserver
+    #   Also support for classic and shortlived
+    #
+    if ca_certbot.ca_info.ca_preferred_acme_profile:
+        opts += ['--preferred-profile', ca_certbot.ca_info.ca_preferred_acme_profile]
+
+    #
     # Where to save all the certs and chains
     #
     cert_path = os.path.join(cert_dir, 'cert.pem')
@@ -113,8 +121,12 @@ def certbot_options(certbot: CertbotHookData,
     opts += ['--fullchain-path', fullchain_path]
 
     #
-    # LE defaults to 'ISRG Root X1' (RSA).
-    # can also use ca_preferred_chain = 'ISRG Root X2' (ECC)
+    # Older:
+    #   LE defaults to 'ISRG Root X1' (RSA).
+    #   can also use ca_preferred_chain = 'ISRG Root X2' (ECC)
+    #
+    # Going forward LE will use "gen y" cert - "ISRG Root YE" for ec and YR for RSA
+    # Best to no longer use this setting.
     #
     if ca_certbot.ca_info.ca_preferred_chain:
         opts += ['--preferred-chain', ca_certbot.ca_info.ca_preferred_chain]

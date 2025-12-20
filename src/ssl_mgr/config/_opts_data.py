@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 ssl-mgr application command line options
 options:
@@ -24,6 +24,7 @@ from dataclasses import (dataclass, field)
 from db import get_conf_dir
 
 from .class_cainfo import CAInfos
+from .renew_info import RenewInfo
 
 
 #
@@ -126,8 +127,13 @@ class SslOptsData:
         self.renew_cert: bool = False
         self.refresh_cert: bool = False
         self.renew_cert_now: bool = False
-        self.renew_expire_days: int = 30
-        self.renew_expire_days_spread: int = 0
+
+        # renew_expire_days -> renew_time.target_90
+        # renew_expire_days_spread -> renew_time.rand_adj_90
+        # self.renew_expire_days: int = 30
+        # self.renew_expire_days_spread: int = 0
+        self.renew_info: RenewInfo = RenewInfo()
+
         self.copy_csr: bool = False
         self.clean_keep: int = 10
         self.clean_all: bool = False

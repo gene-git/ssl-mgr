@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Certificate Tools
 """
@@ -56,9 +56,10 @@ class ServiceConfData:
         #
         # renew when expiry < renew_expire_days
         #  - default inherited from global opts can be changed per svc
-        #
-        self.renew_expire_days = opts.renew_expire_days
-        self.renew_expire_days_spread = opts.renew_expire_days_spread
+        # Do we actually need this - just use opts.xxx
+        # self.renew_expire_days = opts.renew_expire_days
+        # self.renew_expire_days_spread = opts.renew_expire_days_spread
+        # self.renew_info: RenewInfo = opts.renew_info
 
     def __getattr__(self, name):
         """ non-set items simply return None so easy to check existence"""

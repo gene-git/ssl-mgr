@@ -25,5 +25,6 @@ dane_tls = []
     sans = []
 
 [CA]
+    # you may want much shorter certs. Perhaps 45-day or 90-day
     sign_end_days = 1825
     digest = 'sha384'

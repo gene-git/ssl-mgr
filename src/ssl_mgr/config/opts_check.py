@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Basic checks on config and options
 """
@@ -81,6 +81,10 @@ def check_cainfo(opts: SslOptsData) -> bool:
     if not opts.ca_infos:
         logs('Error: no certicate authority infos found (ca-info.conf)')
         return False
+
+    for (name, ca_info) in opts.ca_infos.ca_infos.items():
+        if ca_info.ca_preferred_chain:
+            logs(f'Warning: CA "{name}": ca_preferred_chain not recommended with "Gen Y" certs')
     return True
 
 

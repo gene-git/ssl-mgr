@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
   CA class
 """
@@ -46,6 +46,7 @@ class Service(ServiceData):
         # save initial curr/next cert time
         # Pull it from state
         # Can we drop this now that it is in 'state'
+        # NB These are file modify times.
         #
         self.curr_cert_time = self.state.curr.cert_time
         self.next_cert_time = self.state.next.cert_time

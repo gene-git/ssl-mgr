@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Convert data dictionary to class instance
 """
@@ -32,7 +32,12 @@ def dict_to_opts(opts: SslOptsData, data_dict: dict[str, Any]):
                 setattr(opts, key, val)
                 continue
 
+            if key in 'renew_info':
+                renew_info = getattr(opts, key)
+                renew_info.from_dict(val)
+                continue
+
+            # ignore any unknown dictionary
             print(f'Config parser : uknown {key} {val}')
-            # unknown ignore
             continue
         setattr(opts, key, val)

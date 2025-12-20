@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 Print cert info
 """
@@ -38,6 +38,9 @@ def certinfo_print(info: CertInfoData, log: Callable[..., None] = print):
 
     if info.expiry_date_str:
         log(f'Expires  : {info.expiry_date_str} ({info.expiry_string})')
+
+    if info.issue_date_str:
+        log(f'Issued   : {info.issue_date_str} ({info.issue_string})')
 
     if info.issuer_rfc4514:
         log(f'Issuer   : {info.issuer_rfc4514}')

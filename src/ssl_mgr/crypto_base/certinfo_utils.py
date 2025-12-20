@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 # pylint: disable=too-many-branches
 """
 Check if cert is expiring
@@ -203,7 +203,7 @@ def cert_expires(cert: x509.Certificate) -> CertExpires | None:
     if not cert:
         return None
 
-    expires = CertExpires(cert.not_valid_after_utc)
+    expires = CertExpires(cert.not_valid_before_utc, cert.not_valid_after_utc)
     return expires
 
 
@@ -220,10 +220,16 @@ def cert_info(cert: x509.Certificate) -> CertInfo:
     expires = cert_expires(cert)
     if expires:
         info.expires = expires
+
         info.expiry_date_str = expires.expiration_date_str()
         info.days_left = int(expires.days())        # truncated
         info.seconds_left = expires.seconds()
         info.expiry_string = expires.expiration_string()
+
+        info.issue_date_str = expires.issue_date_str()
+        info.issue_days_ago = int(expires.issue_days())
+        info.issue_seconds_ago = expires.issue_seconds()
+        info.issue_string = expires.issue_string()
 
     # issuer
     if cert.issuer:

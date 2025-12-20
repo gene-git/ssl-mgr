@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: © 2023-present  Gene C <arch@sapience.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 """
 service level tasks
 """
 # pylint: disable=too-many-locals
-import time
+# import time
 import random
 
 from utils import Log
@@ -28,16 +28,16 @@ def _get_rand_adjust_days(spread: int | None) -> tuple[int, int]:
     return (spread, adjust)
 
 
-def _renew_in_text(spread: int, days_to_renew: int) -> str:
+def _renew_in_text(spread: float, days_to_renew: float) -> str:
     '''
     message for next renewal
     '''
-    when = f'{days_to_renew}'
+    when = f'{days_to_renew:.1f}'
     if spread > 0:
         if days_to_renew > 0:
-            when = f'{days_to_renew} ± {spread}'
+            when += f' ± {spread:.1f}'
         else:
-            when = f'0 ± {spread}'
+            when = f'0 ± {spread:.1f}'
     return when
 
 
@@ -55,15 +55,19 @@ def time_to_renew(service: ServiceData,
     # If renew_expire_days_spread > 0 then get a random number
     # of days between -spread and + spread
     #
-    renew_expire_days = service.svc.renew_expire_days
-    renew_expire_days_spread = service.svc.renew_expire_days_spread
-    (spread, renew_adjust) = _get_rand_adjust_days(renew_expire_days_spread)
+    renew_info = service.opts.renew_info
+
+    # older code.
+    # renew_expire_days = service.svc.renew_expire_days
+    # renew_expire_days_spread = service.svc.renew_expire_days_spread
+    # (spread, renew_adjust) = _get_rand_adjust_days(renew_expire_days_spread)
 
     #
     # Have cert - check if ready or too new to renew/refresh
     #
-    is_time_to_renew = True
+    renew_now = True
     cert_expires = None
+
     db_name = service.db.db_names[lname]
     if db_name:
         cert_expires = service.cert[db_name].cert_expires()
@@ -72,22 +76,32 @@ def time_to_renew(service: ServiceData,
         expiry_date_str = cert_expires.expiration_date_str()
         expiry_str = cert_expires.expiration_string()
         days_left = cert_expires.days()
-        days_to_renew = int(days_left - renew_expire_days)
+        # issue_days = cert_expires.issue_days()
+        lifetime = cert_expires.lifetime_at_issue()
+
+        # days_to_renew = int(days_left - renew_expire_days)
+        (renew_now, days_to_renew, spread) = renew_info.renew_decision(lifetime, days_left)
 
         txt = f'{expiry_date_str} ({expiry_str})'
         exp_curr_str = f'↪ Current cert expires: {txt}'
 
-        if days_to_renew > -renew_adjust:
-            is_time_to_renew = False
+        if renew_now:
+            exp_curr_str += ' 🗘 Renew now'
+        else:
             renew_in = _renew_in_text(spread, days_to_renew)
             exp_curr_str += f' 🗘 Renew in {renew_in} days'
-        else:
-            exp_curr_str += ' 🗘 Renew now'
+
+        # if days_to_renew > -renew_adjust:
+        #    renew_now = False
+        #    renew_in = _renew_in_text(spread, days_to_renew)
+        #    exp_curr_str += f' 🗘 Renew in {renew_in} days'
+        # else:
+        #    exp_curr_str += ' 🗘 Renew now'
     else:
         exp_curr_str = 'No curr certs (first cert or missed roll?): '
         exp_curr_str += 'generating new cert'
 
-    return (is_time_to_renew, exp_curr_str)
+    return (renew_now, exp_curr_str)
 
 
 def log_cert_expiry(service: ServiceData, lname: str):
@@ -137,7 +151,7 @@ def time_to_roll(service: ServiceData) -> tuple[int, bool]:
     Check if next/cert is at least min_roll_mins old
     return true if time to roll
     """
-
+    breakpoint()
     #
     # Next must exist
     #
@@ -145,21 +159,32 @@ def time_to_roll(service: ServiceData) -> tuple[int, bool]:
         # no next - nothing to roll
         return (-1, False)
 
+    db_name = service.db.db_names['next']
+    if not db_name:
+        return (-1, False)
+
     #
     # Check next cert age
-    #
-    secs_to_nano = 1000000000
-    min_roll_time = service.opts.min_roll_mins * 60 * secs_to_nano
+    # - use issue date in cert (not_before X509 date)
+    # secs_to_nano = 1000000000
+    # min_roll_time = service.opts.min_roll_mins * 60 * secs_to_nano
+    # next_cert_age = time.time_ns() - service.state.next.cert_time
+    # age_mins = _age_in_mins(next_cert_age / secs_to_nano)
 
-    next_cert_age = time.time_ns() - service.state.next.cert_time
+    min_roll_secs = float(service.opts.min_roll_mins * 60)
+    cert_expires = service.cert[db_name].cert_expires()
+    if not cert_expires:
+        return (-1, False)
 
-    age_mins = _age_in_mins(next_cert_age / secs_to_nano)
+    age_secs = cert_expires.issued_secs
+    age_mins = _age_in_mins(age_secs)
 
     #
     # ok if next/cert old enough for DNS to get out.
     # Or no curr - also okay to roll
     #
-    if next_cert_age >= min_roll_time or not service.state.curr.cert_time:
+    # if next_cert_age >= min_roll_time or not service.state.curr.cert_time:
+    if age_secs >= min_roll_secs or not service.state.curr.cert_time:
         return (age_mins, True)
 
     return (age_mins, False)
