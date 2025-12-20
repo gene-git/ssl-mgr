@@ -6,12 +6,32 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 6.4.0 (2025-11-06)
-	79 commits.
+	2.2.0 (2024-03-29) -> 7.0.0 (2025-12-20)
+	81 commits.
 
 Commits
 =======
 
+
+* 2025-12-20  : **7.0.0**
+
+.. code-block:: text
+
+              - Release 7.0.0
+                These are to support upcoming Letsencrypt changes.
+                 - ACME profiles
+                 - Root Certs
+                 - ca_preferred_chain option - stop using this
+                 - ca_preferred_acme_profile (default tlsserver)
+                 - Renew Timing - handle shortlived certs using original lifetime in renew decision
+                 - New config [renew_info] to control renew timing
+                 - Original lifetime now displayed by sslm-mgr and sslm-info
+                 - now licensed under GPL-2.0-or-later
+ 2025-11-06   ⋯
+
+.. code-block:: text
+
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-11-06  : **6.4.0**
 

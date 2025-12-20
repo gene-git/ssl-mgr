@@ -1,9 +1,23 @@
 -------------------------------------------------------
  Changelog    : ssl-mgr
- Tags         : 6.0.0 ➙ 6.4.0
-              : 2025-07-08 ➙ 2025-11-06
+ Tags         : 6.1.0 ➙ 7.0.0
+              : 2025-07-10 ➙ 2025-12-20
               : 6 tags. See Docs for full changelog
 -------------------------------------------------------
+
+ 2025-12-20   : 7.0.0
+              - Release 7.0.0
+                These are to support upcoming Letsencrypt changes.
+                 - ACME profiles
+                 - Root Certs
+                 - ca_preferred_chain option - stop using this
+                 - ca_preferred_acme_profile (default tlsserver)
+                 - Renew Timing - handle shortlived certs using original lifetime in renew decision
+                 - New config [renew_info] to control renew timing
+                 - Original lifetime now displayed by sslm-mgr and sslm-info
+                 - now licensed under GPL-2.0-or-later
+ 2025-11-06   ⋯
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
  2025-11-06   : 6.4.0
               - Bug fix whereby state machine can lose track of changes
@@ -64,33 +78,4 @@
                 You can also install *pyconcurrent* which will ensure the latest
                   version is always used.
  2025-07-08   ⋯
-              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
-
- 2025-07-08   : 6.0.0
-              - New **major version 6.0* released. Includes:
-            
-                    * PEP-8, PEP-257 and PEP-484 style and type annotations.
-                    * Major re-write and tidy ups.
-                    * Split up various modules (e.g. certs -> 5 separate crypto modules.)
-                    * Ensure config and command line options are 100% backward compatible.
-                    * Improve 2 config values:
-            
-                      Background: Local CAs have self-signed a root CA certificate which is then used
-                      to sign an intermediate CA cert.  The intermediate CA is in turn used to sign
-                      application certificates.
-            
-                      * ca-info.conf: Intermediate local CA entries.
-            
-                        * ca_type = "local" is preferred to "self" (NB both work).
-                          "self" should still be used for self-signed root CAs where it
-                          makes more sense.
-            
-                      * CA service config file for self-signed root certificate:
-            
-                        *  "signing_ca" = "self" is now preferred to an empty string (NB Both work).
-            
-                      * These 2 changes are optional but preferred. No other config file changes.
-            
-                    * Simplify logging code.
- 2025-03-11   ⋯
               - update Docs/Changelog.rst Docs/ssl-mgr.pdf
