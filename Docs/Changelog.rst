@@ -6,12 +6,20 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.0.1 (2025-12-20)
-	83 commits.
+	2.2.0 (2024-03-29) -> 7.0.2 (2025-12-20)
+	85 commits.
 
 Commits
 =======
 
+
+* 2025-12-20  : **7.0.2**
+
+.. code-block:: text
+
+              - Add note about Docs/Changes-7.x.rst to readme since github does
+                  not handle rst references correctly
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-12-20  : **7.0.1**
 
