@@ -12,7 +12,7 @@ self="ssl-mgr"
 info="README.rst Docs examples scripts packaging"
 infodir="usr/share/${self}"
 
-license="Docs/License.rst"
+license="Docs/License/License.rst"
 licensedir="usr/share/licenses/${self}"
 
 etc="examples"
