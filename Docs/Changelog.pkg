@@ -1,9 +1,13 @@
 -------------------------------------------------------
  Changelog    : ssl-mgr
- Tags         : 6.1.0 ➙ 7.0.0
+ Tags         : 6.2.0 ➙ 7.0.1
               : 2025-07-10 ➙ 2025-12-20
               : 6 tags. See Docs for full changelog
 -------------------------------------------------------
+
+ 2025-12-20   : 7.0.1
+              - Installer fix - license file in different directory
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
  2025-12-20   : 7.0.0
               - Release 7.0.0
@@ -45,37 +49,4 @@
                 Fix buglet with min_roll_mins option.
               - Update readme
               - Update to README
-              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
-
- 2025-07-10   : 6.1.0
-              - *Version 6.1 :*
-            
-                * New integrity check.
-            
-                  On each run *sslm-mgr* validates that the production directory is up to date
-                  and consistent with the current suite of certificates, keys and TLSA files.
-            
-                  If not, it explains what the problem is and suggests possible ways to proceed.
-            
-                  Note that the first run after updating to *6.1* it will
-                  automatically re-sync production directory if necessary. No action is
-                  required by you.
-            
-                * Keep certs and production certs fully synced.
-            
-                  Includes removing *next* directory from production after the *roll*
-                  has happened and *next* is no longer needed. This change allows us to check
-                  that production is correctly synchronized. Earlier versions did not
-                  remove any files from production, needed or not.
-            
-                * New dev option *--force-server-restarts*.
-            
-                * Add ability to specif the top level directory (where configs and outputs
-                  are read from / saved to) via environment variable *SSL_MGR_TOPDIR*.
-            
-                * External programs are run using a local copy of *run_prog()* from
-                  the *pyconcurrent* module.
-                You can also install *pyconcurrent* which will ensure the latest
-                  version is always used.
- 2025-07-08   ⋯
               - update Docs/Changelog.rst Docs/ssl-mgr.pdf

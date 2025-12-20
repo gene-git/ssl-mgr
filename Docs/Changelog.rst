@@ -6,12 +6,19 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.0.0 (2025-12-20)
-	81 commits.
+	2.2.0 (2024-03-29) -> 7.0.1 (2025-12-20)
+	83 commits.
 
 Commits
 =======
 
+
+* 2025-12-20  : **7.0.1**
+
+.. code-block:: text
+
+              - Installer fix - license file in different directory
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-12-20  : **7.0.0**
 
