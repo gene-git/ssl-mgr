@@ -15,11 +15,11 @@ of all current changes taken from the *Changes-7.x.rst* file.
 
 These are to support upcoming Letsencrypt changes. See: 
 
-  * `Letsencrypt_45`_
-  * `Letsencrypt_Profiles`_
-  * `Letsencrypt_Root`_
-  * `Letsencrypt_Client_Auth`_
-  * `Letsencryt_Baseline`_
+* `Letsencrypt_45`_
+* `Letsencrypt_Profiles`_
+* `Letsencrypt_Root`_
+* `Letsencrypt_Client_Auth`_
+* `Letsencryt_Baseline`_
 
 ACME profiles 
 -------------

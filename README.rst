@@ -6,6 +6,9 @@ ssl-mgr
 
 Certificate management tool. 
 
+Note that the *Docs* directory contains the full PDF which includes details of the most
+recent changes (*Docs/Changes-7.x.rst*). 
+
 ************
 Key Features
 ************
@@ -122,5 +125,5 @@ be removed if they are being used.
 ssl-mgr: Details
 ****************
 
-More details about *ssl-mgr* tools are available in the `More_Details` section.
+More details about *ssl-mgr* tools are available in the :ref:`More_Details` section.
 
