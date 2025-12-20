@@ -6,6 +6,8 @@
 Latest Changes
 ==============
 
+Note that the full PDF doc is in the Docs directory and includes the details
+of all current changes taken from the *Changes-7.x.rst* file.
 
 **Version 7.0.0 :** (Major version with important changes)
 
@@ -46,30 +48,30 @@ but are also dropping a few fields.
 
 *tlsserver* profile certs will **not** provide:
 
-  * A *Common Name* field 
+* A *Common Name* field 
     
-    CN has been *not recommended* by the Baseline Requirements for several years now.
+  CN has been *not recommended* by the Baseline Requirements for several years now.
 
-  * A *Subject Key Identifier*
-    
+* A *Subject Key Identifier*
+  
     A SKID is *not recommended* by the Baseline Requirements.
 
-  * A *TLS Client Auth Extended Key Usage*
+* A *TLS Client Auth Extended Key Usage*
     
-    root programs are moving towards requiring “single-purpose” issuance hierarchies, where 
-    every certificate has only a single EKU.
+  root programs are moving towards requiring “single-purpose” issuance hierarchies, where 
+  every certificate has only a single EKU.
   
-  * A *Key Encipherment Key Usage* for certificates with RSA public keys 
+* A *Key Encipherment Key Usage* for certificates with RSA public keys 
     
-    This KU was used by older RSA-based TLS cipher suites, but is unnecessary with TLS 1.3.
-    Please note that no certificate should be using RSA at this point. 
+  This KU was used by older RSA-based TLS cipher suites, but is unnecessary with TLS 1.3.
+  Please note that no certificate should be using RSA at this point. 
 
 Root Certs
 ----------
     
-  *tlsserver* and *shorlived* profiles are signed by new *Gen Y* root and intermediate certs.
+*tlsserver* and *shorlived* profiles are signed by new *Gen Y* root and intermediate certs.
 
-  See the note below about removing the **ca_preferred_chain** config option.
+See the note below about removing the **ca_preferred_chain** config option.
 
 ca_preferred_chain option
 -------------------------
