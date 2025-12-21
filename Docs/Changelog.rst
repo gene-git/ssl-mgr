@@ -6,12 +6,24 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.0.2 (2025-12-20)
-	85 commits.
+	2.2.0 (2024-03-29) -> 7.1.0 (2025-12-21)
+	88 commits.
 
 Commits
 =======
 
+
+* 2025-12-21  : **7.1.0**
+
+.. code-block:: text
+
+              - Oops! Remove accidentally left debug in "-roll" code
+ 2025-12-20   ⋯
+
+.. code-block:: text
+
+              - Small readme tweak
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-12-20  : **7.0.2**
 
