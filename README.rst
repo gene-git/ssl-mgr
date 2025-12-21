@@ -110,7 +110,9 @@ Important Changes
 Version 7 brings some significant enhancements supporting Letsencrypt's upcoming short lifetime 
 certs (45-day and 6-day) as well as *ACME profiles*. 
 
-We revisited the *when to renew* a certificate to sensibly handle short lifetime certs.
+We revisited the *when to renew* a certificate decision so that we can sensibly handle 
+short lifetime certs.
+
 There are new config options for those wanting to customize it. In preparation for the
 upcoming May 13, 2026 45-day cert availability, we request *tlsserver* profile by default.
 

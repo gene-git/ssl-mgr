@@ -151,7 +151,6 @@ def time_to_roll(service: ServiceData) -> tuple[int, bool]:
     Check if next/cert is at least min_roll_mins old
     return true if time to roll
     """
-    breakpoint()
     #
     # Next must exist
     #
