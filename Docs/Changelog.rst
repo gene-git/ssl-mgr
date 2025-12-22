@@ -6,12 +6,23 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.1.0 (2025-12-21)
-	88 commits.
+	2.2.0 (2024-03-29) -> 7.1.1 (2025-12-22)
+	90 commits.
 
 Commits
 =======
 
+
+* 2025-12-22  : **7.1.1**
+
+.. code-block:: text
+
+              - Docs/conf.py: fix exclude_patterns to ignore rst files not used in pdf/html
+ 2025-12-21   ⋯
+
+.. code-block:: text
+
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-12-21  : **7.1.0**
 
