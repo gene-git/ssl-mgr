@@ -10,12 +10,12 @@ latex_engine = 'xelatex'
 project = "ssl-mgr"
 copyright = '2023-%Y, Gene C'
 author = 'Gene C'
-release = '7.1.0'
+release = '7.1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 suppress_warnings = ['toc.not_included']
-exclude_patterns = ['**/Changelog.rst', 'Misc/*.rst']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/Changelog.rst', 'Misc/*.rst']
 
 #extensions = ['myst_parser']
 #latex_engine = "xelatex"
@@ -30,7 +30,6 @@ latex_elements = {
 extensions = []
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
