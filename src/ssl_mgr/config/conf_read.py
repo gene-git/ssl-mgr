@@ -7,7 +7,7 @@ Read variables from conf.d/ssl-mgr.conf
 # pylint: disable=too-many-branches
 from typing import (Any)
 import os
-from utils import read_toml_file
+from ssl_mgr.utils import read_toml_file
 
 from .services_list import (is_wildcard_services, service_list_from_dir)
 from ._opts_data import SslOptsData

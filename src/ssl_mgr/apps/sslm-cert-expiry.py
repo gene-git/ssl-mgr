@@ -8,7 +8,7 @@ Certificate Managerment Tools
 """
 # pylint: disable=invalid-name
 import sys
-from crypto_base import (read_cert, cert_time_to_expire)
+from ssl_mgr.crypto_base import (read_cert, cert_time_to_expire)
 
 
 def _parse_args() -> list[str]:

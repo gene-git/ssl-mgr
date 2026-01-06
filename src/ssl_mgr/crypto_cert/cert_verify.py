@@ -6,7 +6,7 @@ Verify cert
 from cryptography import x509
 from cryptography.exceptions import InvalidSignature
 
-from crypto_base import read_cert
+from ssl_mgr.crypto_base import read_cert
 
 
 def cert_verify(cert: x509.Certificate,

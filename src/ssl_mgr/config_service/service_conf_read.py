@@ -6,9 +6,9 @@ Certificate Tools
 import os
 from typing import (Any)
 
-from utils import Log
-from utils import read_toml_file
-from utils import get_file_time_ns
+from ssl_mgr.utils import Log
+from ssl_mgr.utils import read_toml_file
+from ssl_mgr.utils import get_file_time_ns
 
 from .dane_tls import DaneTls
 from .service_conf_data import (ServiceConfData)

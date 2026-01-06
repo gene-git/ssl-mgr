@@ -7,10 +7,10 @@ Crypto primative - keys
 
 import os
 
-from db import SslDb
-from crypto_base import save_privkey_pem
-from crypto_base import read_privkey_pem
-from config_service import ServiceConf
+from ssl_mgr.db import SslDb
+from ssl_mgr.crypto_base import save_privkey_pem
+from ssl_mgr.crypto_base import read_privkey_pem
+from ssl_mgr.config_service import ServiceConf
 
 from .keys import gen_key_rsa
 from .keys import gen_key_ec

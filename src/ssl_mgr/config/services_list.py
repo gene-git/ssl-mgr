@@ -7,7 +7,7 @@ Generate list of services in a directory
 import os
 import re
 
-from utils import (dir_list, open_file)
+from ssl_mgr.utils import (dir_list, open_file)
 
 
 def read_file(file: str) -> list[str]:

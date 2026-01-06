@@ -6,8 +6,8 @@ Set up a new "next" directory and symlink
 # pylint: disable=invalid-name
 import os
 
-from utils import current_date_time_str
-from utils import (make_dir_path, make_symlink)
+from ssl_mgr.utils import current_date_time_str
+from ssl_mgr.utils import (make_dir_path, make_symlink)
 
 from ._db_data import SslDbData
 

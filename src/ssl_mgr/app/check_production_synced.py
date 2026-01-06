@@ -6,9 +6,9 @@ Check that production certs are same as latest "certs" output.
 # pylint: disable=too-many-locals
 import os
 
-from utils import dir_list
-from utils import Log
-from compare import compare_files
+from ssl_mgr.utils import dir_list
+from ssl_mgr.utils import Log
+from ssl_mgr.compare import compare_files
 
 from .ssl_mgr_data import SslMgrData
 

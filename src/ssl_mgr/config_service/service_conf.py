@@ -6,7 +6,7 @@ Certificate Tools
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
 
-from config import SslOpts
+from ssl_mgr.config import SslOpts
 
 from .service_conf_check import check_svc
 from .service_conf_read import read_svc

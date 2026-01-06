@@ -7,8 +7,8 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
 
-from config import (SslOpts, CAInfo)
-from config_service import (ServiceConf)
+from ssl_mgr.config import (SslOpts, CAInfo)
+from ssl_mgr.config_service import (ServiceConf)
 
 from .ca_types import CaSignType
 

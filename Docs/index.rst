@@ -10,9 +10,3 @@ ssl-mgr documentation
    Sections/More-Details
    Sections/Appendix
    Sections/Changes-6.x
-   :maxdepth: 2
-   :caption: Contents:
-
-
-Indices and tables
-==================

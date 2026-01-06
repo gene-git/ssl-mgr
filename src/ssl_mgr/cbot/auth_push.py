@@ -3,7 +3,7 @@
 """
 Auth push
 """
-from utils import Log
+from ssl_mgr.utils import Log
 
 from .auth_push_dns import auth_push_dns
 from .auth_push_http import auth_push_http

@@ -4,7 +4,8 @@
   service level tasks
 """
 # pylint: disable=invalid-name
-from utils import Log
+from ssl_mgr.utils import Log
+
 from ._service_data import ServiceData
 
 

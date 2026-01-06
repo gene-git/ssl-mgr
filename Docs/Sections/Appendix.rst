@@ -414,7 +414,8 @@ Dependencies
  cryptography
  dateutil
  lockmgr            Ensures 1 app runs at a time
- pyconcurrent       Optional - provides run_prog()
+ pyconcurrent       
+ bash
 =================== ==================================
 
 * Building Package:
@@ -423,10 +424,8 @@ Dependencies
  Package             Comment
 =================== ==================================
  git
- hatch              
- wheel
- build 
- installer
+ uv              
+ uv-build
  rsync
  sphinx              Optional (build) docs:
  texlive-latexextra  Optional (build) docs aka texlive tools

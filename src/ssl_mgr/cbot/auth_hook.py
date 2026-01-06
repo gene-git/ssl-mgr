@@ -18,10 +18,10 @@ certbot auth hook
 """
 import os
 # from .class_certbot import Certbot
-from utils import open_file
-from utils import read_file
-from utils import rename_backup
-from utils import Log
+from ssl_mgr.utils import open_file
+from ssl_mgr.utils import read_file
+from ssl_mgr.utils import rename_backup
+from ssl_mgr.utils import Log
 
 from .certbothook_data import CertbotHookData
 from .auth_push import auth_push

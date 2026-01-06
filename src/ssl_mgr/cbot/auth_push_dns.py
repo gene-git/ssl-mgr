@@ -7,10 +7,10 @@ auth push for dns-01
 import os
 import time
 
-from utils import open_file
-from utils import (Log)
-from dns_base import (init_primary_dns_server,  dns_zone_update, dns_restart)
-from dns_base import (dns_txt_record_format)
+from ssl_mgr.utils import open_file
+from ssl_mgr.utils import (Log)
+from ssl_mgr.dns_base import (init_primary_dns_server,  dns_zone_update, dns_restart)
+from ssl_mgr.dns_base import (dns_txt_record_format)
 
 from .certbothook_data import CertbotHookData
 

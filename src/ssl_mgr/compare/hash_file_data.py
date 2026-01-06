@@ -5,8 +5,8 @@ hash of contents of file
 """
 import os
 
-from utils import open_file
-from crypto_hash import (lookup_hash_algo, make_hash)
+from ssl_mgr.utils import open_file
+from ssl_mgr.crypto_hash import (lookup_hash_algo, make_hash)
 
 
 def hash_file_data(fpath: str, comment_char: str = '') -> str:

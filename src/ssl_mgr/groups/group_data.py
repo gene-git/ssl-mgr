@@ -6,11 +6,11 @@
 # pylint: disable=too-many-instance-attributes,m too-few-public-methods
 import os
 
-from config import (SslOpts, is_wildcard_services)
-from utils import Log
-from dns_base import (SslDns, init_primary_dns_server, dns_file_hash)
-from db import SslDb
-from services import Service
+from ssl_mgr.config import (SslOpts, is_wildcard_services)
+from ssl_mgr.utils import Log
+from ssl_mgr.dns_base import (SslDns, init_primary_dns_server, dns_file_hash)
+from ssl_mgr.db import SslDb
+from ssl_mgr.services import Service
 
 from .avail_services import available_services
 from .class_tasks import TaskMgr

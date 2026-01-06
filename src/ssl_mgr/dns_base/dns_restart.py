@@ -3,10 +3,10 @@
 """
 DNS support tools
 """
+from pyconcurrent import run_prog
 
-from config import SslOpts
-from utils import run_prog
-from utils import (Log)
+from ssl_mgr.config import SslOpts
+from ssl_mgr.utils import Log
 
 
 def dns_restart(domains: list[str],

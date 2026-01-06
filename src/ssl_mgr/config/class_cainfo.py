@@ -5,7 +5,7 @@ Read the ca-info.conf file
 """
 # pylint: disable=too-few-public-methods
 import os
-from utils import read_toml_file
+from ssl_mgr.utils import read_toml_file
 
 
 def _read_ca_info_conf(top_dir: str):

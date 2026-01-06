@@ -5,7 +5,7 @@ Check if an LE account exists
 """
 import os
 
-from utils import dir_list
+from ssl_mgr.utils import dir_list
 
 
 def acct_registered(cb_dir: str, staging: bool = False) -> bool:

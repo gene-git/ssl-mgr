@@ -13,9 +13,9 @@ import time
 from dataclasses import dataclass, field
 import argparse
 
-from utils import dir_list, make_dir_path, make_symlink
-from utils import get_file_time_ns
-from crypto_dhparm import (named_dh_params_file, new_dh_params_file)
+from ssl_mgr.utils import dir_list, make_dir_path, make_symlink
+from ssl_mgr.utils import get_file_time_ns
+from ssl_mgr.crypto_dhparm import (named_dh_params_file, new_dh_params_file)
 
 type Opt = tuple[str | tuple[str, str], dict[str, Any]]
 

@@ -4,8 +4,8 @@
 Generate TLSA resource record file(s)
 """
 # pylint: disable=too-many-locals
-from dns_base import dns_zone_update
-from utils import Log
+from ssl_mgr.dns_base import dns_zone_update
+from ssl_mgr.utils import Log
 
 from .group_data import GroupData
 

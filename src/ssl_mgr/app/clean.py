@@ -8,9 +8,9 @@ clean up unused older data from <grp>/<svc>/db/xxx
 import os
 import re
 
-from utils import dir_list
-from utils import Log
-from utils import remove_path
+from ssl_mgr.utils import dir_list
+from ssl_mgr.utils import Log
+from ssl_mgr.utils import remove_path
 
 from .ssl_mgr_data import SslMgrData
 

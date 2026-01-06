@@ -5,9 +5,9 @@
 """
 import os
 
-from dns_base import dns_file_hash
-from services import Service
-from utils import Log
+from ssl_mgr.dns_base import dns_file_hash
+from ssl_mgr.services import Service
+from ssl_mgr.utils import Log
 
 from .group_data import GroupData
 from .tlsa_update_domain import tlsa_update_domain

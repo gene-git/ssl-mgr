@@ -3,7 +3,7 @@
 """
 hash of DNS file
 """
-from compare import hash_file_data
+from ssl_mgr.compare import hash_file_data
 
 
 def dns_file_hash(fpath: str) -> str:

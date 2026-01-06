@@ -8,9 +8,9 @@ Called from ssl_ca.sign_cert()
 # pylint: disable=too-many-locals
 import os
 
-from crypto_csr import SslCsr
-from ca_sign import CACertbot
-from utils import Log
+from ssl_mgr.crypto_csr import SslCsr
+from ssl_mgr.ca_sign import CACertbot
+from ssl_mgr.utils import Log
 
 from .certbothook import CertbotHook
 from .sign_cert import certbot_sign_cert

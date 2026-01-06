@@ -2,57 +2,17 @@
 #
 # Source code checks.
 #
-# Run in src dir
-# i.e. cd src/gfw
+# Run in top level directory
 # 
+mod='ssl_mgr'
 
-apps=(
-    sslm-auth-hook.py
-    sslm-cert-expiry.py
-    sslm-cleanup-hook.py
-    sslm-dhparm.py
-    sslm-info.py
-    sslm-mgr.py
-    sslm-verify.py
-)
+echo "Python code"
+cd ./src
+PYTHONPATH=. pylint $mod/*.py $mod/*/*py
 
-modules=(
-    app
-    ca_sign
-    cbot
-    compare
-    config
-    config_service
-    crypto_base
-    crypto_cert
-    crypto_csr
-    crypto_dhparm
-    crypto_hash
-    db
-    dns_base
-    groups
-    services
-    tlsa
-    utils
-)
-    
-echo "-------------------------------"
-echo "     pylint"
-echo "-------------------------------"
+echo '   NB The following E741 for "O" can be ignored'
+PYTHONPATH=. pycodestyle --max-line-length=110 $mod/*.py $mod/*/*py
 
-PYTHONPATH=. pylint */*py ${apps[@]}
-
-
-echo "-------------------------------"
-echo "     pycodestyle"
-echo "-------------------------------"
-
-PYTHONPATH=. pycodestyle --max-line-length=110 */*py ${apps[@]}
-
-echo "-------------------------------"
-echo "     mypy"
-echo "-------------------------------"
-
-mypy --check-untyped-defs --follow-untyped-imports ${modules[@]} ${apps[@]}
+mypy --check-untyped-defs --follow-untyped-imports $mod
 
 

@@ -7,11 +7,11 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
 
-from db import SslDb
-from config import (SslOpts, CAInfo)
-from config_service import ServiceConf
-from ca_sign import (CABase, CaSignType)
-from utils import Log
+from ssl_mgr.db import SslDb
+from ssl_mgr.config import (SslOpts, CAInfo)
+from ssl_mgr.config_service import ServiceConf
+from ssl_mgr.ca_sign import (CABase, CaSignType)
+from ssl_mgr.utils import Log
 
 from ._cert_data import CertData
 

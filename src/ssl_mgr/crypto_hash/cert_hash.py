@@ -6,7 +6,6 @@ Certificate Hash
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.x509 import load_pem_x509_csr
 
-# from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
 
 from .hash import (lookup_hash_algo, make_hash)

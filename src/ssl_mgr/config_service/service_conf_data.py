@@ -5,7 +5,7 @@ Certificate Tools
 """
 # pylint: disable=invalid-name, too-many-instance-attributes
 # pylint: disable=too-few-public-methods
-from config import SslOpts
+from ssl_mgr.config import SslOpts
 
 from .dane_tls import DaneTls
 

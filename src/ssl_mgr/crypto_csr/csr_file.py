@@ -6,7 +6,7 @@ CSR tools
 from cryptography.x509 import load_pem_x509_csr
 from cryptography.x509 import CertificateSigningRequest
 
-from utils import (read_pem, write_pem)
+from ssl_mgr.utils import (read_pem, write_pem)
 
 
 def read_csr(csr_dir: str, csr_file: str

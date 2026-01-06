@@ -7,8 +7,9 @@ certbot cleanup hook
 """
 import os
 
-from utils import open_file
-from utils import run_prog
+from pyconcurrent import run_prog
+
+from ssl_mgr.utils import open_file
 
 from .auth_push_http import acme_http_token_path
 from .certbothook_data import CertbotHookData

@@ -5,9 +5,10 @@ DNS primary
 """
 # pylint: disable=too-many-locals
 
-from utils import get_domain
-from utils import Log
-from config import SslOpts
+from ssl_mgr.utils import get_domain
+from ssl_mgr.utils import Log
+from ssl_mgr.config import SslOpts
+
 from .class_dns import SslDns
 
 

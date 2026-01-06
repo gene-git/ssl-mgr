@@ -6,10 +6,10 @@ Generate TLSA resource record file(s)
 # pylint: disable=too-many-locals,invalid-name
 import os
 
-from utils import Log
-from utils import write_path_atomic
-from dns_base import (SslDns, dns_tlsa_record_format)
-from crypto_cert import SslCert
+from ssl_mgr.utils import Log
+from ssl_mgr.utils import write_path_atomic
+from ssl_mgr.dns_base import (SslDns, dns_tlsa_record_format)
+from ssl_mgr.crypto_cert import SslCert
 
 from .tlsa_info import TlsaItem
 

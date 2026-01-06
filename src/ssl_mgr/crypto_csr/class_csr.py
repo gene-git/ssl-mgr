@@ -5,8 +5,8 @@ Certificate Tools - CSR
 """
 # pylint: disable=too-many-instance-attributes,invalid-name
 
-from db import SslDb
-from config_service import ServiceConf
+from ssl_mgr.db import SslDb
+from ssl_mgr.config_service import ServiceConf
 
 from .csr_build import csr_generate
 from .csr_file import (read_csr, write_csr)

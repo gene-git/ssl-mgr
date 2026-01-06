@@ -30,12 +30,12 @@ env variables passed down:
     a comma-separated list of all domains that are
     challenged for the current certificate
 
-Needs to know if challenge files are on local machine or remote machine
-set the webserver variable at top of file -
-or better we add a config file to read
+    Needs to know if challenge files are on local machine
+    or remote machine set the webserver variable at top of file -
+    or better we add a config file to read
 
 Config files:
-  <conf_dir>/ (see db/conf.py)
+    <conf_dir>/ (see db/conf.py)
                certbot.conf
                <group>/<service>
 
@@ -48,27 +48,28 @@ web server and push dns out
 import os
 import sys
 
-from cbot import CertbotHook
-from config import SslOpts
+from ssl_mgr.cbot import CertbotHook
+from ssl_mgr.config import SslOpts
 
 
 def _group_service() -> tuple[str, str, str, bool]:
     """
-    args must be passed in : group service
+    args must be passed in : group service [debug]
+    Returns:
+        (prog: str, group: str, service: str, debug: bool)
     """
     prog = sys.argv[0]
     prog = os.path.basename(prog)
-    (group, service, deb) = ('', '', False)
+    (group, service, debug) = ('', '', False)
 
     if len(sys.argv) < 3:
-        return (prog, group, service, deb)
+        return (prog, group, service, debug)
 
     group = sys.argv[1]
     service = sys.argv[2]
     if len(sys.argv) > 3 and sys.argv[3].lower().startswith('deb'):
-        deb = True
-
-    return (prog, group, service, deb)
+        debug = True
+    return (prog, group, service, debug)
 
 
 def main():
@@ -78,9 +79,11 @@ def main():
        cb-auth-http or cb-auth-dns
     """
     (_prog, group, service, deb) = _group_service()
+    # special options
     opts = SslOpts(called_from_certbot=True)
     certbot = CertbotHook('next', group, service, opts, debug=deb)
-    certbot.cleanup_hook()
+
+    certbot.auth_hook()
 
 
 if __name__ == '__main__':

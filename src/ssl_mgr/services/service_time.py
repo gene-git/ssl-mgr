@@ -7,7 +7,7 @@ service level tasks
 # import time
 import random
 
-from utils import Log
+from ssl_mgr.utils import Log
 
 from ._service_data import ServiceData
 

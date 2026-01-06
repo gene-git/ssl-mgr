@@ -6,8 +6,8 @@ Task manager
 # pylint: disable=too-many-instance-attributes
 from dataclasses import dataclass
 
-from config import SslOpts
-from utils import Log
+from ssl_mgr.config import SslOpts
+from ssl_mgr.utils import Log
 
 
 @dataclass

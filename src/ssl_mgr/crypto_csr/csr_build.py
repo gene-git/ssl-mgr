@@ -11,29 +11,9 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
-# from cryptography.x509 import CertificateSigningRequest
-# from cryptography.x509 import load_pem_x509_csr
-
-# from cryptography.hazmat.primitives import hashes
-# from cryptography.hazmat.backends import default_backend
-# from cryptography.hazmat.primitives.asymmetric import ec
-
-# from cryptography.hazmat.primitives.serialization import Encoding
-# from cryptography.hazmat.primitives.serialization import NoEncryption
-# from cryptography.hazmat.primitives.serialization import PrivateFormat
-# from cryptography.hazmat.primitives.serialization import PublicFormat
-# from cryptography.hazmat.primitives.asymmetric import ec
-# from cryptography.hazmat.primitives.asymmetric import rsa
-# from cryptography.hazmat.primitives.asymmetric import dsa
-# from cryptography.hazmat.primitives.asymmetric import ed25519
-# from cryptography.hazmat.primitives.asymmetric import ed448
-# from cryptography.hazmat.primitives.asymmetric import x25519
-# from cryptography.hazmat.primitives.asymmetric import x448
-# from cryptography.hazmat.primitives.asymmetric import dh
-
-from crypto_base import valid_prvkey_type
-from crypto_hash import lookup_hash_algo
-from utils import (is_valid_ip4, is_valid_ip6)
+from ssl_mgr.crypto_base import valid_prvkey_type
+from ssl_mgr.crypto_hash import lookup_hash_algo
+from ssl_mgr.utils import (is_valid_ip4, is_valid_ip6)
 
 from .csr_data import (SslCsrData)
 

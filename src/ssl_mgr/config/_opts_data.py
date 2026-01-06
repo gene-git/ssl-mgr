@@ -21,7 +21,7 @@ from typing import (Any)
 import os
 from dataclasses import (dataclass, field)
 
-from db import get_conf_dir
+from ssl_mgr.db import get_conf_dir
 
 from .class_cainfo import CAInfos
 from .renew_info import RenewInfo

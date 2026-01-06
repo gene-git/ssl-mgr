@@ -6,10 +6,10 @@
 # pylint: disable=invalid-name
 import os
 
-from utils import current_date_time_str
-from utils import dir_list
-from utils import write_path_atomic
-from utils import Log
+from ssl_mgr.utils import current_date_time_str
+from ssl_mgr.utils import dir_list
+from ssl_mgr.utils import write_path_atomic
+from ssl_mgr.utils import Log
 
 from ._db_data import SslDbData
 

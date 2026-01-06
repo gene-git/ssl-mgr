@@ -6,7 +6,8 @@ Read ny variables from conf.d/<group>/ssl-group.conf
 import os
 from typing import (Any)
 
-from utils import read_toml_file
+from ssl_mgr.utils import read_toml_file
+
 from .group import SslGroup
 
 

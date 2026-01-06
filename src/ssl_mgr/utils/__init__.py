@@ -3,7 +3,6 @@
 """
 support utils for ssl_mgr
 """
-from .run_prog_local import run_prog
 
 from .read_write import open_file
 from .read_write import read_file

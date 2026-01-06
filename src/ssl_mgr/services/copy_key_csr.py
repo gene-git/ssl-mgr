@@ -6,9 +6,9 @@ Copy existing private key and CSR
 # pylint: disable=invalid-name
 import os
 
-from utils import copy_file_atomic
-from utils import Log
-from db import SslDb
+from ssl_mgr.utils import copy_file_atomic
+from ssl_mgr.utils import Log
+from ssl_mgr.db import SslDb
 
 
 def copy_key_csr(db: SslDb, db_src: str, db_dst: str) -> bool:

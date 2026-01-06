@@ -21,8 +21,8 @@ service  = ca: "ca-sub1".  client domain: "mail" "web" ...
 # pylint: disable=too-few-public-methods
 import os
 
-from utils import make_dir_path
-from utils import Log
+from ssl_mgr.utils import make_dir_path
+from ssl_mgr.utils import Log
 
 
 class SslDbData:

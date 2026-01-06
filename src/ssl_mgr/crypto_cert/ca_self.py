@@ -7,8 +7,8 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
 
-from config import (SslOpts, CAInfo)
-from ca_sign import (CaSignType, CABase)
+from ssl_mgr.config import (SslOpts, CAInfo)
+from ssl_mgr.ca_sign import (CaSignType, CABase)
 
 
 class CASelf(CABase):

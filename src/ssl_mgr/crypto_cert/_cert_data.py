@@ -10,11 +10,11 @@ Certs, chains, clients
 
 import os
 
-from db import SslDb
-from config import SslOpts
-from config_service import ServiceConf
-from crypto_base import (read_chain_pem, read_cert_pem, read_fullchain_pem)
-from crypto_csr import SslCsr
+from ssl_mgr.db import SslDb
+from ssl_mgr.config import SslOpts
+from ssl_mgr.config_service import ServiceConf
+from ssl_mgr.crypto_base import (read_chain_pem, read_cert_pem, read_fullchain_pem)
+from ssl_mgr.crypto_csr import SslCsr
 
 from .class_key import SslKey
 

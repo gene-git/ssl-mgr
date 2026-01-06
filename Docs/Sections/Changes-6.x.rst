@@ -1,7 +1,8 @@
 .. SPDX-License-Identifier: MIT
 
-Changes: Interesting and/or important
-========================----=========
+#############
+Older Changes
+#############
 
 **Version 6.4 :**
 

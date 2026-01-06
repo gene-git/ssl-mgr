@@ -6,8 +6,9 @@ Initialize db for service name
 # pylint: disable=too-many-instance-attributes,invalid-name
 import os
 
-from utils import make_dir_path
-from utils import Log
+from ssl_mgr.utils import make_dir_path
+from ssl_mgr.utils import Log
+
 from ._db_data import SslDbData
 
 

@@ -7,11 +7,11 @@ load certbot config
 # pylint: disable=too-few-public-methods
 import os
 
-from db import SslDb
-from utils import get_my_hostname
-from utils import (Log, LogZone)
-from utils import set_restictive_file_perms
-from config import SslOpts
+from ssl_mgr.db import SslDb
+from ssl_mgr.utils import get_my_hostname
+from ssl_mgr.utils import (Log, LogZone)
+from ssl_mgr.utils import set_restictive_file_perms
+from ssl_mgr.config import SslOpts
 
 
 class CertbotHookData:

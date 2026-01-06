@@ -6,8 +6,8 @@ DNS support tools
 # pylint: disable=duplicate-code
 import os
 
-from utils import (Log)
-from utils import copy_file_atomic
+from ssl_mgr.utils import (Log)
+from ssl_mgr.utils import copy_file_atomic
 
 
 def dns_zone_update(dns_path: str,

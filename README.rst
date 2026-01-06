@@ -107,6 +107,14 @@ to verify the git tag.  You can also manually verify the signature
 Important Changes
 *****************
 
+Changes since version 7.1.1: 
+
+* Some code re-org and packaging switch to uv from hatch.
+* New dependency: *pyconcurrent* package (was optional)
+
+  Available on `Github <https://github.com/gene-git/pyconcurrent>`_ 
+  and `AUR <https://aur.archlinux.org/packages/pyconcurrent>`_
+
 Version 7 brings some significant enhancements supporting Letsencrypt's upcoming short lifetime 
 certs (45-day and 6-day) as well as *ACME profiles*. 
 

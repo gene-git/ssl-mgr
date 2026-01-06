@@ -8,6 +8,7 @@
 #
 dest="$1"
 self="ssl-mgr"
+mod='ssl_mgr'
 
 info="README.rst Docs examples scripts packaging"
 infodir="usr/share/${self}"
@@ -18,17 +19,23 @@ licensedir="usr/share/licenses/${self}"
 etc="examples"
 etcdir='etc/ssl-mgr/'
 
-libexecdir="usr/lib/${self}/"
-
-# list apps without the ".py" or leave empty string
 apps=('sslm-dhparm' 'sslm-info' 'sslm-mgr' 'sslm-verify')
-#libexec_py=('sslm-auth-hook' 'sslm-cleanup-hook')
+
+libexecdir="usr/lib/${self}/"
 libexec_py=('sslm-auth-hook')
-libexec_other=()
 
 # so can make app link in /usr/bin
 sitedir=$(/usr/bin/python3 -c "import site; print(site.getsitepackages()[0])")
-mysitedir="$sitedir/${self//-/_}"
+installdir="${dest}${sitedir}"
+app_location="${sitedir}/${mod}/apps"
+
+uv_opts=(
+    --python /usr/bin/python
+    --system
+    --no-build-isolation
+    --link-mode=copy
+    --compile-bytecode
+)
 
 if [ ! -d "$dest" ] ; then
     echo 'Missing destination directory'
@@ -46,14 +53,15 @@ else
     mkdir -p ${dest}/${etcdir}
     /usr/bin/rsync --mkpath -a ${etc} ${dest}/${etcdir}/
 
-    /usr/bin/python -m installer --destdir="$dest" dist/*.whl
+    /usr/bin/uv pip install ${uv_opts[@]} --target "$installdir" dist/*.whl
+    /usr/bin/rm -rf "$installdir"/.lock
 
     # link(s) in /usr/bin/
     if [ -v apps ] ; then
         /usr/bin/mkdir -p "${dest}/usr/bin"
         for app in ${apps[@]}
         do
-            /usr/bin/ln -sf ${mysitedir}/${app}.py ${dest}/usr/bin/${app}
+            /usr/bin/ln -sf ${app_location}/${app}.py ${dest}/usr/bin/${app}
         done
     fi
 
@@ -62,16 +70,10 @@ else
     if [ -v libexec_py ] ; then
         for app in ${libexec_py[@]}
         do
-            /usr/bin/ln -sf ${mysitedir}/${app}.py ${dest}/${libexecdir}/${app}
+            /usr/bin/ln -sf ${app_location}/${app}.py ${dest}/${libexecdir}/${app}
         done
     fi
-    # libexec other
-    if [ -v libexec_other ] ; then
-        for app in ${libexec_other[@]}
-        do
-            /usr/bin/ln -sf ${mysitedir}/${app} ${dest}/${libexecdir}/${app}
-        done
-    fi
+
     exit 0
 fi
 

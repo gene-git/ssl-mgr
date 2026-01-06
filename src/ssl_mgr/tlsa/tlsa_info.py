@@ -6,10 +6,10 @@ TLSA data communiation class
 # pylint: disable=too-few-public-methods, too-many-instance-attributes
 # pylint: disable=too-few-public-methods
 
-from db import SslDb
-from crypto_cert import SslCert
-from dns_base import SslDns
-from config_service import DaneTls
+from ssl_mgr.db import SslDb
+from ssl_mgr.crypto_cert import SslCert
+from ssl_mgr.dns_base import SslDns
+from ssl_mgr.config_service import DaneTls
 
 
 class TlsaItem:

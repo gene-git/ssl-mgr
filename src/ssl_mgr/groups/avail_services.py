@@ -4,7 +4,8 @@
 Misc utils
 """
 import os
-from config import service_list_from_dir
+
+from ssl_mgr.config import service_list_from_dir
 
 
 def available_services(top_dir: str, grp_name: str) -> list[str]:

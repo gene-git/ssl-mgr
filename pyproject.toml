@@ -1,11 +1,10 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.21,<=1.0.0"]
+build-backend = "uv_build"
 
 [project]
 name = "ssl-mgr"
-dynamic = ["version"]
-description = "ssl-mgr : Manage (re)new certificates and handle DANE TLSA key rollover"
+description = "ssl-mgr : Manage (re)new certificates (also DANE TLSA key rollover)"
 authors = [{ name = "Gene C", email = "arch@sapience.com" }]
 license = "MIT"
 readme = "README.rst"
@@ -14,34 +13,32 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
+requires-python = ">=3.13"
+version="7.2.0"
 dependencies = []
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/ssl_mgr"]
-include = [
-    "src/ssl_mgr",
-]
 
 [project.urls]
 Documentation = "https://github.com/gene-git/ssl-mgr/Docs"
 Issues = "https://github.com/gene-git/ssl-mgr/issues"
 Source = "https://github.com/gene-git/ssl-mgr"
 
-[tool.hatch.version]
-path = "src/ssl_mgr/config/version.py"
-
-[tool.hatch.envs.default]
-
-[tool.hatch.envs.default.scripts]
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.13", "3.14", "3.15"]
-
-[tool.hatch.envs.lint]
-detached = true
+[tool.uv.build-backend]
+module-name = 'ssl_mgr'
+module-root = "src"
+source-include = [
+    '/ssl_mgr',
+    '/ssl_mgr/py.typed',
+]
+source-exclude = [
+    ".pytest_cache",
+    "__pycache__",
+    ".mypy_cache",
+]
 
 [tool.mypy]
 check_untyped_defs = true
-
-
+follow_untyped_imports = true
+#mypy_path = "src/types_stubs"

@@ -8,11 +8,12 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
 import os
-from groups import SslGroup, GroupChanges
-from utils import current_date_time_str, get_my_hostname
-from utils import (Log)
-from config import SslOpts
-from config import check_options, check_options_cbot_hook, check_options_group
+
+from ssl_mgr.groups import SslGroup, GroupChanges
+from ssl_mgr.utils import current_date_time_str, get_my_hostname
+from ssl_mgr.utils import (Log)
+from ssl_mgr.config import SslOpts
+from ssl_mgr.config import check_options, check_options_cbot_hook, check_options_group
 
 from .class_lock import SslLockMgr
 

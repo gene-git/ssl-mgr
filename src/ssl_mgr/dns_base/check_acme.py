@@ -6,7 +6,8 @@ DNS tools
 # pylint: disable=invalid-name,line-too-long,too-many-locals
 import time
 
-from utils import (Log)
+from ssl_mgr.utils import (Log)
+
 from .dns import dns_serial, dns_query
 from ._dns_data import SslDnsData
 

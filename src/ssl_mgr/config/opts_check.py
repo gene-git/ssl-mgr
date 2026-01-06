@@ -5,7 +5,7 @@ Basic checks on config and options
 """
 import os
 
-from utils import Log
+from ssl_mgr.utils import Log
 
 from ._opts_data import SslOptsData
 

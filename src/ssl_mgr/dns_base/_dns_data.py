@@ -8,8 +8,8 @@ DNS tools
 # pylint: disable=too-few-public-methods
 import dns
 
-from utils import is_valid_cidr
-from utils import Log
+from ssl_mgr.utils import is_valid_cidr
+from ssl_mgr.utils import Log
 
 from .dns import dns_resolver
 from .dns import auth_nameservers

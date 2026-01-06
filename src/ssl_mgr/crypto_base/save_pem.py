@@ -8,9 +8,9 @@ import stat
 from pathlib import Path
 from cryptography import x509
 from cryptography.x509 import load_pem_x509_certificate
-from utils import write_pem
-from utils import read_pem
-from utils import get_file_time_ns
+from ssl_mgr.utils import write_pem
+from ssl_mgr.utils import read_pem
+from ssl_mgr.utils import get_file_time_ns
 
 
 def _restrict_file_perms(fpath: str):

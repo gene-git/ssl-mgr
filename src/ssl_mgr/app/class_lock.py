@@ -8,8 +8,8 @@ import sys
 import pwd
 from lockmgr import LockMgr
 
-from utils import Log
-from crypto_hash import (lookup_hash_algo, make_hash)
+from ssl_mgr.utils import Log
+from ssl_mgr.crypto_hash import (lookup_hash_algo, make_hash)
 
 
 class SslLockMgr:

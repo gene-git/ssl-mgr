@@ -9,6 +9,17 @@ Latest Changes
 Note that the full PDF doc is in the Docs directory and includes the details
 of all current changes taken from the *Changes-7.x.rst* file.
 
+
+**Version 7.2.0**
+
+* Code Reorg
+* Switch packaging from hatch to uv
+* Testing to confirm all working correctly on python 3.14.2
+* New dependency: pyconcurrent is now required instead of optional (code simplification): 
+  
+  Available on `Github <https://github.com/gene-git/pyconcurrent>`_
+  and `AUR <https://aur.archlinux.org/packages/pyconcurrent>`_
+
 **Version 7.0.0 :** (Major version with important changes)
 
 **Enhancements** 

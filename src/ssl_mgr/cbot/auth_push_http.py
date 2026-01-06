@@ -10,8 +10,10 @@ from pwd import getpwnam
 from grp import getgrnam
 import tempfile
 
-from utils import open_file, run_prog, make_dir_path, write_path_atomic
-from utils import Log
+from pyconcurrent import run_prog
+
+from ssl_mgr.utils import open_file, make_dir_path, write_path_atomic
+from ssl_mgr.utils import Log
 
 from .certbothook_data import CertbotHookData
 

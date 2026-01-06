@@ -6,9 +6,11 @@ Push keys/certs to designated directory
 """
 import os
 
-from utils import (make_dir_path, run_prog)
-from utils import Log
-from config import (ConfServ)
+from pyconcurrent import run_prog
+
+from ssl_mgr.utils import make_dir_path
+from ssl_mgr.utils import Log
+from ssl_mgr.config import ConfServ
 
 from .ssl_mgr_data import SslMgrData
 from .check_production_synced import check_production_synced

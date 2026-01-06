@@ -9,9 +9,9 @@ Certificate Tools - CSR
 import os
 from cryptography.x509 import CertificateSigningRequest
 
-from crypto_base import KeyTypePrv
-from db import SslDb
-from config_service import ServiceConf
+from ssl_mgr.crypto_base import KeyTypePrv
+from ssl_mgr.db import SslDb
+from ssl_mgr.config_service import ServiceConf
 
 
 class SslCsrData():

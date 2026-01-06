@@ -7,7 +7,10 @@ import os
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.hazmat.primitives.serialization import ParameterFormat
-from utils import (open_file, run_prog)
+
+from pyconcurrent import run_prog
+
+from ssl_mgr.utils import open_file
 
 
 def generate_dh_params(key_size: int):

@@ -6,9 +6,9 @@
 # pylint: disable=invalid-name
 # pylint: disable=too-many-instance-attributes
 
-from config import SslOpts
-from dns_base import SslDns
-from utils import Log
+from ssl_mgr.config import SslOpts
+from ssl_mgr.dns_base import SslDns
+from ssl_mgr.utils import Log
 
 from .service_tasks import (check_curr_cert_changed, check_next_cert_changed)
 from .service_tasks import (new_key_pair, new_next, new_csr, new_cert)

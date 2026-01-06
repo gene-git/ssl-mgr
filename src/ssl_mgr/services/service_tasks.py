@@ -4,9 +4,9 @@
   service level tasks
 """
 # pylint: disable=invalid-name
-from crypto_cert import SslCert
-from tlsa import (TlsaItem, tlsa_generate_file)
-from utils import Log
+from ssl_mgr.crypto_cert import SslCert
+from ssl_mgr.tlsa import (TlsaItem, tlsa_generate_file)
+from ssl_mgr.utils import Log
 
 from .copy_key_csr import copy_key_csr
 from .service_time import (time_to_renew, log_cert_expiry, time_to_roll)

@@ -7,7 +7,8 @@ Certificate Managerment Test Renew Tool(s)
 # pylint: disable=invalid-name
 # pylint: disable=duplicate-code
 import sys
-from config import SslOpts
+
+from ssl_mgr.config import SslOpts
 
 
 def _help():
@@ -29,7 +30,6 @@ def _options() -> tuple[float, float]:
     Returns
         tuple(summary: bool, argv: list[str])
     """
-    argv: list[str] = []
     if len(sys.argv) < 3:
         _help()
 
@@ -41,6 +41,7 @@ def _options() -> tuple[float, float]:
     expire = float(sys.argv[2])
 
     return (issue, expire)
+
 
 def main():
     """
@@ -59,6 +60,7 @@ def main():
     print(f'renew            : {ok}')
     print(f'days_to_renew    : {round(days_to_renew, 3)}')
     print(f'rand_adj         : {round(rand_adj, 3)}')
+
 
 if __name__ == '__main__':
     main()

@@ -9,9 +9,9 @@ Certificate Managerment Tools
 import os
 import sys
 
-from crypto_cert import (cert_verify_file)
-from crypto_base import (CertInfo, cert_info_from_pem_string)
-from utils import read_pem
+from ssl_mgr.crypto_cert import (cert_verify_file)
+from ssl_mgr.crypto_base import (CertInfo, cert_info_from_pem_string)
+from ssl_mgr.utils import read_pem
 
 
 def _help():

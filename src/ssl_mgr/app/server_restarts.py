@@ -5,11 +5,12 @@
 Restart servers after cert update
 """
 
-from utils import run_prog
-from utils import (Log)
-from dns_base import dns_restart
-from config import (ConfServ, ConfDns, ConfSvcDep)
-from groups import (GroupChange, GroupChanges)
+from pyconcurrent import run_prog
+
+from ssl_mgr.utils import Log
+from ssl_mgr.dns_base import dns_restart
+from ssl_mgr.config import (ConfServ, ConfDns, ConfSvcDep)
+from ssl_mgr.groups import (GroupChange, GroupChanges)
 
 from .ssl_mgr_data import SslMgrData
 

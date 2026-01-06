@@ -6,8 +6,8 @@ Generate TLSA resource record file(s)
 # pylint: disable=too-many-locals
 import os
 
-from utils import (write_path_atomic, read_file_time, merge_lists)
-from utils import Log
+from ssl_mgr.utils import (write_path_atomic, read_file_time, merge_lists)
+from ssl_mgr.utils import Log
 
 from .group_data import GroupData
 

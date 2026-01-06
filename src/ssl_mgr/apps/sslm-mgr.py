@@ -8,7 +8,7 @@ Certificate Managerment Tools
     - CA
     - Domain
 """
-from app import SslMgr
+from ssl_mgr.app import SslMgr
 
 
 def main():

@@ -6,10 +6,11 @@ Push curr keys/certs to designated directory
 # pylint: disable=duplicate-code, too-many-locals
 import os
 
-from utils import make_dir_path
-from utils import remove_path
-from utils import run_prog
-from utils import Log
+from pyconcurrent import run_prog
+
+from ssl_mgr.utils import make_dir_path
+from ssl_mgr.utils import remove_path
+from ssl_mgr.utils import Log
 
 from ._service_data import ServiceData
 

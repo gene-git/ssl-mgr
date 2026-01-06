@@ -9,9 +9,9 @@
 # pylint: disable=too-few-public-methods
 import os
 
-from utils import Log
-from utils import write_path_atomic
-from utils import current_date_time_str
+from ssl_mgr.utils import Log
+from ssl_mgr.utils import write_path_atomic
+from ssl_mgr.utils import current_date_time_str
 
 from .ssl_mgr_data import SslMgrData
 from .clean import cleanup

@@ -6,8 +6,8 @@ Certificate Tools
 import os
 from typing import (Any)
 
-from utils import write_toml_file
-from utils import Log
+from ssl_mgr.utils import write_toml_file
+from ssl_mgr.utils import Log
 
 from .service_conf_data import ServiceConfData
 
