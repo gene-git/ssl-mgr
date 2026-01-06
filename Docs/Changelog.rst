@@ -6,12 +6,31 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.1.1 (2025-12-22)
-	90 commits.
+	2.2.0 (2024-03-29) -> 7.2.0 (2026-01-06)
+	92 commits.
 
 Commits
 =======
 
+
+* 2026-01-06  : **7.2.0**
+
+.. code-block:: text
+
+              - **Version 7.2.0**
+            
+                * Code Reorg
+                * Switch packaging from hatch to uv
+                * Testing to confirm all working correctly on python 3.14.2
+                * New dependency: pyconcurrent is now required instead of optional (code simplification):
+            
+                  Available on `Github <https://github.com/gene-git/pyconcurrent>`_
+                  and `AUR <https://aur.archlinux.org/packages/pyconcurrent>`_
+ 2025-12-22   ⋯
+
+.. code-block:: text
+
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2025-12-22  : **7.1.1**
 
