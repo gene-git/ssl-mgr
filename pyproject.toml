@@ -6,7 +6,7 @@ build-backend = "uv_build"
 name = "ssl-mgr"
 description = "ssl-mgr : Manage (re)new certificates (also DANE TLSA key rollover)"
 authors = [{ name = "Gene C", email = "arch@sapience.com" }]
-license = "MIT"
+license = "GPL-2.0-or-later"
 readme = "README.rst"
 keywords = []
 classifiers = [
