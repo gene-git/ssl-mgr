@@ -6,12 +6,27 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.3.0 (2026-04-04)
-	96 commits.
+	2.2.0 (2024-03-29) -> 7.4.0 (2026-04-04)
+	98 commits.
 
 Commits
 =======
 
+
+* 2026-04-04  : **7.4.0**
+
+.. code-block:: text
+
+              - **Version 7.4.0**
+            
+                * DANE TLSA record now supports a time-to-live (TTL). It is specifed in the service file:
+            
+                  dane_tls_ttl = 3600
+                  dane_tls = [[25, 'tcp', 3, 1, 1, 'MX']]
+            
+                  If dane_tls_ttl is not set, it defaults to 1800 seconds (30 minutes).
+                  Earlier versions inherited the TTL for the DNS zone.
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2026-04-04  : **7.3.0**
 
