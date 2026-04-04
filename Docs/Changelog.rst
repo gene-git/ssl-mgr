@@ -7,7 +7,7 @@ Tags
 .. code-block:: text
 
 	2.2.0 (2024-03-29) -> 7.3.0 (2026-04-04)
-	95 commits.
+	96 commits.
 
 Commits
 =======
@@ -17,6 +17,7 @@ Commits
 
 .. code-block:: text
 
+              - Add new sslm-tlsa-hash app to repo
               - **Version 7.3.0**
             
                 * Fix Typo that broke generation of DANE TLSA files.

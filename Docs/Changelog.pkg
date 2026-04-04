@@ -6,6 +6,7 @@
 -------------------------------------------------------
 
  2026-04-04   : 7.3.0
+              - Add new sslm-tlsa-hash app to repo
               - **Version 7.3.0**
             
                 * Fix Typo that broke generation of DANE TLSA files.
