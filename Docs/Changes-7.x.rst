@@ -9,6 +9,16 @@ Latest Changes
 Note that the full PDF doc is in the Docs directory and includes the details
 of all current changes taken from the *Changes-7.x.rst* file.
 
+**Version 7.4.0**
+
+* DANE TLSA record now supports a time-to-live (TTL). It is specifed in the service file:
+
+  dane_tls_ttl = 3600
+  dane_tls = [[25, 'tcp', 3, 1, 1, 'MX']]
+
+  If dane_tls_ttl is not set, it defaults to 1800 seconds (30 minutes). 
+  Earlier versions inherited the TTL for the DNS zone.
+
 **Version 7.3.0**
 
 * Fix Typo that broke generation of DANE TLSA files.

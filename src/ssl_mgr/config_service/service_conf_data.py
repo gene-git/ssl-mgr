@@ -42,6 +42,7 @@ class ServiceConfData:
         self.file: str = ''
 
         self.signing_ca: str = ''
+        self.dane_tls_ttl: int = 1800
         self.dane_tls: list[DaneTls] = []
 
         self.debug: bool = False

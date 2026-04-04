@@ -89,7 +89,7 @@ However, in practice, it is safer to use CA signed certs for
 SMTP to reduce the chance of potential delivery problems in the event a mail server requires 
 a CA chain of trust. 
 
-We therefore recommend using CA signed certificates and therefore publishing DANE TLSA records using 
+Therefore we therefore using CA signed certificates and publishing DANE TLSA records using 
 those certificiates. Each MX will have its own TLSA record.
 
 While DANE can be used for other TLS services, such as https, in practice it is only used with email.

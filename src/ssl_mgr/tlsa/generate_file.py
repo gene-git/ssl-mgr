@@ -31,11 +31,13 @@ def _match_type_to_hash_name(match_type: int) -> str:
     return hash_name
 
 
-def _tlsa_update_one(cert: SslCert, ssl_dns: SslDns) -> list[str]:
+def _tlsa_update_one(cert: SslCert, tlsa_item: TlsaItem) -> list[str]:
     """
     Make file with tlsa records
     """
     dns_rr: list[str] = []
+
+    ssl_dns: SslDns = tlsa_item.ssl_dns
 
     logger = Log()
     logs = logger.logs
@@ -46,6 +48,13 @@ def _tlsa_update_one(cert: SslCert, ssl_dns: SslDns) -> list[str]:
         return dns_rr
 
     apex_domain: str = ssl_dns.apex_domain
+
+    #
+    # Check for dane_tls_ttl
+    #
+    ttl: str = ''
+    if tlsa_item.dane_tls_ttl > 0:
+        ttl = f'{tlsa_item.dane_tls_ttl} '
 
     #
     # ssl_dns.mx_hosts is dict of (prio, host)
@@ -104,7 +113,7 @@ def _tlsa_update_one(cert: SslCert, ssl_dns: SslDns) -> list[str]:
         #
         # Apex domain
         #
-        rec = f'_{one.port}._{one.proto}.{apex_domain}. IN TLSA {tlsa_rdata}'
+        rec = f'_{one.port}._{one.proto}.{apex_domain}. {ttl} IN TLSA {tlsa_rdata}'
         dns_rr.append(rec)
 
         #
@@ -116,7 +125,7 @@ def _tlsa_update_one(cert: SslCert, ssl_dns: SslDns) -> list[str]:
         for subdomain in subdomains:
             if subdomain != apex_domain:
                 tls_key = f'_{one.port}._{one.proto}.{subdomain}'
-                rec = f'{tls_key} IN TLSA {tlsa_rdata}'
+                rec = f'{tls_key} {ttl} IN TLSA {tlsa_rdata}'
                 dns_rr.append(rec)
     return dns_rr
 
@@ -147,7 +156,7 @@ def tlsa_generate_file(tlsa_item: TlsaItem) -> bool:
         return False
 
     dns_rr = []
-    dns_rr = _tlsa_update_one(cert, tlsa_item.ssl_dns)
+    dns_rr = _tlsa_update_one(cert, tlsa_item)
 
     #
     # save tlsa records file in own db dir

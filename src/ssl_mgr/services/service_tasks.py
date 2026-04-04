@@ -300,6 +300,7 @@ def _tlsa_generate_file(service: ServiceData, lname: str) -> bool:
     tlsa_item.svc_name = service.svc_name
     tlsa_item.lname = lname
     tlsa_item.dane_tls = service.svc.dane_tls
+    tlsa_item.dane_tls_ttl = service.svc.dane_tls_ttl
     tlsa_item.db = service.db
     tlsa_item.cert = service.cert
     tlsa_item.ssl_dns = service.ssl_dns

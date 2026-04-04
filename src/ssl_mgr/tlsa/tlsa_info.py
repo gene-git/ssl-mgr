@@ -25,6 +25,7 @@ class TlsaItem:
         self.group_name: str = ''
         self.svc_name: str = ''
         self.apex_domain: str = ''
+        self.dane_tls_ttl: int = 1800
         self.dane_tls: list[DaneTls] = []
         self.db: SslDb
         self.cert: dict[str, SslCert] = {}

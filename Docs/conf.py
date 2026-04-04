@@ -10,7 +10,7 @@ latex_engine = 'xelatex'
 project = "ssl-mgr"
 copyright = '2023-%Y, Gene C'
 author = 'Gene C'
-release = "7.3.0"
+release = "7.4.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
