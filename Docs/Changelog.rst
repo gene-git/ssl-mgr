@@ -6,12 +6,39 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.2.0 (2026-01-06)
-	92 commits.
+	2.2.0 (2024-03-29) -> 7.3.0 (2026-04-04)
+	95 commits.
 
 Commits
 =======
 
+
+* 2026-04-04  : **7.3.0**
+
+.. code-block:: text
+
+              - **Version 7.3.0**
+            
+                * Fix Typo that broke generation of DANE TLSA files.
+                * New tool: sslm-tlsa-hash
+            
+                  Given a cert, generate the DANE TLSA hash using internal tools and using openssl.
+                  Confirm they match. Once TLSA records are created, you can now double check the cert hash
+                  is correct.
+            
+                * Coming soon: support for DNS-PERSIST-01
+                  See `Letsecnrypt Blog <https://letsencrypt.org/2026/02/18/dns-persist-01>`_ and
+                  preliminary `Draft spec <https://datatracker.ietf.org/doc/html/draft-ietf-acme-dns-persist-00>`_.
+ 2026-01-09   ⋯
+
+.. code-block:: text
+
+              - Update license sting in pyproject
+ 2026-01-06   ⋯
+
+.. code-block:: text
+
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2026-01-06  : **7.2.0**
 
