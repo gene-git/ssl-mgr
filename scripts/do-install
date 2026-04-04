@@ -19,7 +19,7 @@ licensedir="usr/share/licenses/${self}"
 etc="examples"
 etcdir='etc/ssl-mgr/'
 
-apps=('sslm-dhparm' 'sslm-info' 'sslm-mgr' 'sslm-verify')
+apps=('sslm-dhparm' 'sslm-info' 'sslm-mgr' 'sslm-verify', 'sslm-tlsa-hash')
 
 libexecdir="usr/lib/${self}/"
 libexec_py=('sslm-auth-hook')

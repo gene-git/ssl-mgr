@@ -9,6 +9,19 @@ Latest Changes
 Note that the full PDF doc is in the Docs directory and includes the details
 of all current changes taken from the *Changes-7.x.rst* file.
 
+**Version 7.3.0**
+
+* Fix Typo that broke generation of DANE TLSA files.
+* New tool: sslm-tlsa-hash
+
+  Given a cert, generate the DANE TLSA hash using internal tools and using openssl.
+  Confirm they match. Once TLSA records are created, you can now double check the cert hash
+  is correct.
+
+* Coming soon: support for DNS-PERSIST-01
+  See `Letsecnrypt Blog <https://letsencrypt.org/2026/02/18/dns-persist-01>`_ and
+  preliminary `Draft spec <https://datatracker.ietf.org/doc/html/draft-ietf-acme-dns-persist-00>`_.
+
 
 **Version 7.2.0**
 

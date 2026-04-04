@@ -291,7 +291,7 @@ def _tlsa_generate_file(service: ServiceData, lname: str) -> bool:
     """
     Wrap call to tlsa_generate_file()
     """
-    if not service.dane_tls or not service.ssl_dns:
+    if not service.svc.dane_tls or not service.ssl_dns:
         return True
 
     tlsa_item = TlsaItem()
@@ -299,7 +299,7 @@ def _tlsa_generate_file(service: ServiceData, lname: str) -> bool:
     tlsa_item.apex_domain = service.apex_domain
     tlsa_item.svc_name = service.svc_name
     tlsa_item.lname = lname
-    tlsa_item.dane_tls = service.dane_tls
+    tlsa_item.dane_tls = service.svc.dane_tls
     tlsa_item.db = service.db
     tlsa_item.cert = service.cert
     tlsa_item.ssl_dns = service.ssl_dns
