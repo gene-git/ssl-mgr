@@ -148,8 +148,9 @@ Config ssl-mgr.conf
         prod_cert_dir = '/etc/ssl-mgr/prod-certs'
         logdir = '/var/log/ssl-mgr/ssl-mgr/Logs'
 
-        clean_keep = 5
+        clean_keep = 10
         min_roll_mins = 90
+
         #
         # Letsencrypt profiles: classic, tlsserver, shortlived
         # NB classic is going away.
@@ -271,6 +272,7 @@ Config Service : example.com/mail-ec
 
     # Include tls.example.com in zone file to use
     #  => [[port, proto, usage, selector, match], ...]
+    # port 25 uses MX other ports use all SAN hostsnames.
     dane_tls = [[25, 'tcp', 3, 1, 1]]
 
     [KeyOpts]
@@ -409,7 +411,7 @@ Dependencies
 =================== ==================================
  Package             Comment
 =================== ==================================
- python              3.13 or later
+ python              3.14 or later
  dnspython           
  cryptography
  dateutil
@@ -437,15 +439,6 @@ Philosophy
 We follow the *live at head commit* philosophy as recommended by
 Google's Abseil team [1]_.  This means we recommend using the
 latest commit on git master branch. 
-
-
-License
-=======
-
-Created by Gene C. and licensed under the terms of the MIT license.
-
- * SPDX-License-Identifier: MIT
- * SPDX-FileCopyrightText: © 2023-present Gene C <arch@sapience.com>
 
 
 .. _Github: https://github.com/gene-git/ssl-mgr

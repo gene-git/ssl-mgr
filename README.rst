@@ -4,136 +4,243 @@
 ssl-mgr
 #######
 
-Certificate management tool. 
+*sslm-mgr* is a certificate management tool that helps automate key/certificate 
+creation and renewal. It handles multiple certificates for one or more domains.
 
-Note that the *Docs* directory contains the full PDF which includes details of the most
-recent changes (*Docs/Changes-7.x.rst*). 
+See the *Docs* directory for the complete PDF documentation.
+
+A key pair is comprised of a private *key* and a *certificate* holding the public key.
 
 ************
 Key Features
 ************
 
-* Handles creating new and renewing certificates
+* Create new key/cert pairs 
+* Renew existing ones.
+* Generate key pairs using Certificate Signing Request (CSR) for maximum control.
+* Supports http-01 and dns-01 acme challenges.
+* Support of dns-persist-01 planned for 2026 after available in Letsencrypt.
+* Outputs files for acme DNS-01 authentication with appropriate DNS TXT records.
 
-* Generates key pairs and Certificate Signing Request (CSR) to provide maximum control 
+  These are included in the apex domain zone file, making updates straightforward.
 
-* Supports http-01 and dns-01 acme challenges
+* Optional support to output DANE TLSA file for each Apex domain. 
+  
+  These are included in apex domain DNS Zone file.
 
-* Outputs DNS files for acme DNS-01 authentication as well as optioanal DANE TLSA files.
-  These files are to be included by the apex domain zone file. This makes updates 
-  straightforward.
+* Uses certbot in manual mode to communicate with letsencrypt, account tracking etc.
 
-* Uses certbot in manual mode to handle communication with letsencrypt, account tracking etc.
+* Processes multiple domains - each domain can have multiple certs.
 
-* Processes multiple domains and each domain each can have multiple certs.
-  For example separate web and mail certs.
+  For example making separate certs for web and email servers.
+
 
 ********
 Overview
 ********
 
-By way of background, I wrote this with 3 goals. Specifically to:
+Secure communications often use private / public key pairs. The public key
+for many cases is contained within a certificate (*cert*) which is signed by some
+certificate authority (*CA*) and has an expiration date. 
+While certs have expiration date, keys (private or private) do not. 
+
+There are several known and *approved* CAs, such as Letsencrypt,
+whose own certificates are known and trusted. Browsers for example have trust in them.
+When a certificate is presented that has been signed by one of these CAs, then the
+browser trusts that certificate as well. 
+
+Obtaining a certificate from Letsencrypt and other CAs is done using 
+the Automated Certificate Management Environment (ACME) protocol.
+
+See :ref:`Acme_Challenge` for some background how CA certificates are validated.
+
+Web and mail servers both use key/certs. Web servers have browsers and 
+other clients and mail servers (mostly) have other mail servers as clients.
+
+Letsencrypt is a CA service that provides signed certificates for these kinds of uses.
+Their certificates have moderately short (and getting shorter) expirations and thus need
+to be renewed periodically.
+
+I wrote *ssl-mgr* with 3 goals. Specifically to:
 
 * Simplify certificate management - (i.e. automatic, simple and robust)
 * Support *dns-01* acme challenge with Letsencrypt (as well as *http-01*)
 * Support *DANE TLS*
 
-The aim is to make things robust, complete and as simple to use as possible. 
-Under the hood, make it sensible and automate wherever feasible. 
+Creating and reenewing key/certs can be tricky. *ssl-mgr* strives to make things robust, 
+complete, clean and as simple to use as possible.  
+Under the hood, make it sensible (do the *right* thing) and automate wherever feasible. 
 
-A good tool does things correctly while using it should be straightforward 
-and as simple as possible; but no simpler.
+A good tool does things correctly while making using the tool as straightforward 
+and simple as possible; but no simpler.
 
-In practical terms, there are only 2 common commands that are needed with *sslm-mgr*:
+In practical terms, there are only 2 key commands needed with *sslm-mgr*:
 
 * **renew** - creates new certificate(s) in *next* : current certs remain in *curr*. 
-* **roll** - moves *next* to become the new *curr*.
+* **roll** - moves *next* to be the new *curr*.
 
-Once things are set up these can be run out of cron - renew, then wait, then roll.
+The configuration files provide all the relevant information about the domains
+and certificates needed.
+After the configuration files are set up with the appropriate information 
+then these commands can be run out of cron:
+
+* renew, wait, roll.
+
 Clean and simple. 
 
-Strictly speaking, cert rolling is only needed when they are advertized 
-via DNS (for example) and some time is required for things to flush through.  
+Rolling of certs is strictly only needed when certs are advertised 
+via DNS (for example) and some time is required for DNS caches to flush through.  
+This is true for DANE, since it provides certs via DNS *TLSA* records.
 
-In the first step, rolling advertized both old and new keys and keeps them 
-available for an appropriate period of time; typically long enough for 
+In the first roll step, both old and new keys are advertised and they are kept 
+available (in DNS) for an appropriate period of time; typically long enough for 
 DNS info to propogate and DNS servers to update. 
 
-In the second, and last, roll step, dns is updated to advertize only the new certs.
+In the second, and last, roll step, DNS is updated to advertise only the new certs.
 
 Changing to new certs without rolling can be problematic if some DNS servers 
 still point to the older certs.
 
-Without any loss of generality we always renew and then roll. The roll wait time
-can always be set to 0 if no public keys are being advertized over DNS.
+Without any loss of generality we can always renew and roll. If a roll is not 
+needed, then the roll wait time can be adjusted to a small value, or even to 0. 
 
-The **sslm-mgr --status** option gives 
-a convenient summary of all managed certificates along with their expiration and 
-time remaining time before renewal. 
 
-The separate **sslm-info** program provides a 
-convenient way to display information about keys, certs (or chains of certs), CSRs etc.
+**N.B.** 
 
-The **sslm-verify** tool checks if a cert is valid.
+DNSSEC is required for DANE otherwise its not needed. However, we still recommend using DNSSEC
+and made available the tool we use to simplify DNS/DNSSEC management [#dnstool]_.
 
-N.B. DNSSEC is required for DANE otherwise it is not needed. However, we do recommend using DNSSEC
-and have made available the tool we use to simplify DNS/DNSSEC management [#dnstool]_.
+**Important**
+
+  When activating DANE for the first time it's important to only include DANE TLSA records
+  after the *roll*. See :ref:`DANE_TLSA_FIRST_USE` for more detail. 
 
 
 .. [#dnstool] dns_tools : https://github.com/gene-git/dns_tools
 
-DANE can use either self-signed certs or known CA signed certs. *ssl-mgr* makes it straightforward 
-to create self-signed certs as well. 
+DANE can use either self-signed certs or *known* Certificate Authority (CA) signed certs. 
+*ssl-mgr* makes it straightforward to create self-signed certs as well. 
 
-However, in practice, it is safer to use CA signed certs for 
-SMTP to reduce the chance of potential delivery problems in the event a mail server requires 
+The recommended way for creating and using your own certs is
+to have your own self-signed CA which is then used to sign an *intermediate* certificate. 
+The *intermediate* cert is what is then used to sign other certificates. This is the same
+model used by well-known CAs as well. So it keeps it clean and simple to follow the same model.
+
+While mail may use your own CA signed certs, , in practice, it is safer to use CA signed certs for 
+to reduce the chance of delivery problems in the event a mail server requires 
 a CA chain of trust. 
 
 Therefore we therefore using CA signed certificates and publishing DANE TLSA records using 
 those certificiates. Each MX will have its own TLSA record.
 
-While DANE can be used for other TLS services, such as https, in practice it is only used with email.
+While DANE can be used for other TLS services, notably https, in practice it is only used with email.
 
-For convenience, there is a PDF version of this document in the Docs directory.
+Cert Information
+----------------
 
-Note:
+**sslm-mgr --status** provides a convenient summary of all 
+managed certificates along with their expiration and 
+time remaining time before the next renewal. 
 
-All git tags are signed with arch@sapience.com key which is available via WKD
-or download from https://www.sapience.com/tech. Add the key to your package builder gpg keyring.
-The key is included in the Arch package and the source= line with *?signed* at the end can be used
-to verify the git tag.  You can also manually verify the signature
+Sample output of *sslm-mgr --status --verb example.com:web-ec-self*:
+
+.. code-block:: text
+
+     web-ec-self
+         curr         : expires: 2026-07-06 12:07:39+00:00 (  89 days + 23:59:07)
+                      : issued : 2026-04-07 12:07:39+00:00 (   0 days + 00:00:52 ago. 90 day cert)
+               issuer : CN=MySub-ec O=Example IT Department
+              subject : CN=example.com
+               pubkey : pubkey-secp384r1
+                 sans : ['example.com', 'www.example.com']
+             sig_algo : ecdsa-with-SHA384
+
+The last two lines are included when *--verb* option is used.
+
+
+File Information
+----------------
+
+While *sslm-mgr* interacts with the internal data, there are times when its useful
+to find information about a certificate file.  The file can be a private key, 
+a certificate (or chain of certs) or CSR.
+
+**sslm-info <filename>** displays information about it's contents.
+
+**sslm-verify** checks whether a cert is valid.  Sample output:
+
+.. code-block:: text
+
+    -------------------
+        Certificate ** Verified **
+    Certificate Info:
+    Expires  : 2026-06-23 17:50:05+00:00 (  77 days + 05:24:38)
+    Issued   : 2026-03-25 17:50:06+00:00 (  12 days + 18:35:20 ago. 90 day cert)
+    Issuer   : CN=YE2,O=Let's Encrypt,C=US
+    Pubkey   : pubkey-secp384r1
+    Sig algo : ecdsa-with-SHA384
+
+
+    -------------------
+    Chain Info:
+    Expires  : 2028-09-02 23:59:59+00:00 ( 879 days + 11:34:32)
+    Issued   : 2025-09-03 00:00:00+00:00 ( 216 days + 12:25:26 ago. 1096 day cert)
+    Issuer   : CN=Root YE,O=ISRG,C=US
+    Subject  : CN=YE2,O=Let's Encrypt,C=US
+    Pubkey   : pubkey-secp384r1
+    Sig algo : ecdsa-with-SHA384
+
+    Expires  : 2032-09-02 23:59:59+00:00 (2340 days + 11:34:32)
+    Issued   : 2025-09-03 00:00:00+00:00 ( 216 days + 12:25:26 ago. 2557 day cert)
+    Issuer   : CN=ISRG Root X2,O=Internet Security Research Group,C=US
+    Subject  : CN=Root YE,O=ISRG,C=US
+    Pubkey   : pubkey-secp384r1
+    Sig algo : ecdsa-with-SHA384
+
+    Expires  : 2032-09-02 23:59:59+00:00 (2340 days + 11:34:32)
+    Issued   : 2025-09-03 00:00:00+00:00 ( 216 days + 12:25:26 ago. 2557 day cert)
+    Issuer   : CN=ISRG Root X1,O=Internet Security Research Group,C=US
+    Subject  : CN=ISRG Root X2,O=Internet Security Research Group,C=US
+    Pubkey   : pubkey-secp384r1
+    Sig algo : sha256WithRSAEncryption
+
+
+Git Repo
+--------
+
+Please Note:
+
+All git tags are signed with the arch@sapience.com (public) key that is available via WKD
+or for download from https://www.sapience.com/tech. Add the key to your package builder openpgp keyring.
+
+The key is also included in the Arch package and the source= line with *?signed* at the end of the line
+can be used to verify the git tag.  You can also manually verify the signature as usual with
+*git verify*.
 
 *****************
 Important Changes
 *****************
 
-Changes since version 7.1.1: 
+**Version 7.4.0**
 
-* Some code re-org and packaging switch to uv from hatch.
-* New dependency: *pyconcurrent* package (was optional)
+* DANE TLSA record now supports a time-to-live (TTL). It is specifed in the service file:
+  
+  dane_tls_ttl = 3600
 
-  Available on `Github <https://github.com/gene-git/pyconcurrent>`_ 
-  and `AUR <https://aur.archlinux.org/packages/pyconcurrent>`_
+  dane_tls = [[25, 'tcp', 3, 1, 1, 'MX']]
 
-Version 7 brings some significant enhancements supporting Letsencrypt's upcoming short lifetime 
-certs (45-day and 6-day) as well as *ACME profiles*. 
+  If dane_tls_ttl is not set, it defaults to 1800 seconds (30 minutes).
+  Earlier versions inherited the TTL for the DNS zone.
 
-We revisited the *when to renew* a certificate decision so that we can sensibly handle 
-short lifetime certs.
 
-There are new config options for those wanting to customize it. In preparation for the
-upcoming May 13, 2026 45-day cert availability, we request *tlsserver* profile by default.
-
-Everything should work without change. However, there are a couple of optional config options
-we **recommend** removing. 
-
-Please see :ref:`Latest_Changes` for the details and explanation of which configs should
-be removed if they are being used. 
+More details on changes are dound in :ref:`Latest_Changes`.
 
 
 ****************
 ssl-mgr: Details
 ****************
 
-More details about *ssl-mgr* tools are available in the :ref:`More_Details` section.
+More details about *ssl-mgr* tools are available in the sections :ref:`Acme_Challenge`, 
+:ref:`Background`, :ref:`Renew_Roll`, :ref:`Dane`, :ref:`Configs` and
+:ref:`Using_Tools`.
 

@@ -9,11 +9,16 @@ Latest Changes
 Note that the full PDF doc is in the Docs directory and includes the details
 of all current changes taken from the *Changes-7.x.rst* file.
 
+**Version 7.4.1**
+
+* Some documentation clean ups and re-org. No functional change.
+
 **Version 7.4.0**
 
 * DANE TLSA record now supports a time-to-live (TTL). It is specifed in the service file:
 
   dane_tls_ttl = 3600
+
   dane_tls = [[25, 'tcp', 3, 1, 1, 'MX']]
 
   If dane_tls_ttl is not set, it defaults to 1800 seconds (30 minutes). 
@@ -44,6 +49,19 @@ of all current changes taken from the *Changes-7.x.rst* file.
   and `AUR <https://aur.archlinux.org/packages/pyconcurrent>`_
 
 **Version 7.0.0 :** (Major version with important changes)
+
+* significant enhancements supporting Letsencrypt's upcoming short lifetime
+certs (45-day and 6-day) as well as *ACME profiles*.
+
+* We revisited the *when to renew* a certificate decision so that we can sensibly handle
+short lifetime certs.
+
+* There are new config options for those wanting to customize it. In preparation for the
+upcoming May 13, 2026 45-day cert availability, we request *tlsserver* profile by default.
+
+Everything should work without change. However, there are a couple of optional config options
+we **recommend** removing.
+
 
 **Enhancements** 
 

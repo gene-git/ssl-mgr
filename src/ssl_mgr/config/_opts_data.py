@@ -139,6 +139,7 @@ class SslOptsData:
         self.clean_all: bool = False
         self.next_to_curr: bool = False
         self.cert: bool = False
+        self.renew: bool = False
         self.roll: bool = False
         self.min_roll_mins: int = 90
         self.certs_to_prod: bool = False
