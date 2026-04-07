@@ -6,12 +6,24 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.4.0 (2026-04-04)
-	98 commits.
+	2.2.0 (2024-03-29) -> 7.5.0 (2026-04-07)
+	100 commits.
 
 Commits
 =======
 
+
+* 2026-04-07  : **7.5.0**
+
+.. code-block:: text
+
+              - Fix installer bug which installed sslm-verify with trailing ","
+                Doc improvements
+ 2026-04-04   ⋯
+
+.. code-block:: text
+
+              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
 
 * 2026-04-04  : **7.4.0**
 
