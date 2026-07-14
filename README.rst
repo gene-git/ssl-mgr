@@ -35,6 +35,34 @@ Key Features
   For example making separate certs for web and email servers.
 
 
+**************
+Recent Updates
+**************
+
+**7.7.0**
+
+* Improve the the time to renew decision days.
+  We now use a piece-wise linear function instead of piece-wise constant.
+  For example, given 45 certs renew with 10 days to expiry and 90 certs with 30 days,
+  a cert with expiration in between 45 and 90 would use a renew days target that 
+  is linearly interpolated between 10 and 30 days.
+
+**7.6.0**
+
+* Fixes an issue where a 45 day cert with original days to expiration less than 45, (e.g. 44.5)
+  was renewing with 5 days remaining instead of 10 days remaining. This was happening as the
+  code was using the renewal target for 10 certs instead of 45 day certs.
+  
+* Self and Local signed certs: Remove outdated 90 floor on cert expiration.
+
+* Add type support for post quantum mldsa, mlkem to avoid type check warnings.
+  Were not using this types, but they are supported by python cryptography.
+
+* Add .nvchecker.toml file (pkgctl version check)
+
+* Modify the check script for pycodestyle leading to couple small style changes in code.
+
+
 ********
 Overview
 ********

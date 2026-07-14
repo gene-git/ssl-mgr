@@ -9,7 +9,15 @@ Latest Changes
 Note that the full PDF doc is in the Docs directory and includes the details
 of all current changes taken from the *Changes-7.x.rst* file.
 
-**version 7.6.0**
+**7.7.0**
+
+* Improve the the time to renew decision days.
+  We now use a piece-wise linear function instead of piece-wise constant.
+  For example, given 45 certs renew with 10 days to expiry and 90 certs with 30 days,
+  a cert with expiration in between 45 and 90 would use a renew days target that
+  is linearly interpolated between 10 and 30 days.
+
+**7.6.0**
 
 * Fixes an issue where a 45 day cert with original days to expiration less than 45, (e.g. 44.5)
   was renewing with 5 days remaining instead of 10 days remaining. This was happening as the
@@ -25,15 +33,15 @@ of all current changes taken from the *Changes-7.x.rst* file.
 * Modify the check script for pycodestyle leading to couple small style changes in code.
 
 
-**version 7.5.0**
+**7.5.0**
 
 * Self and Local signing now allow creating short expiration certs.
 
-**Version 7.4.1**
+**7.4.1**
 
 * Some documentation clean ups and re-org. No functional change.
 
-**Version 7.4.0**
+**7.4.0**
 
 * DANE TLSA record now supports a time-to-live (TTL). It is specifed in the service file:
 
@@ -44,7 +52,7 @@ of all current changes taken from the *Changes-7.x.rst* file.
   If dane_tls_ttl is not set, it defaults to 1800 seconds (30 minutes). 
   Earlier versions inherited the TTL for the DNS zone.
 
-**Version 7.3.0**
+**7.3.0**
 
 * Fix Typo that broke generation of DANE TLSA files.
 * New tool: sslm-tlsa-hash
@@ -58,7 +66,7 @@ of all current changes taken from the *Changes-7.x.rst* file.
   preliminary `Draft spec <https://datatracker.ietf.org/doc/html/draft-ietf-acme-dns-persist-00>`_.
 
 
-**Version 7.2.0**
+**7.2.0**
 
 * Code Reorg
 * Switch packaging from hatch to uv
@@ -68,7 +76,7 @@ of all current changes taken from the *Changes-7.x.rst* file.
   Available on `Github <https://github.com/gene-git/pyconcurrent>`_
   and `AUR <https://aur.archlinux.org/packages/pyconcurrent>`_
 
-**Version 7.0.0 :** (Major version with important changes)
+**7.0.0 :** (Major version with important changes)
 
 * significant enhancements supporting Letsencrypt's upcoming short lifetime
 certs (45-day and 6-day) as well as *ACME profiles*.

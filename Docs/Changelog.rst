@@ -6,14 +6,26 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.6.0 (2026-07-13)
-	102 commits.
+	2.2.0 (2024-03-29) -> 7.7.0 (2026-07-14)
+	103 commits.
 
 Commits
 =======
 
 
-* 2026-07-13  : **7.6.0**
+* 2026-07-14  : **7.7.0**
+
+.. code-block:: text
+
+              - **7.7.0**
+            
+                * Improve the the time to renew decision days.
+                  We now use a piece-wise linear function instead of piece-wise constant.
+                  For example, given 45 certs renew with 10 days to expiry and 90 certs with 30 days,
+                  a cert with expiration in between 45 and 90 would use a renew days target that
+                  is linearly interpolated between 10 and 30 days.
+
+* 2026-07-13  : **7.6.0, origin/master**
 
 .. code-block:: text
 
