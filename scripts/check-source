@@ -10,8 +10,9 @@ echo "Python code"
 cd ./src
 PYTHONPATH=. pylint $mod/*.py $mod/*/*py
 
-echo '   NB The following E741 for "O" can be ignored'
-PYTHONPATH=. pycodestyle --max-line-length=110 $mod/*.py $mod/*/*py
+# Default ignores: "E121,E123,E126,E226,E24,E704,W503,W504"
+ignores="E123,E126,W503,W504,E741"
+PYTHONPATH=. pycodestyle --ignore="$ignores" --max-line-length=110 $mod/*.py $mod/*/*py
 
 mypy --check-untyped-defs --follow-untyped-imports $mod
 

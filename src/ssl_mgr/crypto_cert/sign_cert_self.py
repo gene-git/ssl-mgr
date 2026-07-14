@@ -82,7 +82,7 @@ def _sign_cert_self(ssl_cert: CertData,
     issuer = csr_subject
 
     time_start = datetime.now(timezone.utc)
-    days_to_end = max(90, svc.ca.sign_end_days)
+    days_to_end = max(1, svc.ca.sign_end_days)
     time_end = time_start + timedelta(days=days_to_end)
 
     serial = x509.random_serial_number()

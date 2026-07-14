@@ -11,6 +11,10 @@ from cryptography.hazmat.primitives.asymmetric import ed448
 from cryptography.hazmat.primitives.asymmetric import x25519
 from cryptography.hazmat.primitives.asymmetric import x448
 from cryptography.hazmat.primitives.asymmetric import dh
+
+from cryptography.hazmat.primitives.asymmetric import mldsa
+from cryptography.hazmat.primitives.asymmetric import mlkem
+
 # from cryptography.hazmat.primitives.serialization import load_pem_private_key
 # from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
@@ -23,8 +27,14 @@ from cryptography.hazmat.primitives.asymmetric import dh
 type KeyTypePrvOther = (
         x25519.X25519PrivateKey |
         x448.X448PrivateKey |
-        dh.DHPrivateKey
+        dh.DHPrivateKey |
+        mldsa.MLDSA44PrivateKey |
+        mldsa.MLDSA65PrivateKey |
+        mldsa.MLDSA87PrivateKey |
+        mlkem.MLKEM768PrivateKey |
+        mlkem.MLKEM1024PrivateKey
         )
+
 type KeyTypePrv = (
         ed25519.Ed25519PrivateKey |
         ed448.Ed448PrivateKey |
@@ -36,8 +46,14 @@ type KeyTypePrv = (
 type KeyTypePubOther = (
         x25519.X25519PublicKey |
         x448.X448PublicKey |
-        dh.DHPublicKey
+        dh.DHPublicKey |
+        mldsa.MLDSA44PublicKey |
+        mldsa.MLDSA65PublicKey |
+        mldsa.MLDSA87PublicKey |
+        mlkem.MLKEM768PublicKey |
+        mlkem.MLKEM1024PublicKey
         )
+
 type KeyTypePub = (
         ed25519.Ed25519PublicKey |
         ed448.Ed448PublicKey |

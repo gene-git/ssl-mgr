@@ -79,7 +79,7 @@ class ServiceConfData:
         def __init__(self):
             # X509name
             self.CN = ''
-            self.O = ''     # noqa: E741
+            self.O = ''  # noqa: E741
             self.OU = ''
             self.L = ''
             self.ST = ''

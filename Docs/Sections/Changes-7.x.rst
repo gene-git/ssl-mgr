@@ -9,6 +9,26 @@ Latest Changes
 Note that the full PDF doc is in the Docs directory and includes the details
 of all current changes taken from the *Changes-7.x.rst* file.
 
+**version 7.6.0**
+
+* Fixes an issue where a 45 day cert with original days to expiration less than 45, (e.g. 44.5)
+  was renewing with 5 days remaining instead of 10 days remaining. This was happening as the
+  code was using the renewal target for 10 certs instead of 45 day certs. 
+
+* Self and Local signed certs: Remove outdated 90 floor on cert expiration.
+
+* Add type support for post quantum mldsa, mlkem to avoid type check warnings.
+  Were not using this types, but they are supported by python cryptography.
+
+* Add .nvchecker.toml file (pkgctl version check)
+
+* Modify the check script for pycodestyle leading to couple small style changes in code.
+
+
+**version 7.5.0**
+
+* Self and Local signing now allow creating short expiration certs.
+
 **Version 7.4.1**
 
 * Some documentation clean ups and re-org. No functional change.

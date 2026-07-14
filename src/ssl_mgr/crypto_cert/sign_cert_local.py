@@ -109,7 +109,7 @@ def sign_cert_local(db_dir: str,
     issuer = ca_cert.subject
 
     time_start = datetime.now(timezone.utc)
-    days_to_end = max(90, ca_svc.ca.sign_end_days)
+    days_to_end = max(1, ca_svc.ca.sign_end_days)
     time_end = time_start + timedelta(days=days_to_end)
 
     serial = x509.random_serial_number()

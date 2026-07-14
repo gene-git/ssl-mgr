@@ -65,42 +65,42 @@ class RenewInfo:
         rand_adj_size: float = 0.0
         rand_adj_used: float = 0.0
 
-        if issue_days >= 90.0:
+        if issue_days >= 89.0:
             self.target_90 = _bounds_check(1.0, 89.0, self.target_90)
             self.rand_adj_90 = _bounds_check(0.0, 5.0, self.rand_adj_90)
 
             target = self.target_90
             rand_adj_size = self.rand_adj_90
 
-        elif issue_days >= 60.0:
+        elif issue_days >= 59.0:
             self.target_60 = _bounds_check(1.0, 59.0, self.target_60)
             self.rand_adj_60 = _bounds_check(0.0, 3.0, self.rand_adj_60)
 
             target = self.target_60
             rand_adj_size = self.rand_adj_60
 
-        elif issue_days >= 45.0:
+        elif issue_days >= 44.0:
             self.target_45 = _bounds_check(1.0, 44.0, self.target_45)
             self.rand_adj_45 = _bounds_check(0.0, 2.0, self.rand_adj_45)
 
             target = self.target_45
             rand_adj_size = self.rand_adj_45
 
-        elif issue_days >= 10.0:
+        elif issue_days >= 9.0:
             self.target_10 = _bounds_check(1.0, 9.0, self.target_10)
             self.rand_adj_10 = _bounds_check(0.0, 1.0, self.rand_adj_10)
 
             target = self.target_10
             rand_adj_size = self.rand_adj_10
 
-        elif issue_days >= 6.0:
+        elif issue_days >= 5.0:
             self.target_6 = _bounds_check(1.0, 5.0, self.target_6)
             self.rand_adj_6 = _bounds_check(0.0, 1.0, self.rand_adj_6)
 
             target = self.target_6
             rand_adj_size = self.rand_adj_6
 
-        elif issue_days >= 2.0:
+        elif issue_days >= 1.9:
             self.target_2 = _bounds_check(1.0, 1.9, self.target_2)
             self.rand_adj_2 = _bounds_check(0.0, 0.5, self.rand_adj_2)
 

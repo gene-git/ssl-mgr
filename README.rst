@@ -112,7 +112,7 @@ and made available the tool we use to simplify DNS/DNSSEC management [#dnstool]_
 
 **Important**
 
-  When activating DANE for the first time it's important to only include DANE TLSA records
+* When activating DANE for the first time it's important to only include DANE TLSA records
   after the *roll*. See :ref:`DANE_TLSA_FIRST_USE` for more detail. 
 
 

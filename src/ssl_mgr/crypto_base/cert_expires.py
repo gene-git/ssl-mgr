@@ -88,21 +88,21 @@ class CertExpires:
         Expiration in days (floating point)
             caller can round, truncate etc
         '''
-        days = float(self.expire_secs_total) / (24*3600)
+        days = float(self.expire_secs_total) / (24 * 3600)
         return days
 
     def issue_days(self) -> float:
         """
         Days since issue
         """
-        days = float(self.issued_secs_total) / (24*3600)
+        days = float(self.issued_secs_total) / (24 * 3600)
         return days
 
     def lifetime_at_issue(self) -> float:
         """
         Original lifetime at issue
         """
-        days = float(self.expire_secs_total_at_issue) / (24*3600)
+        days = float(self.expire_secs_total_at_issue) / (24 * 3600)
         return days
 
     def expiration_date_str(self):
@@ -138,7 +138,7 @@ class CertExpires:
         (hours, seconds) = divmod(self.issued_secs, 3600)
         (minutes, seconds) = divmod(seconds, 60)
 
-        orig_days = round(self.expire_secs_total_at_issue/3600 / 24)
+        orig_days = round(self.expire_secs_total_at_issue / 3600 / 24)
         orig_info = f'ago. {orig_days} day cert'
 
         # do we add "ago" at the end?
