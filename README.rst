@@ -39,7 +39,7 @@ Key Features
 Recent Updates
 **************
 
-**7.8.0**
+**7.8.1**
 
 * Expiration & Issue format improvements
 

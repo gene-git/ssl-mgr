@@ -1,16 +1,19 @@
 -------------------------------------------------------
  Changelog    : ssl-mgr
- Tags         : 7.4.0 ➙ 7.8.0
-              : 2026-04-04 ➙ 2026-07-30
+ Tags         : 7.5.0 ➙ 7.8.1
+              : 2026-04-07 ➙ 2026-07-30
               : 6 tags. See Docs for full changelog
 -------------------------------------------------------
 
- 2026-07-30   : 7.8.0
+ 2026-07-30   : 7.8.1
+              - 7.8.1 - update version in pyproject.toml
+
+ 2026-07-30   : 7.8.0, origin/master
               - **7.8.0**
             
                 * Expiration & Issue format improvements
 
- 2026-07-14   : 7.7.0, origin/master
+ 2026-07-14   : 7.7.0
               - **7.7.0**
             
                 * Improve the the time to renew decision days.
@@ -41,16 +44,4 @@
               - Fix installer bug which installed sslm-verify with trailing ","
                 Doc improvements
  2026-04-04   ⋯
-              - update Docs/Changelog.rst Docs/ssl-mgr.pdf
-
- 2026-04-04   : 7.4.0
-              - **Version 7.4.0**
-            
-                * DANE TLSA record now supports a time-to-live (TTL). It is specifed in the service file:
-            
-                  dane_tls_ttl = 3600
-                  dane_tls = [[25, 'tcp', 3, 1, 1, 'MX']]
-            
-                  If dane_tls_ttl is not set, it defaults to 1800 seconds (30 minutes).
-                  Earlier versions inherited the TTL for the DNS zone.
               - update Docs/Changelog.rst Docs/ssl-mgr.pdf

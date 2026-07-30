@@ -6,14 +6,20 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.8.0 (2026-07-30)
-	104 commits.
+	2.2.0 (2024-03-29) -> 7.8.1 (2026-07-30)
+	105 commits.
 
 Commits
 =======
 
 
-* 2026-07-30  : **7.8.0**
+* 2026-07-30  : **7.8.1**
+
+.. code-block:: text
+
+              - 7.8.1 - update version in pyproject.toml
+
+* 2026-07-30  : **7.8.0, origin/master**
 
 .. code-block:: text
 
@@ -21,7 +27,7 @@ Commits
             
                 * Expiration & Issue format improvements
 
-* 2026-07-14  : **7.7.0, origin/master**
+* 2026-07-14  : **7.7.0**
 
 .. code-block:: text
 
