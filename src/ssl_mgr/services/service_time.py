@@ -32,7 +32,7 @@ def _renew_in_text(spread: float, days_to_renew: float) -> str:
     '''
     message for next renewal
     '''
-    when = f'{days_to_renew:.1f}'
+    when = f'{days_to_renew:10.1f}'
     if spread > 0:
         if days_to_renew > 0:
             when += f' ± {spread:.1f}'
@@ -56,12 +56,6 @@ def time_to_renew(service: ServiceData,
     # of days between -spread and + spread
     #
     renew_info = service.opts.renew_info
-
-    # older code.
-    # renew_expire_days = service.svc.renew_expire_days
-    # renew_expire_days_spread = service.svc.renew_expire_days_spread
-    # (spread, renew_adjust) = _get_rand_adjust_days(renew_expire_days_spread)
-
     #
     # Have cert - check if ready or too new to renew/refresh
     #
@@ -79,7 +73,6 @@ def time_to_renew(service: ServiceData,
         # issue_days = cert_expires.issue_days()
         lifetime = cert_expires.lifetime_at_issue()
 
-        # days_to_renew = int(days_left - renew_expire_days)
         (renew_now, days_to_renew, spread) = renew_info.renew_decision(lifetime, days_left)
 
         txt = f'{expiry_date_str} ({expiry_str})'
@@ -91,12 +84,6 @@ def time_to_renew(service: ServiceData,
             renew_in = _renew_in_text(spread, days_to_renew)
             exp_curr_str += f' 🗘 Renew in {renew_in} days'
 
-        # if days_to_renew > -renew_adjust:
-        #    renew_now = False
-        #    renew_in = _renew_in_text(spread, days_to_renew)
-        #    exp_curr_str += f' 🗘 Renew in {renew_in} days'
-        # else:
-        #    exp_curr_str += ' 🗘 Renew now'
     else:
         exp_curr_str = 'No curr certs (first cert or missed roll?): '
         exp_curr_str += 'generating new cert'

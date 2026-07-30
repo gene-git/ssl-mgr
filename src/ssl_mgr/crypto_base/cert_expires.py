@@ -109,13 +109,15 @@ class CertExpires:
         '''
         Expiration as date
         '''
-        return str(self.expiry)
+        return self.expiry.strftime("%Y-%m-%d %H:%M:%S %Z")
+        #return str(self.expiry)
 
     def issue_date_str(self):
         '''
         Expiration as date
         '''
-        return str(self.issued)
+        return self.issued.strftime("%Y-%m-%d %H:%M:%S %Z")
+        #return str(self.issued)
 
     def expiration_string(self):
         '''
@@ -126,7 +128,7 @@ class CertExpires:
         (minutes, seconds) = divmod(seconds, 60)
 
         # exp_str = f'{days:>4d}d {hours:>2d}H {minutes:2d}M {seconds:>2d}s'
-        exp_str = f'{days:>4d} days + {hours:02d}:{minutes:02d}:{seconds:02d}'
+        exp_str = f'{days:>4d}d {hours:02d}:{minutes:02d}:{seconds:02d}'
         return exp_str
 
     def issue_string(self):
@@ -139,8 +141,8 @@ class CertExpires:
         (minutes, seconds) = divmod(seconds, 60)
 
         orig_days = round(self.expire_secs_total_at_issue / 3600 / 24)
-        orig_info = f'ago. {orig_days} day cert'
+        orig_info = f'{orig_days} day cert'
 
         # do we add "ago" at the end?
-        issue_str = f'{days:>4d} days + {hours:02d}:{minutes:02d}:{seconds:02d} {orig_info}'
+        issue_str = f'{days:>4d}d {hours:02d}:{minutes:02d}:{seconds:02d} ago) ({orig_info}'
         return issue_str

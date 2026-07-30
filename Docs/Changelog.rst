@@ -6,14 +6,22 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 7.7.0 (2026-07-14)
-	103 commits.
+	2.2.0 (2024-03-29) -> 7.8.0 (2026-07-30)
+	104 commits.
 
 Commits
 =======
 
 
-* 2026-07-14  : **7.7.0**
+* 2026-07-30  : **7.8.0**
+
+.. code-block:: text
+
+              - **7.8.0**
+            
+                * Expiration & Issue format improvements
+
+* 2026-07-14  : **7.7.0, origin/master**
 
 .. code-block:: text
 
@@ -25,7 +33,7 @@ Commits
                   a cert with expiration in between 45 and 90 would use a renew days target that
                   is linearly interpolated between 10 and 30 days.
 
-* 2026-07-13  : **7.6.0, origin/master**
+* 2026-07-13  : **7.6.0**
 
 .. code-block:: text
 
