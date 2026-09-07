@@ -1,79 +1,19 @@
 #!/bin/bash
-# SPDX-License-Identifier: MIT
-# Copyright (c) 2022,2023 Gene C
 #
-# installer script for ssl_mgr
-# e.g. Call from PKGBUILD:  ./scripts/do-install ${pkgdir}
-# gene c (2023)
+# Install
+# - arguments:
+#   - no args: destination is "build/pkg".
+#   - destination   =>  install to this directory
 #
-dest="$1"
-self="ssl-mgr"
-mod='ssl_mgr'
-
-info="README.rst Docs examples scripts packaging"
-infodir="usr/share/${self}"
-
-license="Docs/License/License.rst"
-licensedir="usr/share/licenses/${self}"
-
-etc="examples"
-etcdir='etc/ssl-mgr/'
-
-apps=('sslm-dhparm' 'sslm-info' 'sslm-mgr' 'sslm-verify' 'sslm-tlsa-hash')
-
-libexecdir="usr/lib/${self}/"
-libexec_py=('sslm-auth-hook')
-
-# so can make app link in /usr/bin
-sitedir=$(/usr/bin/python3 -c "import site; print(site.getsitepackages()[0])")
-installdir="${dest}${sitedir}"
-app_location="${sitedir}/${mod}/apps"
-
-uv_opts=(
-    --python /usr/bin/python
-    --system
-    --no-build-isolation
-    --link-mode=copy
-    --compile-bytecode
-)
-
-if [ ! -d "$dest" ] ; then
-    echo 'Missing destination directory'
-    exit 1
+set -euo pipefail
+if (( $# < 1 )) ; then
+    dest='build/pkg'
 else
-    #
-    # shared
-    #
-    /usr/bin/rsync --mkpath -a ${info} ${dest}/${infodir}/
-    /usr/bin/rsync --mkpath -a ${license} ${dest}/${licensedir}/
-
-    #
-    # Applications
-    #
-    mkdir -p ${dest}/${etcdir}
-    /usr/bin/rsync --mkpath -a ${etc} ${dest}/${etcdir}/
-
-    /usr/bin/uv pip install ${uv_opts[@]} --target "$installdir" dist/*.whl
-    /usr/bin/rm -rf "$installdir"/.lock
-
-    # link(s) in /usr/bin/
-    if [ -v apps ] ; then
-        /usr/bin/mkdir -p "${dest}/usr/bin"
-        for app in ${apps[@]}
-        do
-            /usr/bin/ln -sf ${app_location}/${app}.py ${dest}/usr/bin/${app}
-        done
-    fi
-
-    # libexec python
-    mkdir -p ${dest}/${libexecdir}
-    if [ -v libexec_py ] ; then
-        for app in ${libexec_py[@]}
-        do
-            /usr/bin/ln -sf ${app_location}/${app}.py ${dest}/${libexecdir}/${app}
-        done
-    fi
-
-    exit 0
+    dest="$1"
 fi
 
+dest=$(realpath "$dest")
+
+/usr/bin/meson install -C build/release --destdir "$dest" > /dev/null
+
+exit 0

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7. Using the Tools : Details &#8212; ssl-mgr 8.0.0
+ documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=f663eb4a"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. Appendix" href="Appendix.html" />
+    <link rel="prev" title="6. Configs: Getting Started" href="Configs.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="using-the-tools-details">
+<span id="using-tools"></span><h1><span class="section-number">7. </span>Using the Tools : Details<a class="headerlink" href="#using-the-tools-details" title="Link to this heading">¶</a></h1>
+<p>Once the config files are set up then the tools can be used to do the real work.</p>
+<p>The primary tool for generating and managing certificates is <em>sslm-mgr</em>.  As usual, help
+is available with the <em>-h</em> or <em>–help</em> option.</p>
+<p>The 2 most frequently used options are <em>renew</em> and <em>roll</em>.</p>
+<p>There are some additional options that give a bit more control, in case
+its ever needed.  These are discussed in detail below.
+For example the <em>-f</em> or <em>–force</em> option does what the name suggests.
+So</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>-f<span class="w"> </span>-renew
+</pre></div>
+</div>
+<p>will force a cert to be renewed even if its not yet time to do so.</p>
+<p>There is also <em>dev</em> mode. This provides access to some lower lever tasks.
+This should seldom, if ever, be needed. In case you do, it is activated by
+by adding <em>dev</em> command as the first argument.</p>
+<p>For example to get help for dev mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>dev<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>The tools in the package include:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sslm-auth-hook</p></td>
+<td><p>internal - used with certbot’s manual hook option</p></td>
+</tr>
+<tr class="row-odd"><td><p>sslm-dhparm</p></td>
+<td><p>generates Diffie Hellman paramater file(s)</p></td>
+</tr>
+<tr class="row-even"><td><p>sslm-info</p></td>
+<td><p>displays info about cert.pem, csr.pem, chain.pem, privkey.pem,  etc</p></td>
+</tr>
+<tr class="row-odd"><td><p>sslm-mgr</p></td>
+<td><p>primary tool for certificate management</p></td>
+</tr>
+<tr class="row-even"><td><p>sslm-verify</p></td>
+<td><p>verifies any cert.pem file using the public key from chain.pem</p></td>
+</tr>
+</tbody>
+</table>
+<section id="sslm-mgr-options">
+<h2><span class="section-number">7.1. </span>sslm-mgr options<a class="headerlink" href="#sslm-mgr-options" title="Link to this heading">¶</a></h2>
+<p>As already mentioned, once configs are set up and running, then all that’s
+needed is to run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>-renew
+</pre></div>
+</div>
+<p>which will check get new certs, if it’s time to renew. A couple of hours later make those certs
+live by doing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>-roll
+</pre></div>
+</div>
+<section id="id1">
+<h3><span class="section-number">7.1.1. </span>sslm-mgr options<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>Has 2 modes - a <em>normal</em> mode and a developer or <em>dev</em> mode. In both cases,
+the groups and services are read from the same config files.
+Some values <em>can</em> be overridden from the command line.</p>
+<p>To specify a group and service(s) on the command line use the format:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sslm-mgr ... &lt;group-name&gt;:&lt;service_1&gt;,&lt;service_2&gt;,...
+</pre></div>
+</div>
+<p>For example, for a domain with multiple services, you can limit
+to one or two services using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>-s<span class="w"> </span>example.com:mail-ec
+sslm-mgr<span class="w"> </span>-s<span class="w"> </span>example.com:mail-ec,mail-rsa
+</pre></div>
+</div>
+<p>Help command for <em>sslm-mgr</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Command</span> <span class="n">line</span> <span class="n">options</span> <span class="n">over</span><span class="o">-</span><span class="n">ride</span> <span class="n">settings</span> <span class="n">taken</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">config</span> <span class="n">file</span><span class="o">.</span>
+<span class="n">For</span> <span class="n">example</span> <span class="nb">any</span> <span class="n">groups</span><span class="o">/</span><span class="n">services</span> <span class="n">given</span> <span class="n">on</span> <span class="n">the</span> <span class="n">command</span> <span class="n">line</span><span class="o">.</span>
+
+
+<span class="n">usage</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sslm</span><span class="o">-</span><span class="n">mgr</span> <span class="p">[</span><span class="o">..</span> <span class="n">options</span> <span class="o">...</span> <span class="p">}</span> <span class="p">[</span><span class="n">grps_svcs</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="n">grps_svcs</span>                 <span class="n">groups</span><span class="o">/</span><span class="n">services</span><span class="p">:</span> <span class="n">grp1</span><span class="p">:[</span><span class="n">sv1</span><span class="p">,</span> <span class="n">sv2</span><span class="p">,</span><span class="o">...</span><span class="p">]</span> <span class="n">grp2</span><span class="p">:[</span><span class="n">ALL</span><span class="p">]</span> <span class="o">...</span>
+
+<span class="n">options</span><span class="p">:</span>
+    <span class="o">--</span><span class="n">help</span>                    <span class="n">show</span> <span class="n">help</span> <span class="n">message</span>
+    <span class="o">--</span><span class="n">clean</span><span class="o">-</span><span class="nb">all</span>               <span class="n">Clean</span> <span class="n">up</span> <span class="nb">all</span> <span class="n">grps</span><span class="o">/</span><span class="n">svcs</span> <span class="ow">not</span> <span class="n">just</span> <span class="n">active</span> <span class="n">domains</span>
+    <span class="o">--</span><span class="n">clean</span><span class="o">-</span><span class="n">keep</span>   <span class="o">&lt;</span><span class="n">Num</span><span class="o">&gt;</span>      <span class="n">Clean</span> <span class="n">database</span> <span class="n">keeping</span> <span class="n">newest</span> <span class="n">Num</span>
+    <span class="o">--</span><span class="n">debug</span>                   <span class="n">debug</span> <span class="n">mode</span> <span class="p">:</span> <span class="nb">print</span> <span class="n">but</span> <span class="n">dont</span> <span class="n">do</span> <span class="n">it</span>
+    <span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">refresh</span>             <span class="n">dns</span><span class="p">:</span> <span class="n">Use</span> <span class="n">script</span> <span class="n">to</span> <span class="n">sign</span> <span class="n">zones</span> <span class="o">&amp;</span> <span class="n">restart</span> <span class="n">primary</span>
+                              <span class="n">See</span> <span class="n">config</span> <span class="n">dns</span><span class="o">.</span><span class="n">restart_cmd</span>
+    <span class="o">--</span><span class="n">force</span>                   <span class="n">Forces</span> <span class="n">renew</span> <span class="o">/</span> <span class="n">roll</span> <span class="o">/</span> <span class="n">prod</span> <span class="n">check</span>
+    <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span>                 <span class="n">Letsencrypt</span> <span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span>
+    <span class="o">--</span><span class="n">reuse</span>                   <span class="n">Reuse</span> <span class="n">curr</span> <span class="n">key</span> <span class="k">with</span> <span class="n">renew</span><span class="o">.</span><span class="n">tlsa</span> <span class="n">unchanged</span> <span class="k">if</span>
+                              <span class="n">using</span> <span class="n">selector</span><span class="o">=</span><span class="mi">1</span> <span class="p">(</span><span class="n">pubkey</span><span class="p">)</span>
+    <span class="o">--</span><span class="n">renew</span>                   <span class="n">Renew</span> <span class="n">keys</span><span class="o">/</span><span class="n">csr</span><span class="o">/</span><span class="n">cert</span> <span class="n">keep</span> <span class="ow">in</span> <span class="nb">next</span>
+                              <span class="n">See</span> <span class="n">also</span> <span class="n">config</span> <span class="n">setting</span> <span class="n">renew_expire_days</span>
+    <span class="o">--</span><span class="n">roll</span>                    <span class="n">Roll</span> <span class="n">Phase</span> <span class="p">:</span> <span class="n">Make</span> <span class="nb">next</span> <span class="n">be</span> <span class="n">the</span> <span class="n">new</span> <span class="n">curr</span> <span class="n">then</span>
+                               <span class="n">copy</span> <span class="n">to</span> <span class="n">production</span>
+                              <span class="n">Refresh</span> <span class="n">dns</span> <span class="k">if</span> <span class="n">needed</span>
+    <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">roll</span><span class="o">-</span><span class="n">mins</span> <span class="o">&lt;</span><span class="n">minutes</span><span class="o">&gt;</span> <span class="n">Only</span> <span class="n">roll</span> <span class="k">if</span> <span class="nb">next</span> <span class="ow">is</span> <span class="n">older</span> <span class="n">than</span> <span class="n">this</span>
+                              <span class="n">See</span> <span class="n">config</span> <span class="n">min_roll_mins</span><span class="o">.</span>
+    <span class="o">--</span><span class="n">status</span>                  <span class="n">Display</span> <span class="n">cert</span> <span class="n">status</span><span class="o">.</span> <span class="n">With</span> <span class="o">--</span><span class="n">verb</span> <span class="n">shows</span> <span class="n">more</span> <span class="n">info</span>
+    <span class="o">--</span><span class="n">test</span>                    <span class="n">Letsencrypt</span> <span class="o">--</span><span class="n">test</span><span class="o">-</span><span class="n">cert</span>
+    <span class="o">--</span><span class="n">verb</span>                    <span class="n">More</span> <span class="n">verbose</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>When more control is needed then <em>dev</em> mode offers the above commands plus few more.
+To see developer help:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sslm</span><span class="o">-</span><span class="n">mgr</span> <span class="p">(</span><span class="k">as</span> <span class="n">above</span> <span class="n">plus</span><span class="p">)</span> <span class="p">[</span> <span class="o">...</span> <span class="n">dev</span> <span class="n">options</span> <span class="o">...</span><span class="p">]</span> <span class="p">[</span><span class="n">grps_svcs</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="n">SSL</span> <span class="n">Manager</span> <span class="n">Dev</span> <span class="n">Mode</span>
+
+<span class="n">options</span><span class="p">:</span>
+    <span class="o">...</span> <span class="n">same</span> <span class="k">as</span> <span class="n">above</span> <span class="n">plus</span><span class="p">:</span>
+
+    <span class="o">--</span><span class="n">new</span><span class="o">-</span><span class="n">cert</span>                <span class="n">Make</span> <span class="n">new</span> <span class="nb">next</span><span class="o">/</span><span class="n">cert</span>
+    <span class="o">--</span><span class="n">copy</span><span class="o">-</span><span class="n">csr</span>                <span class="n">Copy</span> <span class="n">curr</span> <span class="n">key</span> <span class="n">to</span> <span class="nb">next</span> <span class="p">(</span><span class="n">used</span> <span class="n">by</span> <span class="o">--</span><span class="n">reuse</span><span class="p">)</span>
+    <span class="o">--</span><span class="n">new</span><span class="o">-</span><span class="n">csr</span>                 <span class="n">Make</span> <span class="nb">next</span> <span class="n">CSR</span>
+    <span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">restarts</span>   <span class="n">Forces</span> <span class="n">server</span> <span class="n">restarts</span> <span class="n">even</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">needed</span>
+    <span class="o">--</span><span class="n">new</span><span class="o">-</span><span class="n">keys</span>                <span class="n">Make</span> <span class="nb">next</span> <span class="n">new</span> <span class="n">keys</span>
+    <span class="o">--</span><span class="nb">next</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">curr</span>            <span class="n">Move</span> <span class="nb">next</span> <span class="n">to</span> <span class="n">curr</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-files">
+<h2><span class="section-number">7.2. </span>Configuration Files<a class="headerlink" href="#configuration-files" title="Link to this heading">¶</a></h2>
+<p>Sample configs are show in Appendix <a class="reference internal" href="Appendix.html#appendix"><span class="std std-ref">Appendix</span></a> and the files
+are provided in <em>examples/conf.d</em> directory.</p>
+<p>When setting for the first time, up its may be helpful to start by creating a self
+signed CA and use that.
+When you’re ready, change the signing CA to Letsencrypt (LE) and run against the
+LE test-cert server by using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>--test
+</pre></div>
+</div>
+<p>You may also use the Letsencrypt <em>–dry-run</em> option.</p>
+<p>Once that is working then you switch to the normal LE server by dropping the
+test option.</p>
+<p>Config files are located in <em>conf.d</em>. There are 2 shared configs and
+one config for each group/service.  Service configs files reside under
+their <em>group</em> directory.</p>
+<p>The top level configs are <em>ssl-mgr.conf</em> and <em>ca-info.conf</em> which are used for
+all groups and services.</p>
+<p><em>ssl-mgr.conf</em> is the main config file and we’ll go over it in detail.
+It contains the list of domains and their services.</p>
+<p>Groups can be marked active (active = true). In inactive group is not processed.
+<em>sslm-mgr</em> can optionally have 1 or more groups and services provided on the command line.
+Any groups/services specified on the command line are the only ones that are run.</p>
+<p><em>ca-info.conf</em> is a list of available CAs. Each CA name can be referenced
+in the service configs to determine which CA is to provide the signed cert.</p>
+<p>As explained earlier, there are 2 kinds of groups: <em>CA*s and *Apex Domain</em> groups.
+The <em>CA</em> group is for self created CAs and an <em>Apex Group</em> contains 1 more services
+from which a key/certificate pair are to be created.</p>
+<p>It is convenient to name services for their purpose (mail, web etc)
+and also for any characteristics of the certificate,  such key type (RSA, Elliptic Curve)
+and sometimes by the CA name as well.</p>
+<p>Each service config resides under its group:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>conf.d/&lt;group&gt;/&lt;service&gt;
+</pre></div>
+</div>
+<p>This file describes the organization and details for this one service. It specifies
+which CA is to sign the certificate as well as any DANE TLS <a class="footnote-reference brackets" href="#tlsa" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> info needed to generate
+TLSA records.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="tlsa" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>TLSA <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc6698">https://datatracker.ietf.org/doc/html/rfc6698</a></p>
+</aside>
+</aside>
+<dl>
+<dt>N.B. Each service is to be signed by the designated CA.</dt><dd><p>If you want 2 certs signed by 2 different CAs, e.g. both self and letsencrypt,
+then each would have it’s own distinct service name and config file.</p>
+<p>E.g. mail-self and mail-le.
+For each domain, the TLSA records for all services are aggregated into a single
+file, tlsa.rr which can be included by the DNS server apex zone file.</p>
+</dd>
+<dt>N.B.</dt><dd><p>Letsencrypt signing the same CSR counts towards their limits independent
+of validation method used (http-01 or dns-01).</p>
+</dd>
+</dl>
+<section id="service-config">
+<h3><span class="section-number">7.2.1. </span>Service Config<a class="headerlink" href="#service-config" title="Link to this heading">¶</a></h3>
+<p>Info for each service to create it’s cert. Each domain may have
+separate certs for different services (mail, web, etc). Each service must therefore
+have it’s own unique config file.
+Its good practice to use separate certs for each different use cases, to help mitigate
+any impact of key related security issues.</p>
+<p>Each config provides:</p>
+<ul class="simple">
+<li><p>Organization info (CN, O, OU, SAN_Names, … )</p></li>
+<li><p>name, org, service (mail, web etc)</p></li>
+<li><p>Which CA should will be requested to sign this cert
++ validation method). Self signed dont need a validation method.
++ Letsencrypt, for example, allows http-01 and dns-01 as validation methods.</p></li>
+<li><p>DANE TLS info - list of (port, usage, selector, match) - e.g. (25,3,1,1)</p></li>
+<li><p>Key type for the public/private key pair</p></li>
+</ul>
+</section>
+</section>
+<section id="output">
+<h2><span class="section-number">7.3. </span>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
+<p>All generated data is kepy in a dated directory under the <em>db</em> dir and links are provided
+for <em>curr</em> and <em>next</em></p>
+<ul class="simple">
+<li><p>curr -&gt; db/&lt;date-time&gt;</p></li>
+<li><p>next -&gt; db/&lt;date-time&gt;</p></li>
+</ul>
+<p>After a cert has been successfully generated, each dir will contain :</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>What</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>privkey.pem</p></td>
+<td><p>private key</p></td>
+</tr>
+<tr class="row-odd"><td><p>csr.pem</p></td>
+<td><p>certificate signing request</p></td>
+</tr>
+<tr class="row-even"><td><p>cert.pem</p></td>
+<td><p>certificate</p></td>
+</tr>
+<tr class="row-odd"><td><p>chain.pem</p></td>
+<td><p>root + intermediate CA cert</p></td>
+</tr>
+<tr class="row-even"><td><p>fullchain.pem</p></td>
+<td><p>cert + chain</p></td>
+</tr>
+<tr class="row-odd"><td><p>bundle.pem</p></td>
+<td><p>privkey + fullchain</p></td>
+</tr>
+<tr class="row-even"><td><p>tlsa.rr</p></td>
+<td><p>Dane TLSA records for this service (if any)</p></td>
+</tr>
+<tr class="row-odd"><td><p>info</p></td>
+<td><p>Contains date/time when next was rolled to curr (curr only)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The bundle.pem file, which has the priv key, is preferred by postfix to provide atomic udpate
+and avoid a potential race during updates.
+Such a race is conveivable if key and cert are read from separate files.</p>
+<p>In addition there are the acme challenge files. The <em>ssl-mgr.conf</em> file specifies where
+these files are to be written.</p>
+<section id="dns-01-validation">
+<h3><span class="section-number">7.3.1. </span>DNS-01 Validation<a class="headerlink" href="#dns-01-validation" title="Link to this heading">¶</a></h3>
+<p>For dns-01 the location is specified as a directory:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[dns]
+    acme_dir = '...'
+</pre></div>
+</div>
+<p>The acme challenges will be saved into a file under <em>&lt;acme_dir&gt;</em> with apex domain name as suffix:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;acme_dir&gt;/acme-challenge.&lt;apex_domain&gt;
+</pre></div>
+</div>
+<p>The format of the DNS resource record is per RFC 8555 <a class="footnote-reference brackets" href="#rfc-8555-dns" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> spec.
+The challenge file should be included by the DNS zone file for that apex domain.
+Once the challenge session is complete, the file will be replaced by an empty file,
+which ensures that there are no errors including it in the domain zone file.</p>
+</section>
+<section id="http-01-validation">
+<h3><span class="section-number">7.3.2. </span>HTTP-01 Validation<a class="headerlink" href="#http-01-validation" title="Link to this heading">¶</a></h3>
+<p>For http-01 validation the location is specified by <em>server_dir</em> directory:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[web]
+    server_dir = '...'
+</pre></div>
+</div>
+<p>The individual challenge files, one per (sub)domain will be saved in a file following
+RFC 8555 <a class="footnote-reference brackets" href="#rfc-8555-http" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> spec:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;server_dir&gt;/&lt;apex_domain&gt;/.well-known/acme-challenge/&lt;token&gt;
+</pre></div>
+</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="rfc-8555-dns" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>DNS-01 Acme Challenge URI -&gt; <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc8555#section-8.4">https://datatracker.ietf.org/doc/html/rfc8555#section-8.4</a></p>
+</aside>
+<aside class="footnote brackets" id="rfc-8555-http" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>HTTP-01 Acme Challenge URI -&gt; <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc8555#section-8.3">https://datatracker.ietf.org/doc/html/rfc8555#section-8.3</a></p>
+</aside>
+</aside>
+<p>If the web server is not local then ssh will be used to push the file to the remote server.</p>
+<p><strong>N.B.</strong> In all cases please ensure that the process has appropriate write permissions.</p>
+</section>
+<section id="dane-tlsa-dns-file">
+<h3><span class="section-number">7.3.3. </span>DANE-TLSA DNS File<a class="headerlink" href="#dane-tlsa-dns-file" title="Link to this heading">¶</a></h3>
+<p>If DANE is active for any service, then the TLSA records for that service are saved
+under <em>certs/&lt;apex-domain&gt;/&lt;service&gt;/tlsa.rr</em>. All service TLSA records for each apex domain
+are then aggregated under <em>certs/&lt;apex-domain&gt;/tlsa.&lt;apex-domain&gt;</em>.</p>
+<p>The apex domain TLSA file is then copied to one or more
+directories specified in the <em>[dns]</em> section of <em>ssl-mgr.conf</em>.</p>
+<p>This file is what can be included in the DNS zone file for that apex domain.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[dns]
+     ...
+     tlsa_dirs = [&lt;tlsa_1&gt;, &lt;tlsa_2&gt;, ...]
+</pre></div>
+</div>
+<p>Each directory, <em>&lt;tlsa_1&gt;</em>, <em>&lt;tlsa_2&gt;</em> etc, will be populated with one file per apex_domain
+where each file contains the TLSA records for that domain. Each apex domain tlsa file will be
+named:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tlsa.&lt;apex_domain&gt;
+</pre></div>
+</div>
+<p>Each file should be included by the DNS zone file for that apex domain.</p>
+<p><strong>N.B.</strong> Mail server needs a TLSA record for each key/certificate is used. If, for example,
+postfix is set up to use either <em>RSA</em> or <em>EC</em> certs, then you <strong>must</strong> provide a TLSA record
+for both of them. And there must be record for the apex domain as well as every MX host.</p>
+<p>We determine the MX hosts from DNS lookup of the apex domain.</p>
+</section>
+</section>
+<section id="service-config-for-tlsa">
+<h2><span class="section-number">7.4. </span>Service Config for TLSA<a class="headerlink" href="#service-config-for-tlsa" title="Link to this heading">¶</a></h2>
+<p>The service config allows DANE to be specified.</p>
+<p>The input field takes the form of a list, one item per port:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">dane_tls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[[</span><span class="m">25</span>,<span class="w"> </span><span class="s1">'tcp'</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="m">1</span><span class="o">]</span>,<span class="w"> </span><span class="o">[</span>...<span class="o">]</span>,<span class="w"> </span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>Each item has port (25 here), the network protocol (tcp) along with <em>usage</em> (3), <em>selector</em> (1)
+and <em>hash_type</em> (also 1).</p>
+<p>You should use (3,1,1).</p>
+<p>The dane records normally contain the current TLSA records. During rollover
+they contain both current and next ones, and after rollover completes, and
+next becomes current then we’re back to the normal case with only current TLSA records.</p>
+<p>Each apex domain has it’s own file of TLSA records, <em>tlsa.&lt;apex_domain&gt;</em>.</p>
+<p>The <em>ssl-mgr.conf</em> DNS section also specifies where these DNS TLSA record files should be
+copied to - so that the DNS tools can include them in the apex domain zone file.</p>
+<p>The best way to handle the dane resource records is by using $INCLUDE in dns zone file
+to picks up <em>tlsa.&lt;apex_domain&gt;</em> file.</p>
+<p>DNS server is refreshed (i.e. zone files signed and primary server is restarted)  whenenever
+a dane tlsa file changes.</p>
+<p>The TLSA records change when the private key is updated (leading to change in the hash itself)
+or when the dane-info is changed (e.g. change of ports or other dane info). It certainly
+changes after a <em>renew</em> builds new keys/certs in <em>next</em> and after <em>roll</em> when
+the new <em>curr</em> is updated.</p>
+<p>For doing rollover properly, order is important.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curr<span class="w"> </span>⟶<span class="w">  </span>curr<span class="w"> </span>+<span class="w"> </span>next<span class="w"> </span>⟶<span class="w">   </span>DNS
+</pre></div>
+</div>
+<p>After 2xTTL or longer:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>next<span class="w"> </span>⟶<span class="w">  </span>curr<span class="w"> </span>⟶<span class="w">   </span>update<span class="w"> </span>mail<span class="w"> </span>server<span class="w"> </span>⟶<span class="w">   </span>refresh<span class="w"> </span>DNS
+</pre></div>
+</div>
+<p><em>sslm-mgr</em> takes care of this.</p>
+<p>While it is true that reusing a key, means not having to deal with key rolloever as often,
+that only helps when doing things manually. And in fact even doing it manually, doing things
+less frequently may mean mistakes are more likely. There is also a small security reduction
+obviously in reusing a key.</p>
+<p>When things are automated, as here with <em>sslm-mgr</em> taking care of everything, then there is little
+benefit to key reuse. So we support it, but we recommend just renew and roll and all will be fine :)</p>
+</section>
+<section id="certbot-notes">
+<h2><span class="section-number">7.5. </span>Certbot: Notes<a class="headerlink" href="#certbot-notes" title="Link to this heading">¶</a></h2>
+<p>A few notes on certbot and how we’re using it.</p>
+<p>In addition to the database directory (<em>db</em>) there is also a <em>cb</em> dir which
+is provided to certbot. Certbot uses to to keep letsencrypt accounts. Each group-service
+has its own everything - this includes it’s own certbot <em>cb</em> and thus separately registered
+LE (Letsencrypt) account for each service.</p>
+<p>We are using cerbot in manual mode. This gives us a lot of control and allows us to
+use our own generated CSR as well as to specify
+where the resulting cert and chain files get stored.</p>
+<p>When sending a CSR with apex domain plus sub-domains, each (sub)domain gets a challenge and
+each challenge must be validated by LE before cert is issued. Challenges can be validated
+by acme http-01 or dns-01. Wildcard sub-domains (*.example.com) can only be validated using dns-01.</p>
+<p>Certbot sends each challenge to a <em>hook</em> program. The <em>hook</em> program is called once per challenge.
+Information about the challenge and which sub-domain are passed to the <em>hook</em> program in
+environment variables. Env variables also tell the program how many more challenges remain to
+be sent. Once all the challenges have been delivered - and only after the <em>hook</em> program returns -
+LE will then seek to validate all of the acme challenges, whether http or dns validation is
+being used.</p>
+<p>This is actually really good - it means that we can push all the challenges out - and wait for
+every DNS authoritative name server to have the TXT records before allowing the hook to return
+once it has every acme challenge.</p>
+<p>In older versions of certbot, validation took place after each sub-domain challenge, and for DNS
+that meant dns refresh - wait for NS to udpate - LE checks and sends next challenge.
+This could potentially very long wait times - I read of some folks waiting many hours. Now with
+the new way as described above, whether DNS or HTTP challenge, it takes only seconds or minutes.</p>
+<p>It seems to me that LE checks directly with each authoritative NS, which is the most efficient
+way to check - rather than waiting on some random recursive server to get updated.</p>
+</section>
+<section id="sslm-mgr-application">
+<h2><span class="section-number">7.6. </span>sslm-mgr application<a class="headerlink" href="#sslm-mgr-application" title="Link to this heading">¶</a></h2>
+<section id="usage">
+<h3><span class="section-number">7.6.1. </span>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h3>
+<p>To run - go to terminal and use :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>--help
+</pre></div>
+</div>
+</section>
+<section id="config-file-location">
+<h3><span class="section-number">7.6.2. </span>Config File Location<a class="headerlink" href="#config-file-location" title="Link to this heading">¶</a></h3>
+<p>The configuration file for ssl-mgr is chosen by checking for
+as the first directory containing a <em>conf.d</em> directory from the
+list of <em>topdir</em> directories:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;SSL_MGR_TOPDIR&gt;
+./
+/etc/ssl-mgr/
+</pre></div>
+</div>
+<p>Where the directories are checked in order and <em>&lt;SSL_MGR_TOPDIR</em>&gt;
+is an environment variable that can be set to take preference.</p>
+<p>The config files are located in <em>topdir/conf.d/</em> and certificates,
+key files and so on are saved under <em>topdir/certs</em>.</p>
+<p>For example if there environment variable is not set and the directory
+<em>./conf.d</em> exists, then it becomes the top level directory. And all
+configuration files reside under <em>./conf.d</em>.</p>
+</section>
+</section>
+<section id="log-files">
+<h2><span class="section-number">7.7. </span>Log Files<a class="headerlink" href="#log-files" title="Link to this heading">¶</a></h2>
+<p>Logs are found in the log directory specified by the global config variable:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>globals<span class="o">]</span>
+<span class="w">    </span>...
+<span class="w">    </span><span class="nv">logdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'xxx'</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>There are 3 kinds of log files in the log directory.</p>
+<ul class="simple">
+<li><p><em>&lt;logdir&gt;/sslm</em>: General application log</p></li>
+<li><p><em>&lt;logdir&gt;/cbot</em>: Application log while interacting with letsencrypt via certbot.</p></li>
+<li><p><em>&lt;logdir&gt;/letsencrypt/letsencrypt.log.&lt;N&gt;</em>: Letsencrypt log provided by cerbot.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ssl-mgr</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Background.html">2. Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Acme.html">3. Acme Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dane.html">5. DANE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Configs.html">6. Configs: Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Using the Tools : Details</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sslm-mgr-options">7.1. sslm-mgr options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">7.2. Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output">7.3. Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#service-config-for-tlsa">7.4. Service Config for TLSA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#certbot-notes">7.5. Certbot: Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sslm-mgr-application">7.6. sslm-mgr application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#log-files">7.7. Log Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Configs.html" title="previous chapter"><span class="section-number">6. </span>Configs: Getting Started</a></li>
+      <li>Next: <a href="Appendix.html" title="next chapter"><span class="section-number">8. </span>Appendix</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023-present, Gene C.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/Sections/Using_Tools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

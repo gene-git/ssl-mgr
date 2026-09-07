@@ -1,0 +1,21 @@
+py.install_sources(
+     '__init__.py',
+  subdir: 'ssl_mgr'
+)
+subdir('app')
+subdir('ca_sign')
+subdir('cbot')
+subdir('compare')
+subdir('config')
+subdir('config_service')
+subdir('crypto_base')
+subdir('crypto_cert')
+subdir('crypto_csr')
+subdir('crypto_dhparm')
+subdir('crypto_hash')
+subdir('db')
+subdir('dns_base')
+subdir('groups')
+subdir('services')
+subdir('tlsa')
+subdir('utils')

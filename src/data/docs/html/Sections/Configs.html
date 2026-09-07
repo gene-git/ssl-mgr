@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. Configs: Getting Started &#8212; ssl-mgr 8.0.0
+ documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=f663eb4a"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Using the Tools : Details" href="Using_Tools.html" />
+    <link rel="prev" title="5. DANE" href="Dane.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="configs-getting-started">
+<span id="configs"></span><h1><span class="section-number">6. </span>Configs: Getting Started<a class="headerlink" href="#configs-getting-started" title="Link to this heading">¶</a></h1>
+<p><em>ssl-mgr</em> handles keys, certificate signing requests (CSR) and certs.
+It takes care of generating DANE TLSA DNS records should they be desired.
+It reloads/restarts specific servers whenever needed. Each server has
+defined dependencies which trigger restarts whenever those dependencies have changed.</p>
+<p>For example, a web server may depend on one or more apex domain certificates and
+will be restarted when any of those certs change.</p>
+<p>It needs external support tools such as zone signing for DNSSEC and restarting
+dns servers as well as reloading web or mail servers to ensure new certs are
+picked up. These are provided via the top level config file.</p>
+<p>There is support for private/self-signed CAs and Letsencrypt CA.</p>
+<p>The first order of business is to create the config files that describe what
+needs to be done. They specify everything needed to obtain one or more certificates
+for one or more domains.</p>
+<p>There are 3 kinds of configs.</p>
+<p><strong>ssl-mgr.conf</strong></p>
+<p>This is the top level config which has the list of active apex domains and for each
+domain a list of services for that domain. Each service produces one certificate.</p>
+<p>It also specifes the commands to be used to restart servers (e.g. web, mail)
+and where to write any acme challenge files (web or dns) that needed to validate domain
+control to the issuing CA.</p>
+<p>Lastly it defines where the final (production) certificates are to be stored.</p>
+<p><strong>service configs</strong></p>
+<p>Each certificate to be issued for an apex domain for some service uses one configuration file.
+For example a service might be a mail server using elliptic curve algorithm where certificate is
+issued by Letsencrypt.</p>
+<p>The service configs reside in a directory under its apex domain.</p>
+<p><strong>ca-info.conf</strong></p>
+<p>Information about each Certifice Authority is defined in this file.</p>
+<p>Sample configs in examples/conf.d can be used as a template to get started.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ssl-mgr</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Background.html">2. Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Acme.html">3. Acme Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dane.html">5. DANE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6. Configs: Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Using_Tools.html">7. Using the Tools : Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Dane.html" title="previous chapter"><span class="section-number">5. </span>DANE</a></li>
+      <li>Next: <a href="Using_Tools.html" title="next chapter"><span class="section-number">7. </span>Using the Tools : Details</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023-present, Gene C.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/Sections/Configs.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

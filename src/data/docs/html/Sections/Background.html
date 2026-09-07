@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Background &#8212; ssl-mgr 8.0.0
+ documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=f663eb4a"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Acme Challenge" href="Acme.html" />
+    <link rel="prev" title="1. ssl-mgr" href="../README.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="background">
+<span id="id1"></span><h1><span class="section-number">2. </span>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h1>
+<section id="groups-services">
+<h2><span class="section-number">2.1. </span>Groups &amp; Services<a class="headerlink" href="#groups-services" title="Link to this heading">¶</a></h2>
+<p>To keep things organized, data is partitioned into groups and services.</p>
+<p>There are two types of groups:</p>
+<ul class="simple">
+<li><p>Certificate Authorities (CAs)</p></li>
+<li><p>Apex Domains.</p></li>
+</ul>
+<p>A CA can be an external Authority such as Letsencrypt or an internal / local one.</p>
+<p>A local CA is structured similarly to an external one by having
+a self-signed root certificate along with a companion intermediate cert(s) that
+cert is signed by the root cert. Intermediate certs are then used to sign any
+requested certificates.</p>
+<p>Certificates are typically used by a server such as a web or email server.
+Each certificate is defined by a <em>service</em>. Certificates carry an apex domain
+(e.g. example.com) but may have additional subdomains (sub1.example.com, sub2.example.com).
+The full list of all these domains in a certificate is stored under Subject Alternative Names
+or SANS.</p>
+<p>An apex domain can have multiple certificates, where each certificate includes
+all the subdomains along with the apex domain. All the desired details for each certificate
+is provided in a <em>service</em> config file.</p>
+<section id="certificate-authorities">
+<h3><span class="section-number">2.1.1. </span>Certificate Authorities<a class="headerlink" href="#certificate-authorities" title="Link to this heading">¶</a></h3>
+<p>The job of a CA is to take a Certificate Signing Request (CSR) and return a signed cert.</p>
+<ul class="simple">
+<li><p>Internal CA</p>
+<ul>
+<li><p>Self-signed root certs are used solely to sign local intermediate certs.</p></li>
+<li><p>Local intermediate certs are used to sign certs. The intermediates are signed by
+a local self signed root.</p></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<div><p>Using internal certs are a good starting point when getting set up and exploring <em>ssl-mgr</em>.</p>
+</div></blockquote>
+<ul>
+<li><p>Letsencrypt CA</p>
+<p>When ready, using their test server, which is more generous with limits, is a good
+way to prepare for the production. LE’s test server is invoked by using the <em>-t</em>
+option. The <em>–dry-run</em> option may be helpful too.</p>
+<p>When all is working as desired, drop the test option and you’re ready
+to go into production.</p>
+</li>
+</ul>
+</section>
+<section id="apex-domains">
+<h3><span class="section-number">2.1.2. </span>Apex Domains<a class="headerlink" href="#apex-domains" title="Link to this heading">¶</a></h3>
+<p>An Apex domain is the <em>main</em> part of the domain with it’s own DNS authority.</p>
+<p>If <em>example.com</em> has a DNS SOA record, then it would be the apex domain and any
+of it’s subdomain, such as <em>foo.example.com</em> would be a part of that apex domain.
+Whenever we deal with DNS, we (almost) always deal with the apex domain.</p>
+<p>Each apex domain is a <em>group</em> and may have 1 or more certificates where each
+certificate is associated with 1 service.</p>
+</section>
+<section id="services">
+<h3><span class="section-number">2.1.3. </span>Services<a class="headerlink" href="#services" title="Link to this heading">¶</a></h3>
+<p>Each service gets 1 certificate.</p>
+<p>An apex domain may want/need different certs for different services. Each service has
+one certificate.</p>
+<p>An apex domain, for example, may have a mail service and a web service. Each of these has it’s own
+unique cert. Now, mail may use 2 certs, perhaps elliptic curve and RSA, then we would
+simply have 2 services for mail. In this case lets call them <em>mail-ec</em> and <em>mail-rsa</em>
+and lets call the web service <em>web-ec</em>. Its good to name services in a way thats
+useful for administrator - it has no significance to the code other than the name must be
+a good filename so cannot contain <em>/</em> etc.</p>
+<p>In the same vein, for self signed CA certs, we have 2 items - a <em>root</em> cert and an <em>intermediate</em>
+cert where each belongs the special group <em>ca</em>. Again, each of these is a separate service.</p>
+<p>Since each service has its own certificate, each has its own X509 name which describe
+what it is. This includes things like Common Name, Alternative Names and organization.
+In this case it includes info about the keys to be used and which entity
+is provides the signed certificate.</p>
+<p>Each service has it’s information provided by a service file.  It has all the information
+needed to create keys and CSRs as well as certs.  This include key type, various <em>name</em> fields
+along with which CA should be used.  The <em>name</em> fields are essentially <em>x509</em> Name <a class="footnote-reference brackets" href="#x509-name" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>
+fields. These include things like Common Name, Organization and so on.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="x509-name" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>x509 Name <a class="reference external" href="https://en.wikipedia.org/wiki/X.509">https://en.wikipedia.org/wiki/X.509</a></p>
+</aside>
+</aside>
+<p>CSR (certificate signing request) contains the <em>subject</em> organiziation (thats the apex domain
+org) information along with the public key. The private key is kept in a separate file.
+The CSR is sent to the CA which, all being well,  returns a (signed) certificate.</p>
+<p>The resulting cert and certificate chain(s) are kept together with the key and CSR files.
+A cert is signed by the <em>Issuer</em> and in addition to the signature contains the
+public key. The <em>chain</em> file contains the public key and x509 Name of the certificate issuer.</p>
+<p>There are a couple of tools provided (<em>sslm-verify</em> and <em>sslm-info</em>) that make it
+easy to validate a certificate or display information about it.
+<em>sslm-info</em> works on all the <em>sslm-mgr</em> outputs : keys, csrs, certs, chains, fullchains and bundles.</p>
+</section>
+</section>
+<section id="key-cert-files">
+<h2><span class="section-number">2.2. </span>Key/Cert Files<a class="headerlink" href="#key-cert-files" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>CSR (certificate signing request)</p>
+<p>Each certificate for is generated from its CSR which contains the
+public key. Public key is generated from the private key so there
+is no need to save a public key.</p>
+<p>A CSR is always used make a cert. This provides control as well as
+consistency across CAs, be they self or other.
+The public key is in the CSR and also in the certificate provided and signed by the CA.
+We support both RSA and Elliptic Curve (EC) keys. EC is strongly preferred.
+In fact, while RSA keys are still used they are only needed by ancient
+client software for browsers and email. That said, RSA is still in common
+use for DKIM <a class="footnote-reference brackets" href="#dkim" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> signing for some reason. We DKIM sign outbound mail with both RSA and EC.</p>
+</li>
+<li><p>Cert</p>
+<p>Each cert contains the public key which is signed by the CA. It carries the <em>subject</em>
+apex domain name along with ‘subject alternative names’ or SANS. SANS allow a certificate to contain
+multiple domain or subdomain names. The <em>issuer</em>, which signed the certificate, has it’s name
+in the cert as well. Name in this context is an X509 name meaning, common name, organization,
+organization unit and so on.</p>
+</li>
+<li><p>Certificate chains</p>
+<ul>
+<li><p><strong>chain</strong> =  CA root cert + Signing CA cert</p>
+<p>Signing CA cert is usually the CA Intermediate cart(s)
+Note that the root cert may or may not be included by CAs other than LE
+For those client chain = signing ca</p>
+</li>
+<li><p><strong>fullchain</strong> = Domain cert + chain</p></li>
+<li><p><strong>bundle</strong> = priv-key + fullchain.</p>
+<p>A bundle is just a chain made of the private key plus the fullchain. This is preferred
+by postfix <a class="footnote-reference brackets" href="#postfix-tls" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+</li>
+</ul>
+</li>
+<li><p>Private key</p>
+<p>Also called simply the <em>key</em>. It is stored in a file with restricted permissions.
+The companion public key can be generated from the private key. By always generating
+the public key from the private key, they are guaranteed to remain consistent.</p>
+</li>
+</ul>
+<p>Key, CSR and certificate files are stored in the convenient PEM format. Certificates use
+X509.V3 <a class="footnote-reference brackets" href="#x509" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> which provides for <em>extensions</em> such as SANS which are critical to have.
+CSR files use <em>PKCS#10</em> <a class="footnote-reference brackets" href="#pkcs" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> which can carry the same set of X509 extensions.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="dkim" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>DKIM -&gt; <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc6376">https://datatracker.ietf.org/doc/html/rfc6376</a></p>
+</aside>
+<aside class="footnote brackets" id="postfix-tls" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>Postfix TLS -&gt; <a class="reference external" href="https://www.postfix.org/postconf.5.html#smtpd_tls_chain_files">https://www.postfix.org/postconf.5.html#smtpd_tls_chain_files</a></p>
+</aside>
+<aside class="footnote brackets" id="x509" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
+<p>X509 V3 -&gt; <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc5280">https://datatracker.ietf.org/doc/html/rfc5280</a></p>
+</aside>
+<aside class="footnote brackets" id="pkcs" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
+<p>PKCS#10 CSR -&gt; <a class="reference external" href="https://www.rfc-editor.org/rfc/rfc2986">https://www.rfc-editor.org/rfc/rfc2986</a></p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ssl-mgr</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#groups-services">2.1. Groups &amp; Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-cert-files">2.2. Key/Cert Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Acme.html">3. Acme Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dane.html">5. DANE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Configs.html">6. Configs: Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Using_Tools.html">7. Using the Tools : Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../README.html" title="previous chapter"><span class="section-number">1. </span>ssl-mgr</a></li>
+      <li>Next: <a href="Acme.html" title="next chapter"><span class="section-number">3. </span>Acme Challenge</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023-present, Gene C.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/Sections/Background.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

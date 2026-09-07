@@ -110,14 +110,12 @@ class CertExpires:
         Expiration as date
         '''
         return self.expiry.strftime("%Y-%m-%d %H:%M:%S %Z")
-        #return str(self.expiry)
 
     def issue_date_str(self):
         '''
         Expiration as date
         '''
         return self.issued.strftime("%Y-%m-%d %H:%M:%S %Z")
-        #return str(self.issued)
 
     def expiration_string(self):
         '''
