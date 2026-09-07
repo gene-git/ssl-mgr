@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5. DANE &#8212; ssl-mgr 8.0.1
+ documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=521b6f53"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Configs: Getting Started" href="Configs.html" />
+    <link rel="prev" title="4. Renewing &amp; Rolling" href="Renew_Roll.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="dane">
+<span id="id1"></span><h1><span class="section-number">5. </span>DANE<a class="headerlink" href="#dane" title="Link to this heading">¶</a></h1>
+<p>For DANE TLSA records, care must be taken to properly <em>roll</em> new keys. Key rolling
+ensures that the <em>next</em> key and the <em>curr</em> key are both advertised in DNS
+for some period. After some time the new key can be made <em>curr</em>. This waiting period
+should be long enough to provide sufficient time for all DNS servers to pick up both old and new
+new keys before DNS is changed to only show the new ones.
+It’s reasonable to wait 2 x the DNS TTL or longer.</p>
+<p>After that wait time, the new (<em>next</em>) keys can be then be made available as the new <em>curr</em> ones.
+Applications, mail really,  can now use the new keys since the world has both sets of keys.</p>
+<p>Then DNS servers can then be updated again, this time with just the new (now <em>curr</em>) keys in the TLSA records.
+DANE key roll is similar to key roll for DNSEC.  DANE TLSA actually requires DNSSEC.</p>
+<p>DANE was designed as an alternative to third party certificate authorities like letsencrypt which
+means its fine to used self signed or CA signed certs. While DANE could be used for web servers
+to date it is really only used for email.</p>
+<p>The companion <em>dns_tools</em> package takes care of all our DNSSEC needs <a class="footnote-reference brackets" href="#dnstool" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="dnstool" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>dns_tools : <a class="reference external" href="https://github.com/gene-git/dns_tools">https://github.com/gene-git/dns_tools</a></p>
+</aside>
+</aside>
+<p>And I recommend using it to simplify the DNS refresh needed for validating
+Letsencrypt acme challenges using <em>DNS-01</em> as well as for DANE TLSA.
+A DNS refresh means resign zones (when using DNSSEC) and then restarting the primary dns server.</p>
+<p>DANE TLSA records contain the public key, or a hash of that key, and thus need to be refreshed
+whenever that key changes; this is the key roll. It also means that if the key is kept the same, then
+the TLSA records aren’t changing <a class="footnote-reference brackets" href="#tlsa-1" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.  <em>ssl-mgr</em> has an option to re-use the public key
+when certs are being renewed, and this allows the TLSA records to remain unchanged.
+In that case no key roll is needed until that key is changed. Some may find this useful.</p>
+<p>It basically means using the same certificate signing request, CSR, to get a new cert. The CSR contains
+the public key associated with the private key. So if keys dont change CSR doesn’t change either,
+and the same CSR can be re-used.</p>
+<p>However, I find <em>ssl-mgr</em> makes it so simple to renew with new keys, that
+I don’t see much point in reusing the old keys. Of course using new keys offers a security benefit.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="tlsa-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>DANE can use either public key or the cert. Cert does change when it’s reneweed even if the
+public key is unchanged. I believe pretty much everyone uses the public key not the cert in
+TLSA reords.</p>
+</aside>
+</aside>
+<p>Note that each MX for the mail domain will have a TLSA record as required by the standard.</p>
+<section id="dane-first-use-caution">
+<span id="dane-tlsa-first-use"></span><h2><span class="section-number">5.1. </span>DANE First Use - Caution<a class="headerlink" href="#dane-first-use-caution" title="Link to this heading">¶</a></h2>
+<p><strong>Important</strong>:</p>
+<p>A cautionary note about the turning on DANE TLSA for the first time for an Apex domain.</p>
+<p>Do not include dane TLSA records in DNS zone files, until after the <em>roll</em>.</p>
+<p>The very first time <em>DANE</em> is turned on, <em>tlsa</em> DNS records are created for <em>next</em>.
+The reason is, at this point there are no <em>tlsa</em> records for <em>curr</em> and the key/cert
+in <em>curr</em> is what mail server is using.</p>
+<p>So if DNS is pushed out before the roll, these new <em>TLSA</em> records for <em>next</em> will be visible.
+However, the mail servers are still using the key/certs from <em>curr</em>. Mail servers attempting to send
+mail inbound to your servers will be checking for the certs being advertized which are
+from <em>next</em>, and these are not yet being used.</p>
+<p>After the roll, it is fine to update the DNS zone file to include the DANE TLSA records,
+because the mail servers are now using the key/certs from <em>curr</em> as advertized by the
+<em>DANE</em> records.</p>
+<p>Going forward after a renewal, there will be no issue. This is becuase both <em>curr</em> and <em>next</em> <em>TLSA</em>
+DNS records will both be advertized before the roll. Mail server is then using <em>curr</em> and
+there is a DANE records advertizing the <em>curr</em> cert.</p>
+<p>So, after activating DANE the very first time for an Apex domain, hold off actually including those
+TLSA records in the zone file until after the <em>roll</em>. After the <em>roll,  the mail servers are using the
+key/certs advertized in the DNS *DANE TLSA</em> records.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ssl-mgr</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Background.html">2. Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Acme.html">3. Acme Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. DANE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dane-first-use-caution">5.1. DANE First Use - Caution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Configs.html">6. Configs: Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Using_Tools.html">7. Using the Tools : Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Renew_Roll.html" title="previous chapter"><span class="section-number">4. </span>Renewing &amp; Rolling</a></li>
+      <li>Next: <a href="Configs.html" title="next chapter"><span class="section-number">6. </span>Configs: Getting Started</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023-present, Gene C.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/Sections/Dane.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -37,12 +37,10 @@ Key Features
 Recent Updates
 ==============
 
-**8.0.1**
+**8.0.0**
 
-* Change Arch package dependencies that have been renamed:
-
-  - pyconcurrent -> python-pyconcurrent
-  - lockmgr -> python-lockmgr
+* Use meson / meson-python for build and package management.
+* Code review 
 
 Overview
 ========

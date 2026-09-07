@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Acme Challenge &#8212; ssl-mgr 8.0.1
+ documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=521b6f53"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Renewing &amp; Rolling" href="Renew_Roll.html" />
+    <link rel="prev" title="2. Background" href="Background.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="acme-challenge">
+<span id="id1"></span><h1><span class="section-number">3. </span>Acme Challenge<a class="headerlink" href="#acme-challenge" title="Link to this heading">¶</a></h1>
+<p>Letsencrypt uses Automated Certificate Management Environment (ACME)
+and while our focus is on Letsencrypt there are other providers using ACME as well.</p>
+<p>The protocol provides a mechanism for the CA to provide a signed certificate.
+The way <em>ssl-mgr</em> works is by creating a Certificate Signing Request (CSR) which
+is sent to Letsencrypt which returns a signed certificate. The CSR and the cert
+contain the public key. The companion private key is never shared.</p>
+<p>Before the CA signs the certificate it validates that we have control over the Apex domain and
+any other subdomains that are part of the certificate. There a various ways the validation
+occurs.</p>
+<p>One validation method uses a web server (the http-01 protocol) and another uses
+DNS server (dns-01). The validation generally involves the CA sending a secret which is
+then made available on the web server for the domain name being validated or available
+on the DNS server for the domain. After the CA has verified the correct secret has been
+posted on the web/dns server it then issues the certificate.</p>
+<p>Using <em>DNS-01</em> to validate Letsencrypt acme challenges is done by adding the challenge TXT records
+to DNS, signing the zones (if using DNSSEC) and pushing them out, so that
+the signing CA can subsequently check those DNS records match appropriately and then
+they provide the requested cert.</p>
+<p>While <a class="footnote-reference brackets" href="#acme-val-challenge" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> can use either http-1 or dns-01; dns is preferred
+whenever possible.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="acme-val-challenge" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>acme-val-challenge : <a class="reference external" href="https://letsencrypt.org/docs/challenge-types/">https://letsencrypt.org/docs/challenge-types/</a></p>
+</aside>
+</aside>
+<p>There is a new acme protocol expected to be available in 2026 called
+<a class="reference external" href="https://datatracker.ietf.org/doc/html/draft-ietf-acme-dns-persist-00">dns-persist-01</a>.
+This is similar to dns-01 but instead of requiring validation on every renewal, the
+idea is to have a long lasting, persistent, DNS record which can be re-used at renewal.
+This should simplify and speed up renewals.</p>
+<p>Note that in order to update DNS, an appropriate tool is needed. We use
+<a class="reference external" href="https://github.com/gene-git/dns_tools">dns_tools</a> for that purpose.</p>
+<p>To make this as smooth as possible, <em>ssl-mgr</em> should run on the DNS signing server.
+This allows files with DNS records, acme challenges and
+TLSA record files, to be written to accessible directories on same machine.</p>
+<p>A possible future enhancement may allow the dns signing server to be remote.</p>
+<p>Note that DNS server refresh is also done after any DANE TLSA records are updated.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ssl-mgr</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Background.html">2. Background</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Acme Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dane.html">5. DANE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Configs.html">6. Configs: Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Using_Tools.html">7. Using the Tools : Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Background.html" title="previous chapter"><span class="section-number">2. </span>Background</a></li>
+      <li>Next: <a href="Renew_Roll.html" title="next chapter"><span class="section-number">4. </span>Renewing &amp; Rolling</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023-present, Gene C.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/Sections/Acme.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

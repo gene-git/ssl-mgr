@@ -1,0 +1,29 @@
+-------------------------------------------------------
+ Changelog    : ssl-mgr
+ Tags         : 7.7.0 ➙ 8.0.1,
+              : 2026-07-14 ➙ 2026-09-06
+              : 6 tags. See Docs for full changelog
+-------------------------------------------------------
+
+ 2026-09-06   : 8.0.1,
+              - **8.0.0**
+            
+                * Use meson / meson-python for build and package management.
+                * Code review
+
+ 2026-07-30   : 7.8.1
+              - 7.8.1 - update version in pyproject.toml
+
+ 2026-07-30   : 7.8.0
+              - **7.8.0**
+            
+                * Expiration & Issue format improvements
+
+ 2026-07-14   : 7.7.0
+              - **7.7.0**
+            
+                * Improve the the time to renew decision days.
+                  We now use a piece-wise linear function instead of piece-wise constant.
+                  For example, given 45 certs renew with 10 days to expiry and 90 certs with 30 days,
+                  a cert with expiration in between 45 and 90 would use a renew days target that
+                  is linearly interpolated between 10 and 30 days.

@@ -1,5 +1,6 @@
-/Docs/_build/latex
-/Docs/_build/doctrees
 __pycache__/
 .mypy_cache/
+build/
+src/data/docs/_build/
+src/data/docs/html/.buildinfo.bak
 
