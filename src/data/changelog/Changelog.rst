@@ -6,14 +6,21 @@ Tags
 
 .. code-block:: text
 
-	2.2.0 (2024-03-29) -> 8.0.1, (2026-09-06)
-	106 commits.
+	2.2.0 (2024-03-29) -> 8.0.2 (2026-10-07)
+	107 commits.
 
 Commits
 =======
 
 
-* 2026-09-06  : **8.0.1,**
+* 2026-10-07  : **8.0.2**
+
+.. code-block:: text
+
+              - **8.0.2**
+                * Documentation available on readthedocs https://ssl-mgr.readthedocs.io
+
+* 2026-09-06  : **8.0.1, origin/master**
 
 .. code-block:: text
 

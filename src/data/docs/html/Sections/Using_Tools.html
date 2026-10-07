@@ -1,41 +1,111 @@
+
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>7. Using the Tools : Details &#8212; ssl-mgr 8.0.1
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7. Using the Tools : Details &mdash; ssl-mgr 8.0.2
  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
-    <script src="../_static/documentation_options.js?v=521b6f53"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=29180f0f" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=65e3e539"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="8. Appendix" href="Appendix.html" />
-    <link rel="prev" title="6. Configs: Getting Started" href="Configs.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
+    <link rel="prev" title="6. Configs: Getting Started" href="Configs.html" /> 
+</head>
 
-  
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../index.html" class="icon icon-home">
+            ssl-mgr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Background.html">2. Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Acme.html">3. Acme Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dane.html">5. DANE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Configs.html">6. Configs: Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Using the Tools : Details</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sslm-mgr-options">7.1. sslm-mgr options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">7.1.1. sslm-mgr options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">7.2. Configuration Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#service-config">7.2.1. Service Config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output">7.3. Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dns-01-validation">7.3.1. DNS-01 Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#http-01-validation">7.3.2. HTTP-01 Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dane-tlsa-dns-file">7.3.3. DANE-TLSA DNS File</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#service-config-for-tlsa">7.4. Service Config for TLSA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#certbot-notes">7.5. Certbot: Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sslm-mgr-application">7.6. sslm-mgr application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usage">7.6.1. Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-file-location">7.6.2. Config File Location</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#log-files">7.7. Log Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ssl-mgr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">7. </span>Using the Tools : Details</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/Sections/Using_Tools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="using-the-tools-details">
-<span id="using-tools"></span><h1><span class="section-number">7. </span>Using the Tools : Details<a class="headerlink" href="#using-the-tools-details" title="Link to this heading">¶</a></h1>
+<span id="using-tools"></span><h1><span class="section-number">7. </span>Using the Tools : Details<a class="headerlink" href="#using-the-tools-details" title="Link to this heading"></a></h1>
 <p>Once the config files are set up then the tools can be used to do the real work.</p>
 <p>The primary tool for generating and managing certificates is <em>sslm-mgr</em>.  As usual, help
 is available with the <em>-h</em> or <em>–help</em> option.</p>
@@ -81,7 +151,7 @@ by adding <em>dev</em> command as the first argument.</p>
 </tbody>
 </table>
 <section id="sslm-mgr-options">
-<h2><span class="section-number">7.1. </span>sslm-mgr options<a class="headerlink" href="#sslm-mgr-options" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.1. </span>sslm-mgr options<a class="headerlink" href="#sslm-mgr-options" title="Link to this heading"></a></h2>
 <p>As already mentioned, once configs are set up and running, then all that’s
 needed is to run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>-renew
@@ -93,7 +163,7 @@ live by doing:</p>
 </pre></div>
 </div>
 <section id="id1">
-<h3><span class="section-number">7.1.1. </span>sslm-mgr options<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.1.1. </span>sslm-mgr options<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>Has 2 modes - a <em>normal</em> mode and a developer or <em>dev</em> mode. In both cases,
 the groups and services are read from the same config files.
 Some values <em>can</em> be overridden from the command line.</p>
@@ -160,7 +230,7 @@ To see developer help:</p>
 </section>
 </section>
 <section id="configuration-files">
-<h2><span class="section-number">7.2. </span>Configuration Files<a class="headerlink" href="#configuration-files" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.2. </span>Configuration Files<a class="headerlink" href="#configuration-files" title="Link to this heading"></a></h2>
 <p>Sample configs are show in Appendix <a class="reference internal" href="Appendix.html#appendix"><span class="std std-ref">Appendix</span></a> and the files
 are provided in <em>examples/conf.d</em> directory.</p>
 <p>When setting for the first time, up its may be helpful to start by creating a self
@@ -216,7 +286,7 @@ of validation method used (http-01 or dns-01).</p>
 </dd>
 </dl>
 <section id="service-config">
-<h3><span class="section-number">7.2.1. </span>Service Config<a class="headerlink" href="#service-config" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.2.1. </span>Service Config<a class="headerlink" href="#service-config" title="Link to this heading"></a></h3>
 <p>Info for each service to create it’s cert. Each domain may have
 separate certs for different services (mail, web, etc). Each service must therefore
 have it’s own unique config file.
@@ -235,7 +305,7 @@ any impact of key related security issues.</p>
 </section>
 </section>
 <section id="output">
-<h2><span class="section-number">7.3. </span>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.3. </span>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
 <p>All generated data is kepy in a dated directory under the <em>db</em> dir and links are provided
 for <em>curr</em> and <em>next</em></p>
 <ul class="simple">
@@ -282,7 +352,7 @@ Such a race is conveivable if key and cert are read from separate files.</p>
 <p>In addition there are the acme challenge files. The <em>ssl-mgr.conf</em> file specifies where
 these files are to be written.</p>
 <section id="dns-01-validation">
-<h3><span class="section-number">7.3.1. </span>DNS-01 Validation<a class="headerlink" href="#dns-01-validation" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.3.1. </span>DNS-01 Validation<a class="headerlink" href="#dns-01-validation" title="Link to this heading"></a></h3>
 <p>For dns-01 the location is specified as a directory:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[dns]
     acme_dir = '...'
@@ -298,7 +368,7 @@ Once the challenge session is complete, the file will be replaced by an empty fi
 which ensures that there are no errors including it in the domain zone file.</p>
 </section>
 <section id="http-01-validation">
-<h3><span class="section-number">7.3.2. </span>HTTP-01 Validation<a class="headerlink" href="#http-01-validation" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.3.2. </span>HTTP-01 Validation<a class="headerlink" href="#http-01-validation" title="Link to this heading"></a></h3>
 <p>For http-01 validation the location is specified by <em>server_dir</em> directory:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[web]
     server_dir = '...'
@@ -323,7 +393,7 @@ RFC 8555 <a class="footnote-reference brackets" href="#rfc-8555-http" id="id4" r
 <p><strong>N.B.</strong> In all cases please ensure that the process has appropriate write permissions.</p>
 </section>
 <section id="dane-tlsa-dns-file">
-<h3><span class="section-number">7.3.3. </span>DANE-TLSA DNS File<a class="headerlink" href="#dane-tlsa-dns-file" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.3.3. </span>DANE-TLSA DNS File<a class="headerlink" href="#dane-tlsa-dns-file" title="Link to this heading"></a></h3>
 <p>If DANE is active for any service, then the TLSA records for that service are saved
 under <em>certs/&lt;apex-domain&gt;/&lt;service&gt;/tlsa.rr</em>. All service TLSA records for each apex domain
 are then aggregated under <em>certs/&lt;apex-domain&gt;/tlsa.&lt;apex-domain&gt;</em>.</p>
@@ -349,7 +419,7 @@ for both of them. And there must be record for the apex domain as well as every 
 </section>
 </section>
 <section id="service-config-for-tlsa">
-<h2><span class="section-number">7.4. </span>Service Config for TLSA<a class="headerlink" href="#service-config-for-tlsa" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.4. </span>Service Config for TLSA<a class="headerlink" href="#service-config-for-tlsa" title="Link to this heading"></a></h2>
 <p>The service config allows DANE to be specified.</p>
 <p>The input field takes the form of a list, one item per port:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">dane_tls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[[</span><span class="m">25</span>,<span class="w"> </span><span class="s1">'tcp'</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="m">1</span><span class="o">]</span>,<span class="w"> </span><span class="o">[</span>...<span class="o">]</span>,<span class="w"> </span>...<span class="o">]</span>
@@ -389,7 +459,7 @@ obviously in reusing a key.</p>
 benefit to key reuse. So we support it, but we recommend just renew and roll and all will be fine :)</p>
 </section>
 <section id="certbot-notes">
-<h2><span class="section-number">7.5. </span>Certbot: Notes<a class="headerlink" href="#certbot-notes" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.5. </span>Certbot: Notes<a class="headerlink" href="#certbot-notes" title="Link to this heading"></a></h2>
 <p>A few notes on certbot and how we’re using it.</p>
 <p>In addition to the database directory (<em>db</em>) there is also a <em>cb</em> dir which
 is provided to certbot. Certbot uses to to keep letsencrypt accounts. Each group-service
@@ -418,16 +488,16 @@ the new way as described above, whether DNS or HTTP challenge, it takes only sec
 way to check - rather than waiting on some random recursive server to get updated.</p>
 </section>
 <section id="sslm-mgr-application">
-<h2><span class="section-number">7.6. </span>sslm-mgr application<a class="headerlink" href="#sslm-mgr-application" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.6. </span>sslm-mgr application<a class="headerlink" href="#sslm-mgr-application" title="Link to this heading"></a></h2>
 <section id="usage">
-<h3><span class="section-number">7.6.1. </span>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.6.1. </span>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
 <p>To run - go to terminal and use :</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sslm-mgr<span class="w"> </span>--help
 </pre></div>
 </div>
 </section>
 <section id="config-file-location">
-<h3><span class="section-number">7.6.2. </span>Config File Location<a class="headerlink" href="#config-file-location" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">7.6.2. </span>Config File Location<a class="headerlink" href="#config-file-location" title="Link to this heading"></a></h3>
 <p>The configuration file for ssl-mgr is chosen by checking for
 as the first directory containing a <em>conf.d</em> directory from the
 list of <em>topdir</em> directories:</p>
@@ -446,7 +516,7 @@ configuration files reside under <em>./conf.d</em>.</p>
 </section>
 </section>
 <section id="log-files">
-<h2><span class="section-number">7.7. </span>Log Files<a class="headerlink" href="#log-files" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">7.7. </span>Log Files<a class="headerlink" href="#log-files" title="Link to this heading"></a></h2>
 <p>Logs are found in the log directory specified by the global config variable:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>globals<span class="o">]</span>
@@ -465,87 +535,34 @@ configuration files reside under <em>./conf.d</em>.</p>
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Configs.html" class="btn btn-neutral float-left" title="6. Configs: Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Appendix.html" class="btn btn-neutral float-right" title="8. Appendix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, Gene C.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">ssl-mgr</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-
-<search id="searchbox" style="display: none" role="search">
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">ssl-mgr documentation</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">1. ssl-mgr</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Background.html">2. Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Acme.html">3. Acme Challenge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Renew_Roll.html">4. Renewing &amp; Rolling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Dane.html">5. DANE</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Configs.html">6. Configs: Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Using the Tools : Details</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#sslm-mgr-options">7.1. sslm-mgr options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-files">7.2. Configuration Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#output">7.3. Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#service-config-for-tlsa">7.4. Service Config for TLSA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#certbot-notes">7.5. Certbot: Notes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#sslm-mgr-application">7.6. sslm-mgr application</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#log-files">7.7. Log Files</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Appendix.html">8. Appendix</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="Configs.html" title="previous chapter"><span class="section-number">6. </span>Configs: Getting Started</a></li>
-      <li>Next: <a href="Appendix.html" title="next chapter"><span class="section-number">8. </span>Appendix</a></li>
-  </ul></li>
-</ul>
-</div>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &#169;2023-present, Gene C.
-      
-      |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
-      
-      |
-      <a href="../_sources/Sections/Using_Tools.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

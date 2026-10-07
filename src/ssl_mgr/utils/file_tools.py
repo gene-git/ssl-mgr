@@ -190,13 +190,17 @@ def set_restictive_file_perms(topdir: str, strict_dir: bool = False) -> bool:
     return okay
 
 
-def make_dir_path(path_dir: str) -> bool:
+def make_dir_path(path_dir: str, mode: int = -1) -> bool:
     """
     makes directory and any missing path components
-      - set reasonable permissions (owner / group)
+      - set reasonable default, permissions (owner=rwx, group=rx, o=)
     """
     okay = True
-    dirmode = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP
+    if mode > 0:
+        dirmode = mode
+    else:
+        dirmode = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP
+
     try:
         os.makedirs(path_dir, exist_ok=True)
         os.chmod(path_dir, dirmode)

@@ -31,8 +31,8 @@ help:
 
 $(BUILDDIR)/html/index.html: $(SOURCES)
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
-	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
-	@rsync -a  $(HTML_EXCL)  _build/html .
+	@rsync -a --mkpath  $(HTML_EXCL)  _build/html/ ./html/
+	@touch $(BUILDDIR)/html/index.html
 	@echo "HTML doc build complete. Path: $@"
 
 $(PKG).pdf: $(SOURCES)
@@ -41,6 +41,7 @@ $(PKG).pdf: $(SOURCES)
 	$(MAKE) -C "$(BUILDDIR)/latex" all-pdf LATEXOPTS="-interaction=nonstopmode" PDFLATEX=xelatex
 	$(MAKE) -C "$(BUILDDIR)/latex" all-pdf LATEXOPTS="-interaction=nonstopmode" PDFLATEX=xelatex
 	@rsync -av _build/latex/$(PKG).pdf .
+	@touch $(PKG).pdf
 	@echo "PDF doc build complete. Path: $@"
 
 clean:

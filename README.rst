@@ -34,15 +34,13 @@ Key Features
   For example making separate certs for web and email servers.
 
 
-Recent Updates
-==============
+Documentation
+=============
 
-**8.0.1**
+The manual provides detailed information and is available in both HTML and PDF formats.
+Both are installed under */usr/share/cidrtools/docs*.
 
-* Change Arch package dependencies that have been renamed:
-
-  - pyconcurrent -> python-pyconcurrent
-  - lockmgr -> python-lockmgr
+The manual is also available at: `readthedocs <https://ssl-mgr.readthedocs.io>`_.
 
 Overview
 ========
